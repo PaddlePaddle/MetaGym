@@ -23,8 +23,7 @@ from rlschool.liftsim.environment.mansion.person_generators.generator_proxy impo
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState, ElevatorAction
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
-from baseline.liftsim_baseline.rl_benchmark.dispatcher import RL_dispatcher
-from baseline.liftsim_baseline.rule_benchmark.dispatcher import Rule_dispatcher
+from rule_benchmark.dispatcher import Rule_dispatcher
 
 
 fail_flag = False

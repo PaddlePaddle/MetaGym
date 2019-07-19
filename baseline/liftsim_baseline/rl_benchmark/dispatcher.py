@@ -50,6 +50,7 @@ class RL_dispatcher():
         acc_reward = 0.0
 
         while self._global_step < self.max_episode:
+            # self.env.render()
             state = self.env.state
             action = self._agent.sample(state)
             state_, reward, done, info = self.env.step(action)

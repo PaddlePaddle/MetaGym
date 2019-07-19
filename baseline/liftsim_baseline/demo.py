@@ -19,7 +19,6 @@ from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
 from rl_benchmark.dispatcher import RL_dispatcher
-from rule_benchmark.dispatcher import Rule_dispatcher
 import sys
 import argparse
 
@@ -52,25 +51,18 @@ def run_main(args):
     parser = argparse.ArgumentParser(description='demo configuration')
     parser.add_argument('--iterations', type=int, default=100000000,
                             help='total number of iterations')
-    parser.add_argument('--controlpolicy', type=str, default='rule_benchmark',
-                            help='policy type: rule_benchmark or others')
     args = parser.parse_args(args)
     print('iterations:', args.iterations)
-    print('controlpolicy:', args.controlpolicy)
 
     mansion_env = LiftSim()
     mansion_env.seed(2019)
 
-    if args.controlpolicy == 'rule_benchmark':
-        dispatcher = Rule_dispatcher(mansion_env, args.iterations)
-        dispatcher.run_dispacher()
-    elif args.controlpolicy == 'rl_benchmark':
-        mansion_env = Wrapper(mansion_env)
-        mansion_env = ActionWrapper(mansion_env)
-        mansion_env = ObservationWrapper(mansion_env)
+    mansion_env = Wrapper(mansion_env)
+    mansion_env = ActionWrapper(mansion_env)
+    mansion_env = ObservationWrapper(mansion_env)
 
-        dispatcher = RL_dispatcher(mansion_env, args.iterations)
-        dispatcher.run_episode()
+    dispatcher = RL_dispatcher(mansion_env, args.iterations)
+    dispatcher.run_episode()
 
     return 0
 
