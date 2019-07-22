@@ -166,7 +166,6 @@ def action_idx_to_action(action_idx, act_dim):
         action += 1
     return ElevatorAction(action, direction)
 
-
 def action_to_action_idx(action, act_dim):
     assert isinstance(action, ElevatorAction)
     assert isinstance(act_dim, int)

@@ -13,37 +13,15 @@ Authors: wangfan04(wangfan04@baidu.com)
 Date:    2019/05/22 19:30:16
 """
 
-from rlschool.liftsim.environment.env import LiftSim, Wrapper, ActionWrapper, ObservationWrapper
+from rlschool.liftsim.environment.env import LiftSim
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
+from baseline.wrapper import Wrapper, ActionWrapper, ObservationWrapper
 from rl_benchmark.dispatcher import RL_dispatcher
 import sys
 import argparse
-
-
-def run_mansion_main(mansion_env, policy_handle, iteration):
-    mansion_env.reset()
-    policy_handle.link_mansion(mansion_env.attribute)
-    policy_handle.load_settings()
-    i = 0
-    acc_reward = 0.0
-    while i < iteration:
-        i += 1
-        mansion_env.render()
-        state = mansion_env.state
-        action = policy_handle.policy(state)
-        _, r, _, _ = mansion_env.step(action)
-        output_info = policy_handle.feedback(state, action, r)
-        acc_reward += r
-        if(isinstance(output_info, dict) and len(output_info) > 0):
-            mansion_env.log_notice("%s", output_info)
-        if(i % 3600 == 0):
-            mansion_env.log_notice(
-                "Accumulated Reward: %f, Mansion Status: %s",
-                acc_reward, mansion_env.statistics)
-            acc_reward = 0.0
 
 # run main program with args
 def run_main(args):

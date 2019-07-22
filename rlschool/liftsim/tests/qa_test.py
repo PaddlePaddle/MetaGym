@@ -18,7 +18,7 @@ import time
 import copy
 import traceback
 
-from rlschool.liftsim.environment.env import LiftSim, Wrapper, ActionWrapper, ObservationWrapper
+from rlschool.liftsim.environment.env import LiftSim
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState, ElevatorAction
@@ -263,10 +263,6 @@ def run_qa_test(configfile, iterations, controlpolicy, set_seed=None):
     print('iterations:', iterations) # total number of iterations
     print('controlpolicy:', controlpolicy) # policy type: rule_benchmark or others
 
-    # control_module = ("dispatchers.{}.dispatcher"
-    #                   .format(controlpolicy))
-    # Dispatcher = __import__(control_module, fromlist=[None]).Dispatcher
-
     mansion_env = LiftSim(configfile)
 
     if(set_seed):
@@ -275,9 +271,7 @@ def run_qa_test(configfile, iterations, controlpolicy, set_seed=None):
     if controlpolicy == 'rule_benchmark':
         dispatcher = Rule_dispatcher(mansion_env, iterations)
     elif controlpolicy == 'rl_benchmark':
-        mansion_env = Wrapper(mansion_env)
-        mansion_env = ActionWrapper(mansion_env)
-        mansion_env = ObservationWrapper(mansion_env)
+        pass
 
     run_mansion_main(mansion_env, dispatcher, iterations)    
 

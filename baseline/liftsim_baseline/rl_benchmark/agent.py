@@ -81,7 +81,6 @@ class ElevatorAgent(Agent):
             ret_actions.append(int(action))
         return ret_actions
         
-
     def predict(self, obs):
         pred_Q = self.fluid_executor.run(
             self._pred_program,

@@ -7,7 +7,6 @@ from copy import deepcopy
 from collections import deque
 
 from rlschool.liftsim.environment.mansion.utils import EPSILON, HUGE
-from rlschool.liftsim.environment.wrapper_utils import obs_dim, act_dim
 from rl_benchmark.model import RLDispatcherModel
 from rl_benchmark.agent import ElevatorAgent
 from parl.algorithms import DQN

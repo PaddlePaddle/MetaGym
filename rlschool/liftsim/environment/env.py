@@ -6,8 +6,6 @@ from rlschool.liftsim.environment.mansion.person_generators.generator_proxy impo
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
-from rlschool.liftsim.environment.wrapper_utils import obs_dim, act_dim, mansion_state_preprocessing
-from rlschool.liftsim.environment.wrapper_utils import action_idx_to_action, action_to_action_idx
 
 NoDisplay = False
 try:
@@ -62,11 +60,6 @@ class LiftSim():
             config['MansionInfo']['Name']
         )
 
-        self.mansion_attr = self._mansion.attribute
-        self.elevator_num = self.mansion_attr.ElevatorNumber
-        self.observation_space = obs_dim(self.mansion_attr)
-        self.action_space = act_dim(self.mansion_attr)
-
         self.viewer = None
 
     def seed(self, seed=None):
@@ -75,7 +68,7 @@ class LiftSim():
     def step(self, action):
         time_consume, energy_consume, given_up_persons = self._mansion.run_mansion(action)
         reward = - (time_consume + 0.01 * energy_consume +
-                    1000 * given_up_persons) * 1.0e-5
+                    100 * given_up_persons) * 1.0e-4
         info = {'time_consume':time_consume, 'energy_consume':energy_consume, 'given_up_persons': given_up_persons}
         return (self._mansion.state, reward, False, info)
 
@@ -121,54 +114,3 @@ class LiftSim():
     @property
     def log_fatal(self):
         return self._config.log_fatal
-
-
-class Wrapper(LiftSim):
-    def __init__(self, env):
-        self.env = env
-        self._mansion = env._mansion
-        self.elevator_num = env.elevator_num
-        self.action_space = env.action_space
-        self.observation_space = env.observation_space
-        self.viewer = env.viewer
-
-    def __getattr__(self, name):
-        if name.startswith('_'):
-            raise AttributeError("attempted to get missing private attribute '{}'".format(name))
-        return getattr(self.env, name)
-
-    def seed(self, seed=None):
-        return self.env.seed(seed)
-
-    def step(self, action):
-        return self.env.step(action)
-
-    def reset(self):
-        return self.env.reset()
-
-    def render(self):
-        return self.env.render()
-
-    def close(self):
-        return self.env.close()
-
-    
-class RewardWrapper(Wrapper):
-    pass
-
-class ActionWrapper(Wrapper):
-    def step(self, action):
-        return self.env.step([action_idx_to_action(a, self.action_space) for a in action])
-
-class ObservationWrapper(Wrapper):
-    def reset(self):
-        self.env.reset()
-        return mansion_state_preprocessing(self._mansion.state)
-
-    def step(self, action):
-        observation, reward, done, info = self.env.step(action)
-        return (mansion_state_preprocessing(observation), reward, done, info)
-
-    @property
-    def state(self):
-        return mansion_state_preprocessing(self._mansion.state)
