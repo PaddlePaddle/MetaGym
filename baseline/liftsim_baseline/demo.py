@@ -33,7 +33,7 @@ def run_main(args):
     print('iterations:', args.iterations)
 
     mansion_env = LiftSim()
-    mansion_env.seed(2019)
+    mansion_env.seed(1956)
 
     mansion_env = Wrapper(mansion_env)
     mansion_env = ActionWrapper(mansion_env)
