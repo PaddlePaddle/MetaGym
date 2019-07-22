@@ -18,7 +18,7 @@ from rlschool.liftsim.environment.mansion.person_generators.generator_proxy impo
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
-from baseline.wrapper import Wrapper, ActionWrapper, ObservationWrapper
+from wrapper import Wrapper, ActionWrapper, ObservationWrapper
 from rl_benchmark.dispatcher import RL_dispatcher
 import sys
 import argparse

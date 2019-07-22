@@ -90,7 +90,7 @@ def state_check(state, next_state, action):
             if(ele_Velocity == 0 and ele.Direction != 0):
                 assert (ele_Floor % 1) == 0 or \
                         (ele_Floor % 1 != 0 and next_ele.Direction == 0)
-            if(ele_Floor % 1 != 0 and ele.Direction != 0):
+            if(round(ele_Floor, 1) % 1 != 0 and ele.Direction != 0):
                 assert ele_Velocity != 0 or next_ele_Velocity != 0 or\
                          next_ele.Direction == 0 or ele_Floor == ele.CurrentDispatchTarget
             assert (ele.DoorIsClosing and ele.DoorIsOpening) == False

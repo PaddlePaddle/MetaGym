@@ -1,6 +1,9 @@
+# wrapper part modified from
+# https://github.com/openai/gym/blob/master/gym/core.py
+
 from rlschool.liftsim.environment.env import LiftSim
-from baseline.wrapper_utils import obs_dim, act_dim, mansion_state_preprocessing
-from baseline.wrapper_utils import action_idx_to_action, action_to_action_idx
+from wrapper_utils import obs_dim, act_dim, mansion_state_preprocessing
+from wrapper_utils import action_idx_to_action
 
 
 class Wrapper(LiftSim):

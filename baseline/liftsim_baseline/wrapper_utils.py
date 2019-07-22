@@ -52,11 +52,6 @@ def linear_discretize(value, n_dim, min_val, max_val):
     ret_array[active_pos + 1] = weight
     return ret_array
 
-
-# def clip(value, min_val, max_val):
-#     return min(max_val, max(min_val, value))
-
-
 def ele_state_preprocessing(ele_state):
     ele_feature = []
 

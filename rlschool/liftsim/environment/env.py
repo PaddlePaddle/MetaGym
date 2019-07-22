@@ -1,6 +1,3 @@
-# wrapper part modified from
-# https://github.com/openai/gym/blob/master/gym/core.py
-
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import set_seed
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
@@ -17,14 +14,14 @@ import argparse
 import configparser
 import random
 import sys
+import os
 
 
 class LiftSim():
     '''
     environmentation Environment
     '''
-
-    def __init__(self, config_file='rlschool/liftsim/config.ini'):
+    def __init__(self, config_file=os.path.join(os.path.dirname(__file__), '../config.ini')):
         file_name = config_file
 
         config = configparser.ConfigParser()
