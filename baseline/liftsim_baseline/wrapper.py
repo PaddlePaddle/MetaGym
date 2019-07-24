@@ -45,7 +45,10 @@ class ActionWrapper(Wrapper):
         return self.env.reset()
     
     def step(self, action):
-        return self.env.step([self.action(a, self.action_space) for a in action])
+        act = []
+        for a in action:
+            act.extend(self.action(a, self.action_space))
+        return self.env.step(act)
 
     def action(self, action, action_space):
         return action_idx_to_action(action, action_space)

@@ -12,7 +12,11 @@ class ElevatorAgent(Agent):
         self._action_dim = action_dim
         self._obs_dim = obs_dim
         self._update_target_steps = 1000
+
         self._global_step = 0
+        self.exploration_ratio = 0.9
+        self.exploration_decre = 1e-6
+        self.exploration_min = 0.1
         super(ElevatorAgent, self).__init__(algorithm)
 
         use_cuda = True if self.gpu_id >= 0 else False
@@ -66,15 +70,13 @@ class ElevatorAgent(Agent):
                 obs, action, reward, next_obs, terminal)
     
     def sample(self, obs):
-        exploration_ratio = 800000.0 / \
-            (800000.0 + self._global_step) + 0.1
-        if self._global_step > 200000 and self._global_step % 50000 <= 3000:
-            exploration_ratio = 0
+        if self.exploration_ratio > self.exploration_min:
+            self.exploration_ratio -= self.exploration_decre
         q_values = self.predict(obs)
 
         ret_actions = list()
         for i in range(len(q_values)):  # number of elevators
-            if  (random.random() < exploration_ratio):
+            if  (random.random() < self.exploration_ratio):
                 action = random.randint(0, self._action_dim)
             else:
                 action = np.argmax(q_values[i])

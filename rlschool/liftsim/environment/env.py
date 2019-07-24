@@ -1,8 +1,9 @@
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import set_seed
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
-from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
 from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
+from rlschool.liftsim.environment.mansion.utils import ElevatorAction
+
 
 NoDisplay = False
 try:
@@ -63,7 +64,10 @@ class LiftSim():
         set_seed(seed)
 
     def step(self, action):
-        time_consume, energy_consume, given_up_persons = self._mansion.run_mansion(action)
+        action_tuple = []
+        for i in range(self._mansion.attribute.ElevatorNumber):
+            action_tuple.append(ElevatorAction(action[i*2], action[i*2+1]))
+        time_consume, energy_consume, given_up_persons = self._mansion.run_mansion(action_tuple)
         reward = - (time_consume + 0.01 * energy_consume +
                     100 * given_up_persons) * 1.0e-4
         info = {'time_consume':time_consume, 'energy_consume':energy_consume, 'given_up_persons': given_up_persons}

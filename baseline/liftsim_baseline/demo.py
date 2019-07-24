@@ -14,10 +14,6 @@ Date:    2019/05/22 19:30:16
 """
 
 from rlschool.liftsim.environment.env import LiftSim
-from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
-from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
-from rlschool.liftsim.environment.mansion.utils import ElevatorState, MansionState
-from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
 from wrapper import Wrapper, ActionWrapper, ObservationWrapper
 from rl_benchmark.dispatcher import RL_dispatcher
 import sys
@@ -33,7 +29,7 @@ def run_main(args):
     print('iterations:', args.iterations)
 
     mansion_env = LiftSim()
-    mansion_env.seed(1956)
+    # mansion_env.seed(1988)
 
     mansion_env = Wrapper(mansion_env)
     mansion_env = ActionWrapper(mansion_env)
