@@ -1,12 +1,11 @@
 from rlschool.liftsim.environment.mansion.utils import MansionAttribute, MansionState
-from rlschool.liftsim.environment.mansion.utils import ElevatorAction
 from rlschool.liftsim.environment.env import LiftSim
 
 env = LiftSim()
 env.seed(1998)
 #iteration = env.iterations
 state = env.reset()
-action = [ElevatorAction(0, 1) for i in range(4)]
+action = [0,1,0,1,0,1,0,1]
 for i in range(100):
     next_state, reward, _, _ = env.step(action)
 
