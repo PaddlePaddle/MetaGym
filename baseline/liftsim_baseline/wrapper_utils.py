@@ -119,7 +119,10 @@ def obs_dim(mansion_attr):
 
 
 def act_dim(mansion_attr):
-    '''Calculate the action dimension, which is number of floor times 2 plus 2
+    '''Calculate the action dimension, which is number of floor times 2 plus 2.
+    The additional two are for special cases: the elevator stops at once if the new dispatch_target is 0,
+    the original dispatch_target does not change if dispatch_target is -1. See implementation in
+    method action_idx_to_action below.
     Args:
         mansion_attr: MansionAttribute, attribute of mansion_manager
     Returns:

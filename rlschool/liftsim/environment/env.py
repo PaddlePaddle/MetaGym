@@ -1,3 +1,4 @@
+import numpy as np
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import set_seed
 from rlschool.liftsim.environment.mansion.person_generators.generator_proxy import PersonGenerator
 from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
@@ -64,6 +65,9 @@ class LiftSim():
         set_seed(seed)
 
     def step(self, action):
+        assert type(action) is list, "Type of action should be list"
+        assert len(action) == self._mansion.attribute.ElevatorNumber*2, \
+            "Action is supposed to be a list with length ElevatorNumber * 2"
         action_tuple = []
         for i in range(self._mansion.attribute.ElevatorNumber):
             action_tuple.append(ElevatorAction(action[i*2], action[i*2+1]))

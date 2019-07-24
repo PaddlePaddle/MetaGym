@@ -239,7 +239,7 @@ def run_mansion_main(mansion_env, policy_handle, iteration):
         # state = mansion_env.state
 
         action = policy_handle.policy(last_state)
-        state, r, _, _ = mansion_env.step(action)
+        state, r, _, _ = mansion_env.step(elevatoraction_to_list(action))
         # output_info = policy_handle.feedback(last_state, action, r)
         acc_reward += r
 
@@ -292,7 +292,7 @@ def run_action_abnormal_test(action_target_floor, action_target_direction, set_s
         state = env.reset()
 
         action = [ElevatorAction(action_target_floor, action_target_direction) for i in range(4)]
-        next_state, reward, _, _ = env.step(action)
+        next_state, reward, _, _ = env.step(elevatoraction_to_list(action))
     except AssertionError:
         flag = False
         print('abnormal action: ', action_target_floor, type(action_target_floor) \
@@ -304,6 +304,12 @@ def run_action_abnormal_test(action_target_floor, action_target_direction, set_s
         print('run_action_abnormal_test fail')
         assert False
 
+def elevatoraction_to_list(action):
+    action_list = []
+    for a in action:
+        action_list.append(a.TargetFloor)
+        action_list.append(a.DirectionIndicator)
+    return action_list
 
 if __name__ == "__main__":
     if (len(sys.argv) == 2):

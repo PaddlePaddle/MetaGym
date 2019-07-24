@@ -15,7 +15,7 @@ class ElevatorAgent(Agent):
 
         self._global_step = 0
         self.exploration_ratio = 0.9
-        self.exploration_decre = 1e-6
+        self.exploration_decre = 1e-7
         self.exploration_min = 0.1
         super(ElevatorAgent, self).__init__(algorithm)
 
