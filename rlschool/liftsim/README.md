@@ -85,7 +85,9 @@ reset(self)和step(self, action)返回一个namedtuple，MansionState。
 
 公式：
 
-$$- (time\_consume + 0.01 * energy\_consume + 100 * given\_up\_persons) * 1.0e-4$$
+```python
+- (time_consume + 0.01 * energy_consume + 100 * given\_up\_persons) * 1e-4
+```
 
 计算28800 steps，即模拟环境内四小时之后的总得分。
 
