@@ -8,7 +8,7 @@ python3 demo.py
 
 ## 算法
 
-利用PARL实现Deep Q Learning算法
+利用PARL实现Deep Q-networkg算法
 
 ## 期望结果
 
