@@ -53,13 +53,13 @@ class Render(pyglet.window.Window):
             image.width, image.height = 20, 38
             self.center_image(image)
 
-        self.up.width, self.up.height = 43, 45
+        self.up.width, self.up.height = 35, 45
         self.center_image(self.up)
 
-        self.down.width, self.down.height = 43, 45
+        self.down.width, self.down.height = 35, 45
         self.center_image(self.down)
 
-        self.steady.width, self.steady.height = 43, 50
+        self.steady.width, self.steady.height = 35, 50
         self.center_image(self.steady)
 
         self.up_label = pyglet.text.Label(text="Waiting up", font_size=12, x=100, y=self.screen_y-35, anchor_x='center')

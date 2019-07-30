@@ -73,7 +73,7 @@ reset(self)和step(self, action)返回一个namedtuple，MansionState。
 
 ## 示例
 
-我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState处理的方法。
+我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState处理的方法可供参考。
 
 ## 评价标准
 
@@ -86,23 +86,31 @@ reset(self)和step(self, action)返回一个namedtuple，MansionState。
 公式：
 
 ```python
-- (time_consume + 0.01 * energy_consume + 100 * given\_up\_persons) * 1e-4
+- (time_consume + 0.01 * energy_consume + 100 * given_up_persons) * 1e-4
 ```
 
 计算28800 steps，即模拟环境内四小时之后的总得分。
 
 ## 提交
 
-提交文件需包括调控电梯的代码、requirements.txt文件以及运行的shell文件
+提交文件需包括调控电梯的代码、requirements.txt文件以及运行的shell文件：
 
-- 代码：除环境以外的部分。    TODO: 配置好docker环境后修改
+- 代码：除环境以外的部分。同训练时一样导入环境，from rlschool import LiftSim，并通过LiftSim环境调用step方法。
 
-- requirements.txt：所需依赖包。
+- requirements.txt：依赖包。
 
-- shell文件：包括用pip下载requirements.txt文件以及运行代码的命令。比赛环境提供python3和python2.7命令。
+- shell文件：shell文件需激活环境、下载requirements.txt文件以及运行代码。激活环境即使用anaconda：Python2.7运行source activate py2；Python3.6运行source activate py3。**shell文件命名为run_main.sh**，示例：
+```shell
+#!/bin/bash
+# run_mansion.sh file
+source activate py3
+pip install -r requirements.txt
+python main.py
+```
 
-在[此处][submit]提交结果
+将以上文件打包成zip文件，**命名为submit_file.zip**，在[此处][submit]提交结果。
 
 
 [demo]: https://github.com/Banmahhhh/RLSchool/blob/master/liftsim/demo.py
-[submit]: https://www.google.com/
+[submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
+
