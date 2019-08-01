@@ -1,9 +1,23 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import pyglet
 import os
 import random
 
 
-pyglet.resource.path = [os.path.join(os.path.dirname(__file__), 'resources')]
+pyglet.resource.path = [(os.path.dirname(__file__)+'/resources')]
 pyglet.resource.reindex()
 
 class Render(pyglet.window.Window):
@@ -67,11 +81,11 @@ class Render(pyglet.window.Window):
         self.level_label = pyglet.text.Label(text="Elevator Simulator", font_size=12, x=self.screen_x//2, y=self.screen_y-15, anchor_x='center')
 
     def init_batch(self):
-        '''
+        """
         line_batch: lines to separate floors, which can be initialized here as it remains unchanged
         waiting_people_batch: people on the two sides
         elevator_batch: including elevator (square) and passengers (circle)
-        '''
+        """
         self.line_batch = pyglet.graphics.Batch()
         self.waiting_people_batch = pyglet.graphics.Batch()
         self.elevator_batch = list()
