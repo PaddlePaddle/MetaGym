@@ -13,7 +13,6 @@
 # limitations under the License.
 
 """
-
 A running demo of elevators
 
 Authors: wangfan04(wangfan04@baidu.com)
