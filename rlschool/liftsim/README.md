@@ -18,14 +18,8 @@ pip install rlschool
 ```python
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install -e .
+pip install .
 ```
-
-#### 依赖：
-
-numpy==1.16.4
-
-pyglet==1.2.0（可选，用于图像渲染，显示电梯当前状态）
 
 
 ## 基本接口
@@ -34,17 +28,9 @@ pyglet==1.2.0（可选，用于图像渲染，显示电梯当前状态）
 
 - reset(self)：重置环境，返回observation。
 - step(self, action)：根据action调整环境，返回[observation](#Observation)，[reward](#Reward)，done，info。每运行一次step()，电梯模拟器内部运行0.5秒，即一个timestep。
-    - done：电梯环境可以始终保持运行，因此done一直为False。
+    - done：电梯属于连续任务，没有回合制概念，因此done一直为False。
     - info：一个dictionary，包括人们等待的时间time_consume（float）、能量消耗energy_consume（float）、放弃等待的人数given_up_persons（int）。详细解释见[Reward](#Reward)
 - render(self)：渲染一帧图像，显示当前电梯内部的环境。
-
-### Action
-
-传入step方法的action为一个长度为2\*n的list，n为电梯数，在第一轮中为4。2*n个数字每连续两个数字为代表一部电梯的控制指令：
-- 其中第一个数字表示分配到的楼层（DispatchTarget）。DispatchTarget可以为1~最高楼层数，以及-1、0两个特殊值。1~最高楼层数表示调配到相应楼层；为-1时表示不改变之前的DispatchTarget；为0时表示要求电梯立即停下。
-- 后一个数字代表分配到的方向（DispatchTargetDirection）。可以为-1（向下），0（无方向），1（向上）。
-
-<img src="elevator_indicator.png" width="400"/>
 
 ```python
 from rlschool import LiftSim
@@ -53,8 +39,18 @@ env = LiftSim()
 observation = env.reset()
 action = [1, 0, 1, 0, 1, 0, 1, 0]
 for i in range(100):
+    env.render()    # use render to show animation
     next_obs, reward, done, info = env.step(action)
 ```
+
+### Action
+
+传入step方法的action为一个长度为2\*n的list，n为电梯数，在第一轮中比赛中，电梯数量固定为为4。2*n个数字每连续两个数字代表一部电梯的控制指令：
+- 其中第一个数字表示分配到的楼层（DispatchTarget）。DispatchTarget为1~MaxFloorNumber时表示调配到相应楼层（MaxFloorNumber代表最高楼层，第一轮比赛中固定为10）；为-1时表示不改变之前的DispatchTarget；为0时表示要求电梯立即停下。
+- 后一个数字代表分配到的方向（DispatchTargetDirection）。可以为-1（向下），0（无方向），1（向上）。
+
+<img src="elevator_indicator.png" width="400"/>
+
 
 ## Observation
 
@@ -79,20 +75,19 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 | MaximumSpeed            | float   | 电梯最大速度                                 |
 | Direction               | int     | 电梯方向，-1为向下，1为向上，0为无方向           |
 | DoorState               | float   | 电梯门当前打开的比例，0.0为完全关闭，1.0为完全开启|
-| CurrentDispatchTarget   | int     | 电梯当前分配到的目标楼层*                      |
-| DispatchTargetDirection | int     | 电梯分配到的方向                             |
-| LoadWeight              | float   | 电梯当前承载的质量（kg）                      |
+| CurrentDispatchTarget   | int     | action中指定的目标楼层                        |
+| DispatchTargetDirection | int     | action中指定的方向                           |
+| LoadWeight              | float   | 电梯当前承载的质量（kg）                       |
 | MaximumLoad             | float   | 电梯最大能承载的质量（kg）                     |
-| ReservedTargetFloors    | list    | 存储电梯内乘客的目标楼层，即电梯内被按下的楼层数   |
+| ReservedTargetFloors    | list    | 存储电梯内乘客的目标楼层，即电梯内被按下的楼层按键 |
 | OverloadedAlarm         | float   | 电梯是否超载倒计时，由超载情况则倒计时两秒        |
 | DoorIsOpening           | boolean | 指示电梯门是否正在打开                         |
 | DoorIsClosing           | Boolean | 指示电梯门是否正在关闭                         |
 
-*action中的DispatchTarget如果在可取值范围之内，即-1~最高楼层数，则会保存为CurrentDispatchTarget，否则将被忽略。DispatchTargetDirection类似，取值范围为-1~1。
 
 ## 示例
 
-我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState处理的方法，供参赛者参考。
+我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState的特征处理的方法，供参赛者参考。
 
 ## Reward
 
@@ -105,7 +100,7 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 公式：
 
 ```python
-- (time_consume + 0.01 * energy_consume + 100 * given_up_persons) * 1e-4
+reward = - (time_consume + 0.01 * energy_consume + 100 * given_up_persons) * 1e-4
 ```
 
 ### 比赛评分
@@ -120,10 +115,10 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 
 - requirements.txt：依赖包。
 
-- shell脚本：shell文件的作用是激活环境、下载requirements.txt文件以及运行代码。评估环境使用anaconda环境：. activate py2激活Python2.7环境；. activate py3激活Python3.6环境。**shell文件命名为run_main.sh**，示例：
+- shell脚本：shell文件的作用是激活环境、下载requirements.txt文件以及运行代码。评估环境使用anaconda环境：". activate py2"激活Python2.7环境；". activate py3"激活Python3.6环境。**shell文件命名为run_main.sh**，示例：
 ```shell
 #!/bin/bash
-# run_mansion.sh file
+# run_mansion.sh
 . activate py3 # 激活环境，可选择使用py2（Python2.7）或者py3（Python3.6）
 pip install -r requirements.txt # 安装requirements.txt文件中的依赖库
 python main.py  # 自定义代码运行命令
