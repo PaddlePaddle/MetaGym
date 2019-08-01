@@ -1,7 +1,16 @@
-# Elevator.py
-# Author: Fan Wang (wang.fan@baidu.com)
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 #
-# Simulator of Elevator Power
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import sys
 from rlschool.liftsim.environment.mansion.utils import PersonType, ElevatorState, ElevatorAction
@@ -12,14 +21,14 @@ from copy import deepcopy
 
 
 class Elevator(object):
-    '''
+    """
     A simulator of elevator motion and power consumption
     Energy consumption calculated according to the paper
 
     Adak, M. Fatih, Nevcihan Duru, and H. Tarik Duru.
     "Elevator simulator design and estimating energy consumption of an elevator system."
     Energy and Buildings 65 (2013): 272-280.
-    '''
+    """
 
     def __init__(self,
                  start_position,
@@ -119,13 +128,13 @@ class Elevator(object):
 
     @property
     def door_fully_open(self, floor):
-        '''
+        """
         Returns whether the door is fully open in the corresponding floor
         Args:
           floor, the floor to be queried
         Returns:
           True if the elevator stops at the floor and opens the door, False in other case
-        '''
+        """
         cur_floor = self._current_position / self._floor_height + 1
         if(abs(cur_floor - float(floor)) < EPSILON
                 and self._door_open_rate > 1.0 - EPSILON):
@@ -135,16 +144,16 @@ class Elevator(object):
 
     @property
     def name(self):
-        '''
+        """
         Return Name of the Elevator
-        '''
+        """
         return self._name
 
     @property
     def state(self):
-        '''
+        """
         Return Formalized States
-        '''
+        """
         floor = self._current_position / self._floor_height + 1
         return ElevatorState(
             floor,
@@ -164,13 +173,13 @@ class Elevator(object):
 
     @property
     def nearest_floor(self):
-        '''
+        """
         Get the nearest_floor
         Args:
           None
         Returns:
           Nearest Floor
-        '''
+        """
         cur_floor = self._current_position / self._floor_height + 1.0
         nearest_floor = int(cur_floor + 0.5)
         delta_distance = nearest_floor - float(cur_floor)
@@ -178,13 +187,13 @@ class Elevator(object):
 
     @property
     def nearest_reachable_floor(self):
-        '''
+        """
         Get the nearest reachable floor
         Args:
           None
         Returns:
           Nearest reachable floor
-        '''
+        """
         if(self._current_velocity < 0.0):
             velocity_sign = -1
         else:
@@ -202,47 +211,47 @@ class Elevator(object):
 
     @property
     def ready_to_enter(self):
-        '''
+        """
         Returns:
           whether it is OK to enter the elevator
-        '''
+        """
         return (not self._is_unloading) and (not self._is_entering)
 
     @property
     def is_stopped(self):
-        '''
+        """
         Returns:
           whether the elevator stops
-        '''
+        """
         return (abs(self._current_velocity) < EPSILON)
 
     @property
     def loaded_people_num(self):
-        '''
+        """
         Returns:
             the number of loaded_people
-        '''
+        """
         return sum(len(self._loaded_person[i]) for i in range(self._number_of_floors))
 
     def _check_floor(self, floor):
-        '''
+        """
         check if the floor is in valid range
-        '''
+        """
         if(floor < 1 or floor > self._number_of_floors):
             return False
         return True
 
     def _clip_v(self, v):
-        '''
+        """
         Clip the velocity
-        '''
+        """
         return max(-self._maximum_speed, min(self._maximum_speed, v))
 
     def _check_abnormal_state(self):
-        '''
+        """
         the function checks that the elevator is OK
         raise Exceptions if anything is wrong
-        '''
+        """
         cur_floor = self._current_position / self._floor_height + 1.0
         if(cur_floor < 1 - EPSILON or cur_floor > self._number_of_floors + EPSILON):
             self._config.log_fatal(
@@ -287,13 +296,13 @@ class Elevator(object):
                 self)
 
     def _check_target_validity(self, dispatch_target):
-        '''
+        """
         check whether a dispatch target is legal
         Args:
           target_floor: a new target to be pushed into the stop list to set as a target into list
         Returns:
           True - success False - Rejected
-        '''
+        """
         # 0: No Dispatch Target
         # if dispatch_target == 0:
         #  return True
@@ -341,10 +350,10 @@ class Elevator(object):
             return True
 
     def _insert_target(self, new_target):
-        '''
+        """
         insert a new target
         BETTER check the new_target with _check_target_validity() first before inserting!
-        '''
+        """
         if(self._direction >= 0):
             # If target floors are empty, insert directly
             if(len(self._target_floors) < 1):
@@ -416,13 +425,13 @@ class Elevator(object):
                     return self._target_floors[0]
 
     def run_elevator(self):
-        '''
+        """
         run elevator for one step
         Args:
           None
         Returns:
           Energy Consumption in one single step
-        '''
+        """
 
         # Get the current immediate target floor
         target_floor = self._get_true_target()
@@ -663,9 +672,9 @@ class Elevator(object):
             len(row) for row in self._loaded_person)
 
     def require_door_opening(self):
-        '''
+        """
         Requires the door to close for the elevator
-        '''
+        """
         if(self.is_stopped and self._door_open_rate < 1.0 - EPSILON
                 and self._is_overloaded_alarm < EPSILON):
             self._is_door_opening = True
@@ -673,9 +682,9 @@ class Elevator(object):
             self._is_door_closing = False
 
     def require_door_closing(self):
-        '''
+        """
         Requires the door to open for the elevator
-        '''
+        """
         if(self._door_open_rate > EPSILON and not self._is_door_opening
                 and not self._is_unloading and not self._is_entering
                 and self._keep_door_open_left < EPSILON):
@@ -689,14 +698,14 @@ class Elevator(object):
                 self._entering_person)
 
     def person_request_in(self, person):
-        '''
+        """
         Load a person onto the elevator
         Args:
           Person Tuple
         Returns:
           True - if Success
           False - if Overloaded
-        '''
+        """
         assert isinstance(person, PersonType)
         cur_floor = self._current_position / self._floor_height + 1.0
         if(abs(person.SourceFloor - cur_floor) > EPSILON or
@@ -730,20 +739,20 @@ class Elevator(object):
         return True
 
     def press_button(self, button):
-        '''
+        """
         press a button in the elevator, might be valid or not valid
         Args:
           button: the button to be clicked
         Returns:
           None
-        '''
+        """
         if(button > 0 and button <= self._number_of_floors and button not in self._clicked_buttons):
             self._clicked_buttons.add(button)
 
     def set_action(self, action):
-        '''
+        """
         Impose standard actions
-        '''
+        """
         assert isinstance(action, ElevatorAction)
         assert isinstance(action.TargetFloor, int)
         assert isinstance(action.DirectionIndicator, int)

@@ -31,8 +31,6 @@ setup(
     description=("A reinforcement learning simulators"),
     license="GPLv3",
     keywords="redis subscripe",
-    # url="",
-    # packages=_find_packages('rlschool'),
     packages = [package for package in find_packages()
                 if package.startswith('rlschool')],
     package_data={'rlschool':['./liftsim/config.ini', './liftsim/environment/animation/resources/*.png']},

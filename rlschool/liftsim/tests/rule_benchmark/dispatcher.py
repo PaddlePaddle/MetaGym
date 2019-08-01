@@ -1,3 +1,17 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import sys
 import random
 import queue
@@ -6,12 +20,12 @@ from rlschool.liftsim.environment.mansion.utils import EPSILON, HUGE
 
 
 class Rule_dispatcher():
-    '''
+    """
     A rule benchmark demonstration of the dispatcher
     A dispatcher must provide policy and feedback function
     The policy function receives MansionState and output ElevatorAction Lists
     The feedback function receives reward
-    '''
+    """
 
     def __init__(self, env, max_episode):
         self.elevator_num = env.attribute.ElevatorNumber
@@ -188,4 +202,8 @@ class Rule_dispatcher():
 
         # print min_unaddressed_up_lift, max_unaddressed_down_lift,
         # state.RequiringUpwardFloors, state.RequiringDownwardFloors
+        # action_list = []
+        # for a in ret_actions:
+        #     action_list.append(a.TargetFloor)
+        #     action_list.append(a.DirectionIndicator)
         return ret_actions

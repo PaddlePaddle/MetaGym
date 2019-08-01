@@ -1,3 +1,17 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import sys
 import parl
 import numpy as np
@@ -17,9 +31,9 @@ BATCH_SIZE = 64
 
 
 class RL_dispatcher():
-    '''
+    """
     An RL benchmark for elevator system
-    '''
+    """
 
     def __init__(self, env, max_episode):
         self.env = env
@@ -45,6 +59,8 @@ class RL_dispatcher():
         self._loss_queue = deque()
 
     def run_episode(self):
+        # self._agent.restore('./model.ckpt')
+
         self.env.reset()
         acc_reward = 0.0
 
@@ -62,6 +78,8 @@ class RL_dispatcher():
                     "Accumulated Reward: %f, Mansion Status: %s",
                     acc_reward, self.env.statistics)
                 acc_reward = 0.0
+
+        self._agent.save('./model.ckpt')
 
     def learn_step(self, state, action, r):
         self._global_step += 1

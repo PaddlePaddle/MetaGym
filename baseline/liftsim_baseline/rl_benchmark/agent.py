@@ -1,9 +1,23 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import numpy as np
 import numpy.random as random
 import paddle.fluid as fluid
-import parl.layers as layers
-from parl.framework.agent_base import Agent
+from parl import layers
+from parl import Agent
 from parl.utils import get_gpu_count
 
 
@@ -35,16 +49,16 @@ class ElevatorAgent(Agent):
 
         self.learn_pe = fluid.ParallelExecutor(
             use_cuda=use_cuda,
-            main_program=self._learn_program,
+            main_program=self.learn_program,
             build_strategy=build_strategy,
             exec_strategy=exec_strategy,
             )
 
     def build_program(self):
-        self._pred_program = fluid.Program()
-        self._learn_program = fluid.Program()
+        self.pred_program = fluid.Program()
+        self.learn_program = fluid.Program()
 
-        with fluid.program_guard(self._pred_program):
+        with fluid.program_guard(self.pred_program):
             obs = layers.data(
                 name='obs',
                 shape=[self._obs_dim],
@@ -52,7 +66,7 @@ class ElevatorAgent(Agent):
             )
             self._value = self.alg.define_predict(obs)
 
-        with fluid.program_guard(self._learn_program):
+        with fluid.program_guard(self.learn_program):
             obs = layers.data(
                 name='obs',
                 shape=[self._obs_dim],
@@ -85,7 +99,7 @@ class ElevatorAgent(Agent):
         
     def predict(self, obs):
         pred_Q = self.fluid_executor.run(
-            self._pred_program,
+            self.pred_program,
             feed={'obs': obs.astype('float32')},
             fetch_list=[self._value])  # [0]
         return pred_Q[0]

@@ -1,4 +1,17 @@
-# office_generators.py
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Author: Fan Wang (wang.fan@baidu.com)
 #
 # Generating Persons for typical office buildings:
@@ -14,11 +27,11 @@ from rlschool.liftsim.environment.mansion.person_generators.person_generator imp
 
 
 class OfficePersonGenerator(PersonGeneratorBase):
-    '''
+    """
     Basic Generator Class
     Generates Random Person from Random Floor, going to random other floor
     Uniform distribution in floor number, target floor number etc
-    '''
+    """
 
     def configure(self, configuration):
         self._particle_number = int(configuration['ParticleNumber'])
@@ -38,13 +51,13 @@ class OfficePersonGenerator(PersonGeneratorBase):
         return random.normalvariate(50, 10)
 
     def generate_person(self):
-        '''
+        """
         Generate Random Persons from Poisson Distribution
         Args:
           None
         Returns:
           List of Random Persons
-        '''
+        """
         ret_persons = []
         time_interval = self._config.raw_time - self._last_generate_time
         cur_hour = self._config.world_time

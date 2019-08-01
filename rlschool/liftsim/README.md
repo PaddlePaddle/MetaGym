@@ -33,11 +33,12 @@ pip install .
 - render(self)：渲染一帧图像，显示当前电梯内部的环境。
 
 ```python
+# 以下是一个简单的可运行电梯模拟器的例子
 from rlschool import LiftSim
 
 env = LiftSim()
 observation = env.reset()
-action = [1, 0, 1, 0, 1, 0, 1, 0]
+action = [2, 0, 4, 0, 7, 0, 10, 0]
 for i in range(100):
     env.render()    # use render to show animation
     next_obs, reward, done, info = env.step(action)
@@ -75,12 +76,12 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 | MaximumSpeed            | float   | 电梯最大速度                                 |
 | Direction               | int     | 电梯方向，-1为向下，1为向上，0为无方向           |
 | DoorState               | float   | 电梯门当前打开的比例，0.0为完全关闭，1.0为完全开启|
-| CurrentDispatchTarget   | int     | action中指定的目标楼层                        |
+| CurrentDispatchTarget   | int     | action中指定的目标楼层（若电梯需停下时，则为0）   |
 | DispatchTargetDirection | int     | action中指定的方向                           |
 | LoadWeight              | float   | 电梯当前承载的质量（kg）                       |
 | MaximumLoad             | float   | 电梯最大能承载的质量（kg）                     |
 | ReservedTargetFloors    | list    | 存储电梯内乘客的目标楼层，即电梯内被按下的楼层按键 |
-| OverloadedAlarm         | float   | 电梯是否超载倒计时，由超载情况则倒计时两秒        |
+| OverloadedAlarm         | float   | 电梯是否超载倒计时，有超载情况则倒计时两秒        |
 | DoorIsOpening           | boolean | 指示电梯门是否正在打开                         |
 | DoorIsClosing           | Boolean | 指示电梯门是否正在关闭                         |
 
@@ -93,7 +94,7 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 
 根据三个部分计算：
 
-- time_consume：所有乘客在一个timestep内等待时长的加和，在乘客还未到达目的楼层之前，都处于等待状态，单位：秒；
+- time_consume：所有乘客在一个timestep内等待时长的加和（在乘客还未到达目的楼层之前，都处于等待状态），单位：秒；
 - energy_consume：一个timestep电梯消耗的能量，单位：焦；
 - given_up_persons：一个timestep放弃的人数（电梯外排队的人五分钟后自动放弃），单位：人。
 

@@ -14,10 +14,10 @@
 
 import os
 import paddle.fluid as fluid
-import parl.layers as layers
+from parl import layers
 import numpy as np
-from parl.framework.model_base import Model
-from parl.framework.agent_base import Agent
+from parl import Model
+from parl import Agent
 from parl.utils import get_gpu_count
 
 

@@ -1,3 +1,17 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import sys
 import random
 import numpy as np
@@ -9,11 +23,11 @@ from rlschool.liftsim.environment.mansion.mansion_manager import MansionManager
 
 
 def discretize(value, n_dim, min_val, max_val):
-    '''
+    """
     discretize a value into a vector of n_dim dimension 1-hot representation
     with the value below min_val being [1, 0, 0, ..., 0]
     and the value above max_val being [0, 0, ..., 0, 1]
-    '''
+    """
     assert n_dim > 0
     if(n_dim == 1):
         return [1]
@@ -27,13 +41,13 @@ def discretize(value, n_dim, min_val, max_val):
 
 
 def linear_discretize(value, n_dim, min_val, max_val):
-    '''
+    """
     discretize a value into a vector of n_dim dimensional representation
     with the value below min_val being [1, 0, 0, ..., 0]
     and the value above max_val being [0, 0, ..., 0, 1]
     e.g. if n_dim = 2, min_val = 1.0, max_val = 2.0
       if value  = 1.5 returns [0.5, 0.5], if value = 1.8 returns [0.2, 0.8]
-    '''
+    """
     assert n_dim > 0
     if(n_dim == 1):
         return [1]
@@ -53,12 +67,12 @@ def linear_discretize(value, n_dim, min_val, max_val):
     return ret_array
 
 def ele_state_preprocessing(ele_state):
-    '''Process elevator state, make it usable for network
+    """Process elevator state, make it usable for network
     Args:
         ele_state: ElevatorState, nametuple, defined in rlschool/liftsim/environment/mansion/utils.py
     Returns:    
         ele_feature: list of elevator state
-    '''
+    """
     ele_feature = []
 
     # add floor information
@@ -105,12 +119,12 @@ def ele_state_preprocessing(ele_state):
 
 
 def obs_dim(mansion_attr):
-    '''Calculate the observation dimension
+    """Calculate the observation dimension
     Args:
         mansion_attr: MansionAttribute, attribute of mansion_manager
     Returns:
         observation dimension
-    '''
+    """
     assert isinstance(mansion_attr, MansionAttribute)
     ele_dim = mansion_attr.NumberOfFloor * 3 + 34
     obs_dim = (ele_dim + 1) * mansion_attr.ElevatorNumber + \
@@ -119,7 +133,7 @@ def obs_dim(mansion_attr):
 
 
 def act_dim(mansion_attr):
-    '''Calculate the action dimension, which is number of floor times 2 plus 2.
+    """Calculate the action dimension, which is number of floor times 2 plus 2.
     The additional two are for special cases: the elevator stops at once if the new dispatch_target is 0,
     the original dispatch_target does not change if dispatch_target is -1. See implementation in
     method action_idx_to_action below.
@@ -127,19 +141,19 @@ def act_dim(mansion_attr):
         mansion_attr: MansionAttribute, attribute of mansion_manager
     Returns:
         action dimension
-    '''
+    """
     assert isinstance(mansion_attr, MansionAttribute)
     return mansion_attr.NumberOfFloor * 2 + 2
 
 
 def mansion_state_preprocessing(mansion_state):
-    '''Process mansion_state to make it usable for networks, convert it into a numpy array
+    """Process mansion_state to make it usable for networks, convert it into a numpy array
     Args:
         mansion_state: namedtuple of mansion state, 
             defined in rlschool/liftsim/environment/mansion/utils.py
     Returns:
         the converted numpy array
-    '''
+    """
     ele_features = list()
     for ele_state in mansion_state.ElevatorStates:
         ele_features.append(ele_state_preprocessing(ele_state))
@@ -172,13 +186,13 @@ def mansion_state_preprocessing(mansion_state):
 
 
 def action_idx_to_action(action_idx, act_dim):
-    '''Convert action_inx to action
+    """Convert action_inx to action
     Args:
         action_idx: the index needed to be converted
         act_dim: action dimension
     Returns:
         the converted namedtuple
-    '''
+    """
     assert isinstance(action_idx, int)
     assert isinstance(act_dim, int)
     realdim = act_dim - 2
@@ -196,23 +210,23 @@ def action_idx_to_action(action_idx, act_dim):
         action += 1
     return [action, direction]
 
-# def action_to_action_idx(action, act_dim):
-#     '''Convert action to number according to act_dim. 
-#     Args:
-#         action: namedtuple defined in rlschool/liftsim/environment/mansion/utils.py
-#         act_dim: action dimension
-#     Returns:
-#         action_idx: the result index
-#     '''
-#     assert isinstance(action, ElevatorAction)
-#     assert isinstance(act_dim, int)
-#     realdim = act_dim - 2
-#     if(action.TargetFloor == 0):
-#         return realdim
-#     elif(action.TargetFloor < 0):
-#         return realdim + 1
-#     action_idx = 0
-#     if(action.DirectionIndicator < 0):
-#         action_idx += int(realdim / 2)
-#     action_idx += action.TargetFloor - 1
-#     return action_idx
+def action_to_action_idx(action, act_dim):
+    """Convert action to number according to act_dim. 
+    Args:
+        action: namedtuple defined in rlschool/liftsim/environment/mansion/utils.py
+        act_dim: action dimension
+    Returns:
+        action_idx: the result index
+    """
+    assert isinstance(action, ElevatorAction)
+    assert isinstance(act_dim, int)
+    realdim = act_dim - 2
+    if(action.TargetFloor == 0):
+        return realdim
+    elif(action.TargetFloor < 0):
+        return realdim + 1
+    action_idx = 0
+    if(action.DirectionIndicator < 0):
+        action_idx += int(realdim / 2)
+    action_idx += action.TargetFloor - 1
+    return action_idx
