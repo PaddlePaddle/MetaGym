@@ -24,7 +24,7 @@ pip install .
 
 ## 基本接口
 
-类似gym，liftsim提供了三个基本接口：
+类似[gym][gym]，liftsim提供了三个基本接口：
 
 - reset(self)：重置环境，返回observation。
 - step(self, action)：根据action调整环境，返回[observation](#Observation)，[reward](#Reward)，done，info。每运行一次step()，电梯模拟器内部运行0.5秒，即一个timestep。
@@ -33,7 +33,7 @@ pip install .
 - render(self)：渲染一帧图像，显示当前电梯内部的环境。
 
 ```python
-# 以下是一个简单的可运行电梯模拟器的例子
+# 以下是一个简单可运行的电梯模拟器的例子
 from rlschool import LiftSim
 
 env = LiftSim()
@@ -94,9 +94,9 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 
 根据三个部分计算：
 
-- time_consume：所有乘客在一个timestep内等待时长的加和（在乘客还未到达目的楼层之前，都处于等待状态），单位：秒；
-- energy_consume：一个timestep电梯消耗的能量，单位：焦；
-- given_up_persons：一个timestep放弃的人数（电梯外排队的人五分钟后自动放弃），单位：人。
+- time_consume：所有乘客在一个timestep内等待时长的加和（在乘客未到达目的楼层之前，都处于等待状态），单位：秒；
+- energy_consume：一个timestep内电梯消耗的能量，单位：焦；
+- given_up_persons：一个timestep内放弃的人数（电梯外排队的人五分钟后自动放弃），单位：人。
 
 公式：
 
@@ -128,6 +128,7 @@ python main.py  # 自定义代码运行命令
 将以上文件打包成zip文件，**命名为submit_folder.zip**，我们提供了[示例][submit_folder]。参赛者在[此处][submit]提交结果。
 
 
+[gym]: https://gym.openai.com/
 [demo]: https://github.com/PaddlePaddle/RLSchool/tree/master/baseline/liftsim_baseline
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
