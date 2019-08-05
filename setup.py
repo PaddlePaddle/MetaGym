@@ -12,28 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Setup script.
-
-Authors: wangfan04(wangfan04@baidu.com)
-Date:    2019/05/22 19:30:16
-"""
-
 from setuptools import setup, find_packages
 import os
 import re
 
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
+
 setup(
     name="rlschool",  # pypi中的名称，pip或者easy_install安装时使用的名称
-    version="1.0",
+    version="0.0.1",
     author="",
     author_email="",
-    description=("A reinforcement learning simulators"),
+    description=("RLSchool: Excellent environments for reinforcement Learning benchmarking"),
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/PaddlePaddle/RLSchool',
     license="GPLv3",
     keywords="redis subscripe",
     packages = [package for package in find_packages()
                 if package.startswith('rlschool')],
-    package_data={'rlschool':['./liftsim/config.ini', './liftsim/environment/animation/resources/*.png']},
+    package_data={'rlschool':[
+        './liftsim/config.ini', 
+        './liftsim/environment/animation/resources/*.png'],
+    },
+    tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
         'pyglet>=1.2.0',
