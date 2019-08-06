@@ -25,11 +25,11 @@ from rlschool.liftsim.environment.mansion.person_generators.person_generator imp
 
 
 class UniformPersonGenerator(PersonGeneratorBase):
-    '''
+    """
     Basic Generator Class
     Generates Random Person from Random Floor, going to random other floor
     Uniform distribution in floor number, target floor number etc
-    '''
+    """
 
     def configure(self, configuration):
         self._particle_number = int(configuration['ParticleNumber'])
@@ -42,13 +42,13 @@ class UniformPersonGenerator(PersonGeneratorBase):
         return random.uniform(MIN_WEIGHT, MAX_WEIGHT)
 
     def generate_person(self):
-        '''
+        """
         Generate Random Persons from Poisson Distribution
         Args:
           None
         Returns:
           List of Random Persons
-        '''
+        """
         ret_persons = []
         time_interval = self._config.raw_time - self._last_generate_time
         for i in range(self._particle_number):

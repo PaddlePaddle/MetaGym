@@ -5,75 +5,130 @@ LiftSim是一个电梯调度模拟环境
 <img src="demo_image.gif" width="400"/>
 
 
+## 安装
 
-## 下载
-
-可以通过pip下载：
+#### 通过pip安装：
 
 ```python
 pip install rlschool
 ```
 
+#### 在本地安装：
+
+```python
+git clone https://github.com/PaddlePaddle/RLSchool
+cd RLSchool
+pip install .
+```
+
 
 ## 基本接口
 
-类似gym，liftsim提供了三个基本接口：
+类似[gym][gym]，liftsim提供了三个基本接口：
 
 - reset(self)：重置环境，返回observation。
-- step(self, action)：根据action调整环境，返回observation，reward，done，info。
-- render(self)：显示一个timestep内的环境。
+- step(self, action)：根据action调整环境，返回[observation](#Observation)，[reward](#Reward)，done，info。每运行一次step()，电梯模拟器内部运行0.5秒，即一个timestep。
+    - done：电梯属于连续任务，没有回合制概念，因此done一直为False。
+    - info：一个dictionary，包括人们等待的时间time_consume（float）、能量消耗energy_consume（float）、放弃等待的人数given_up_persons（int）。详细解释见[Reward](#Reward)
+- render(self)：渲染一帧图像，显示当前电梯内部的环境。
 
 ```python
+# 以下是一个简单可运行的电梯模拟器的例子
 from rlschool import LiftSim
-from rlschool import ElevatorAction
 
 env = LiftSim()
 observation = env.reset()
-action = [ElevatorAction(0, 1) for i in range(4)]
+action = [2, 0, 4, 0, 7, 0, 10, 0]
 for i in range(100):
+    env.render()    # use render to show animation
     next_obs, reward, done, info = env.step(action)
 ```
 
-## MansionState/ElevatorState
+### Action
 
-reset(self)和step(self, action)返回一个namedtuple，MansionState。
+传入step方法的action为一个长度为2\*n的list，n为电梯数，在第一轮中比赛中，电梯数量固定为为4。2*n个数字每连续两个数字代表一部电梯的控制指令：
+- 其中第一个数字表示分配到的楼层（DispatchTarget）。DispatchTarget为1~MaxFloorNumber时表示调配到相应楼层（MaxFloorNumber代表最高楼层，第一轮比赛中固定为10）；为-1时表示不改变之前的DispatchTarget；为0时表示要求电梯立即停下。
+- 后一个数字代表分配到的方向（DispatchTargetDirection）。可以为-1（向下），0（无方向），1（向上）。
 
-- MansionState = collections.namedtuple("MansionState", 
-                    ["ElevatorStates", "RequiringUpwardFloors","RequiringDownwardFloors"])
+<img src="elevator_indicator.png" width="400"/>
 
-    ELevatorState为各个电梯的情况。RequiringUpwardFloors是list，包括有人等待向上的楼层；RequiringDownwardFloors包括有人等待向下的楼层。
-- ElevatorStates = collections.namedtuple("ElevatorState",
-                   ["Floor", "MaximumFloor",
-                   "Velocity", "MaximumSpeed",
-                   "Direction", "DoorState",
-                   "CurrentDispatchTarget", "DispatchTargetDirection",
-                   "LoadWeight", "MaximumLoad",
-                   "ReservedTargetFloors", "OverloadedAlarm",
-                   "DoorIsOpening", "DoorIsClosing"])
 
-    Floor：电梯当前楼层；   MaximumFloor：大楼最高楼层；    Velocity：电梯当前速度；    MaximumSpeed：电梯最大速度；Direction：电梯方向（-1为向下，1为向上，0为无方向）；   DoorState：电梯门当前打开的比例；   CurrentDispatchTarget：电梯当前dispatch到的目标楼层；   DispatchTargetDirection：电梯dispatch到的方向；     LoadWeight：电梯承载的质量；        MaximumLoad：电梯最大能承载的质量；     ReservedTargetFloors：list，存储电梯内乘客的目标楼层；      OverloadedAlarm：指示电梯是否超载；     DoorIsOpening：指示电梯门是否正在打开；     DoorIsClosing：指示电梯门是否正在关闭。
+## Observation
 
-## 运行逻辑
+reset(self)和step(self, action)返回当前大楼的MansionState，详细含义如下：
 
-电梯负责处理电梯内乘客按下的楼层（target_floot），依次停靠。Dispatcher负责调配电梯到有人等待的楼层去接乘客（dispatch_target）以及分配接到人后的方向（dispatch_target_direction）。
+- MansionState：namedtuple，表示电梯整体情况。第一轮比赛中大楼最高十层，每层4.0米高，大楼共有四部电梯。
 
-电梯若无法在dispatch_target停下，则忽略dispatch_target。若希望电梯在某一层停下，则需要在电梯停在该楼层之前，保持dispatch_target一直为该楼层，或返回ElevatorAction中TargetFloor为-1。
+|名字                       |类型                  |描述            |
+|--------------------------|----------------------|---------------|
+|ElevatorStates            |List of ElevatorState |存储所有电梯的状态|
+|RequiringUpwardFloors     |List of int           |有人等待向上的楼层|
+|RequiringDownwardFloors   |List of int           |有人等待向下的楼层|
 
-dispatch_target_direction负责指示接到乘客后电梯行驶方向，当电梯内无人，电梯静止且无方向时有效。
+
+- ElevatorState：namedtuple ，表示各个电梯的状态。
+
+| 名字                    | 类型     | 描述                                        |
+| :----------------------:| :-----: | :----------------------------------------: |
+| Floor                   | float   | 电梯当前楼层                                 |
+| MaximumFloor            | int     | 大楼最高楼层                                 |
+| Velocity                | float   | 电梯当前速度                                 |
+| MaximumSpeed            | float   | 电梯最大速度                                 |
+| Direction               | int     | 电梯方向，-1为向下，1为向上，0为无方向           |
+| DoorState               | float   | 电梯门当前打开的比例，0.0为完全关闭，1.0为完全开启|
+| CurrentDispatchTarget   | int     | action中指定的目标楼层（若电梯需停下时，则为0）   |
+| DispatchTargetDirection | int     | action中指定的方向                           |
+| LoadWeight              | float   | 电梯当前承载的质量（kg）                       |
+| MaximumLoad             | float   | 电梯最大能承载的质量（kg）                     |
+| ReservedTargetFloors    | list    | 存储电梯内乘客的目标楼层，即电梯内被按下的楼层按键 |
+| OverloadedAlarm         | float   | 电梯是否超载倒计时，有超载情况则倒计时两秒        |
+| DoorIsOpening           | boolean | 指示电梯门是否正在打开                         |
+| DoorIsClosing           | Boolean | 指示电梯门是否正在关闭                         |
+
 
 ## 示例
 
-我们提供了电梯调度算法的[示例][demo]，包括强化学习和规则，以供参考。
+我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState的特征处理的方法，供参赛者参考。
 
-## 评价标准
+## Reward
 
-根据电梯内乘客等待时长、电梯外人们排队时长、电梯消耗的能量、放弃的人数（排队的人五分钟后自动放弃）来计算reward。公式：
-$$- (time\_consume + 0.01 * energy\_consume + 1000 * given\_up\_persons) * 1.0e-5$$
+根据三个部分计算：
+
+- time_consume：所有乘客在一个timestep内等待时长的加和（在乘客未到达目的楼层之前，都处于等待状态），单位：秒；
+- energy_consume：一个timestep内电梯消耗的能量，单位：焦；
+- given_up_persons：一个timestep内放弃的人数（电梯外排队的人五分钟后自动放弃），单位：人。
+
+公式：
+
+```python
+reward = - (time_consume + 0.01 * energy_consume + 100 * given_up_persons) * 1e-4
+```
+
+### 比赛评分
+
+计算28800 steps，即模拟环境内四小时的reward总和。
 
 ## 提交
 
-在[此处][submit]提交结果
+提交文件需包括调控电梯的代码、requirements.txt文件以及运行的shell脚本：
+
+- 代码：参赛者编写的调度算法，通过LiftSim提供的step()接口与环境交互。
+
+- requirements.txt：依赖包。
+
+- shell脚本：shell文件的作用是激活环境、下载requirements.txt文件以及运行代码。评估环境使用anaconda环境：". activate py2"激活Python2.7环境；". activate py3"激活Python3.6环境。**shell文件命名为run_main.sh**，示例：
+```shell
+#!/bin/bash
+# run_mansion.sh
+. activate py3 # 激活环境，可选择使用py2（Python2.7）或者py3（Python3.6）
+pip install -r requirements.txt # 安装requirements.txt文件中的依赖库
+python main.py  # 自定义代码运行命令
+```
+
+将以上文件打包成zip文件，**命名为submit_folder.zip**，我们提供了[示例][submit_folder]。参赛者在[此处][submit]提交结果。
 
 
-[demo]: https://github.com/Banmahhhh/RLSchool/blob/master/liftsim/demo.py
-[submit]: https://www.google.com/
+[gym]: https://gym.openai.com/
+[demo]: https://github.com/PaddlePaddle/RLSchool/tree/master/baseline/liftsim_baseline
+[submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
+[submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip

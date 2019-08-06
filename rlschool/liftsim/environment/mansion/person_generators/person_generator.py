@@ -23,10 +23,10 @@ from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 
 
 class PersonGeneratorBase(object):
-    '''
+    """
     Basic Generator Class
     Generates Random Person from Random Floor, going to random other floor
-    '''
+    """
 
     def __init__(self):
         pass
@@ -40,11 +40,11 @@ class PersonGeneratorBase(object):
         self._last_generate_time = self._config.raw_time
 
     def generate_person(self, time):
-        '''
+        """
         Generate Random Persons from Poisson Distribution
         Args:
           None
         Returns:
           List of Random Persons
-        '''
+        """
         raise NotImplementedError()

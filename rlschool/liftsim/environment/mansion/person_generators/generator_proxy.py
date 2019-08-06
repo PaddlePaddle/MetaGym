@@ -1,5 +1,3 @@
-# basic_generators.py
-#
 # A Proxy for generating different persons
 #
 # Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.

@@ -1,4 +1,3 @@
-#
 # Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,9 +32,9 @@ class TestElevator(unittest.TestCase):
     # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_door_load_unload(self, mock_uniformgenerator):
-        '''
+        """
         stop at the target, load and unload corresponding passengers, open and close the door properly
-        '''
+        """
         max_floors = 8
         world = MansionConfig(
             dt=0.50,
@@ -120,10 +119,10 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_overload(self, mock_uniformgenerator):
-        '''
+        """
         overload, two people enter together, check who can enter the elevator one by one
         after overload, if the dispatcher still dispatches the elevator to the current floor, ignore the dispatch
-        '''
+        """
         max_floors = 8
         world = MansionConfig(
             dt=0.50,
@@ -198,9 +197,9 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_stop_at_dispatch(self, mock_uniformgenerator):
-        '''
+        """
         stop at the dispatch floor, open and close the door, then keep going to the target floor
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(
@@ -271,9 +270,9 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_dispatch_when_closing(self, mock_uniformgenerator):
-        '''
+        """
         dispatch the current floor when the door is closing
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(
@@ -366,10 +365,10 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_dispatch_invalid(self, mock_uniformgenerator):
-        '''
+        """
         ignore the invalid dispatch (cannot stop at the dispatch)
         and decelerate when needed (test velocity_planner)
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(
@@ -434,9 +433,9 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_no_dispatch(self, mock_uniformgenerator):
-        '''
+        """
         arrive at the target, no dispatch, hold still
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(
@@ -497,11 +496,11 @@ class TestElevator(unittest.TestCase):
     # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_dispatch_twice(self, mock_uniformgenerator):
-        '''
+        """
         no target, dispatch (3, 1) first, then (8, -1)
         decelerate then accelerate
         not accelerate immediately
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(
@@ -552,9 +551,9 @@ class TestElevator(unittest.TestCase):
     @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_cancel_dispatch(self, mock_uniformgenerator):
-        '''
+        """
         no target, dispatch first, accelerate, then cancel dispatch, decelerate
-        '''
+        """
         max_floors = 8
         # mansion_config
         world = MansionConfig(

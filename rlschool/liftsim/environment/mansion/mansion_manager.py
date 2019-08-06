@@ -13,7 +13,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.#
+# limitations under the License.
 
 import sys
 import random
@@ -29,10 +29,10 @@ from rlschool.liftsim.environment.mansion.person_generators.person_generator imp
 
 
 class MansionManager(object):
-    '''
+    """
     Mansion Class
     Mansion Randomly Generates Person that requiring elevators for a lift
-    '''
+    """
 
     def __init__(
             self,
@@ -40,7 +40,7 @@ class MansionManager(object):
             person_generator,
             mansion_config,
             name="Mansion"):
-        '''
+        """
         Initializing the Building
         Args:
           floor_number: number of floor in the building
@@ -50,7 +50,7 @@ class MansionManager(object):
           person_generator: PersonGenerator class that generates stochastic pattern of person flow
         Returns:
           None
-        '''
+        """
         assert isinstance(mansion_config, MansionConfig)
         assert isinstance(person_generator, PersonGeneratorBase)
         self._name = name
@@ -97,9 +97,9 @@ class MansionManager(object):
 
     @property
     def state(self):
-        '''
+        """
         Return Current state of the building simulator
-        '''
+        """
         upward_req = []
         downward_req = []
         state_queue = []
@@ -114,14 +114,14 @@ class MansionManager(object):
         return MansionState(state_queue, upward_req, downward_req)
 
     def run_mansion(self, actions):
-        '''
+        """
         Perform one step of simulations
         Args:
           actions: A list of actions, e.g., action.add_target = [2, 6, 8], action.remove_target = [4]
           mark the target floor to be added into the queue or removed from the queue
         Returns:
           State, Cumulative Wating Time for Person, Energy Consumption of Elevator
-        '''
+        """
         self._config.step()  # update the current time
 
         person_list = self._person_generator.generate_person()
@@ -143,8 +143,7 @@ class MansionManager(object):
         loaded_person_num = 0
         tmp_delivered_person = 0
         for idx in range(self._elevator_number):
-            energy_consumption[idx], delivered_person_time, tmp_loaded_person = self._elevators[idx].run_elevator(
-            )
+            energy_consumption[idx], delivered_person_time, tmp_loaded_person = self._elevators[idx].run_elevator()
             tmp_delivered_person += len(delivered_person_time)
             loaded_person_num += tmp_loaded_person
 
@@ -257,9 +256,9 @@ class MansionManager(object):
         return cumulative_waiting_time, cumulative_energy_consumption, give_up_persons
 
     def get_statistics(self):
-        '''
+        """
         Get Mansion Statistics
-        '''
+        """
         return {
             "DeliveredPersons(10Minutes)": int(sum(self._delivered_person)),
             "GeneratedPersons(10Minutes)": int(sum(self._generated_person)),
@@ -269,9 +268,9 @@ class MansionManager(object):
 
     @property
     def attribute(self):
-        '''
+        """
         returns all kinds of attributes
-        '''
+        """
         return MansionAttribute(
             self._elevator_number,
             self._floor_number,
@@ -279,28 +278,28 @@ class MansionManager(object):
 
     @property
     def config(self):
-        '''
+        """
         Returns config of the mansion
-        '''
+        """
         return self._config
 
     @property
     def waiting_queue(self):
-        '''
+        """
         Returns the waiting queue of each floor
-        '''
+        """
         return [self._wait_upward_persons_queue, self._wait_downward_persons_queue]
 
     @property
     def loaded_people(self):
-        '''
+        """
         Returns: the number of loaded people of each elevator
-        '''
+        """
         return [self._elevators[i].loaded_people_num for i in range(self._elevator_number)]
 
     @property
     def name(self):
-        '''
+        """
         Returns name of the mansion
-        '''
+        """
         return self._name

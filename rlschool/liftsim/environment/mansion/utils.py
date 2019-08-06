@@ -1,3 +1,17 @@
+#   Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # utils.py
 #
 # Utils for mansion and elevator simulator
@@ -59,10 +73,10 @@ SimulatedTime = collections.namedtuple(
 
 
 def formulate_simulation_time(time):
-    '''
+    """
     Turn Seconds Into Formulated Time
     Eg. 93671 = Day: 1, Hour: 2, Min: 1, Sec: 11
-    '''
+    """
     res = time
     day = int(res) // 86400
     res -= float(day) * 86400.0
@@ -74,26 +88,26 @@ def formulate_simulation_time(time):
 
 
 def simulation_time_to_str(time):
-    '''
+    """
     Turn simulated time to string
-    '''
+    """
     assert isinstance(time, SimulatedTime)
     return "(Day: %d, Hour: %d, Minute: %d, Second: %2.2f)" % (
         time.Day, time.Hour, time.Min, time.Sec)
 
 
 def raw_time_to_str(time):
-    '''
+    """
     convert raw time to a string
-    '''
+    """
     formulated_time = formulate_simulation_time(time)
     return simulation_time_to_str(formulated_time)
 
 
 def args_to_string(string, args):
-    '''
+    """
     Convert arguments to a string
-    '''
+    """
     if(len(args) < 1):
         return string
     elif(len(args) < 2):
@@ -103,7 +117,7 @@ def args_to_string(string, args):
 
 
 def velocity_planner(start_v, target_x, max_acc, max_spd, dt):
-    '''
+    """
     Plan a trajectory toward target position, such that velocity = 0 when arriving at the position
     Args:
       start_v: initial velocity
@@ -115,7 +129,7 @@ def velocity_planner(start_v, target_x, max_acc, max_spd, dt):
       des_vel, eff_dt
       the agent accelerate uniformly from start_v to des_vel from t = 0 to t = eff_dt
                keeps v = des_vel from t = eff_dt to t = dt
-    '''
+    """
 
     def clip_value(value, max_abs_val):
         return max(-max_abs_val, min(max_abs_val, value))
