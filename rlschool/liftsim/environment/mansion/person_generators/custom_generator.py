@@ -1,8 +1,6 @@
-# office_generators.py
+# custom_generators.py
 #
-# Generating Persons for typical office buildings:
-# Very high pedestrian flow during the morning and the evening
-# Average amount of pedestrian flow in other cases
+# Generating pedestrian flow from npy file
 #
 # Copyright (c) 2018 PaddlePaddle Authors. All Rights Reserved.
 #
