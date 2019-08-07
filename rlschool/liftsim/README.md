@@ -129,6 +129,6 @@ python main.py  # 自定义代码运行命令
 
 
 [gym]: https://gym.openai.com/
-[demo]: https://github.com/PaddlePaddle/PARL/tree/develop/examples/LiftSim_demo
+[demo]: https://github.com/PaddlePaddle/PARL/tree/develop/examples/LiftSim_baseline
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
