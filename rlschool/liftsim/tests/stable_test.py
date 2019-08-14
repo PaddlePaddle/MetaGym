@@ -37,6 +37,8 @@ def main():
         for i in range(count):
             line1 = res1_lines_list[i]
             line2 = res2_lines_list[i]
+            assert line1.find('Fatal') == -1
+            assert line1.find('Warning') == -1
             if line1.find('MainThread'):
                 continue
             line1_find = line1.find('world_time')

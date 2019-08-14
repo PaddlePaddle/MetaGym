@@ -393,7 +393,6 @@ class Elevator(object):
 
     def _get_true_target(self):
         # print ("check target: %d, %d"%(self._dispatch_target, self._check_target_validity(self._dispatch_target)))
-        floor, delta_dist = self.nearest_floor
         if(self._is_overloaded_alarm > EPSILON):
             # in case overload alarm is ringing, neglect the dispatch target
             if(len(self._target_floors) < 1):
@@ -462,12 +461,12 @@ class Elevator(object):
         # if no target floors and current speeds = 0 and the door is closing,
         # set direction = 0
         if(no_reserved_target and self.is_stopped
-                and self._door_open_rate < EPSILON and (not self._is_door_opening)):
+                and self._door_open_rate < EPSILON):
             self._direction = 0
 
         # if the elevator is free, set the direction as specified by dispatcher
         if(self._direction == 0 and self.is_stopped):
-            if(self._dispatch_target > 0 and self.is_stopped and
+            if(self._dispatch_target > 0 and
                     abs(self._dispatch_target - floor_digit) < EPSILON):
                 if(self._dispatch_target_direction == 1 or self._dispatch_target_direction == - 1):
                     self._direction = self._dispatch_target_direction
@@ -508,8 +507,7 @@ class Elevator(object):
                 if(target_floor in self._target_floors):
                     self._target_floors.remove(target_floor)
 
-        # release the control command to the elevator door TODO: when would
-        # this case happen?
+        # release the control command to the elevator door
         if(abs(self._current_velocity) > EPSILON):
             if(self._is_door_opening):
                 self._is_door_opening = False
@@ -555,7 +553,6 @@ class Elevator(object):
 
         # caculate the variables for energy loss
         acceleration = 0.0
-        min_deceleration_zone = 0.5 * self._floor_height
 
         # The Elevator Dynamics
         eff_dt = self._dt
