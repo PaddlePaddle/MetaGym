@@ -93,11 +93,12 @@ class TestElevator(unittest.TestCase):
 
         for i in range(4):
             test_mansion.run_mansion(dispatch)
+            # print(test_mansion.state, "\nworld time is", world.raw_time)
         state = test_mansion.state    # passenger 6 is unloaded, t = 3.0
         self.assertAlmostEqual(state.ElevatorStates[0].LoadWeight, 40)
 
         dispatch = []
-        dispatch.append(ElevatorAction(-1, 0))
+        dispatch.append(ElevatorAction(0, 0))
 
         for i in range(4):
             test_mansion.run_mansion(dispatch)
@@ -112,11 +113,12 @@ class TestElevator(unittest.TestCase):
 
         for i in range(4):
             test_mansion.run_mansion(dispatch)
+            print(test_mansion.state, "\nworld time is", world.raw_time)
         state = test_mansion.state    # the door is closed, going up, t = 9.0
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 1.0)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_overload(self, mock_uniformgenerator):
         """
@@ -194,7 +196,7 @@ class TestElevator(unittest.TestCase):
         # print(test_mansion.state, "\nworld time is", world.raw_time)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_stop_at_dispatch(self, mock_uniformgenerator):
         """
@@ -253,7 +255,7 @@ class TestElevator(unittest.TestCase):
         self.assertAlmostEqual(state.ElevatorStates[0].DoorState, 1.0)
 
         dispatch = []
-        dispatch.append(ElevatorAction(-1, 0))
+        dispatch.append(ElevatorAction(0, 0))
 
         for i in range(6):
             # finish time open lag and close the door
@@ -267,7 +269,7 @@ class TestElevator(unittest.TestCase):
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 2.0)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_dispatch_when_closing(self, mock_uniformgenerator):
         """
@@ -362,7 +364,7 @@ class TestElevator(unittest.TestCase):
         self.assertAlmostEqual(state.ElevatorStates[0].LoadWeight, 250)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_dispatch_invalid(self, mock_uniformgenerator):
         """
@@ -430,7 +432,7 @@ class TestElevator(unittest.TestCase):
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 0.0)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_no_dispatch(self, mock_uniformgenerator):
         """
@@ -548,7 +550,7 @@ class TestElevator(unittest.TestCase):
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 2.0)
 
     # checked
-    @unittest.skip("test")
+    # @unittest.skip("test")
     @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
     def test_cancel_dispatch(self, mock_uniformgenerator):
         """
@@ -599,6 +601,54 @@ class TestElevator(unittest.TestCase):
         state = test_mansion.state
         self.assertAlmostEqual(state.ElevatorStates[0].DoorState, 0.0)
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 0.0)
+
+    @mock.patch("person_generators.uniform_generator.UniformPersonGenerator")
+    def test_set_direction_0(self, mock_uniformgenerator):
+        """
+        When the elevator is stopped and empty, always set direction as 0 first, 
+        then set as dispatch_target_direction
+        """
+        max_floors = 8
+        # mansion_config
+        world = MansionConfig(
+            dt=0.50,
+            number_of_floors=max_floors,
+            floor_height=4.0
+        )
+
+        # test_elevator
+        test_elevator = Elevator(start_position=0.0,
+                                 mansion_config=world,
+                                 name="test_elevator")
+        test_elevator._direction = 1
+        test_elevator._current_velocity = 0.0
+        test_elevator._current_position = 8.0   # 3rd floor
+        test_elevator._target_floors = list()
+        test_elevator._loaded_person = [
+            list() for i in range(
+                test_elevator._number_of_floors)]
+        test_elevator._load_weight = 0
+
+        # mansion
+        tmp_uniform_generator = UniformPersonGenerator()
+        ret_person = []
+        ret_person.append(PersonType(0, 50, 3, 1, world.raw_time))
+        person_generators.uniform_generator.UniformPersonGenerator.generate_person = mock.Mock(
+            return_value=(ret_person))
+        test_mansion = MansionManager(
+            elevator_number=1,
+            person_generator=tmp_uniform_generator,
+            mansion_config=world,
+            name="test_mansion"
+        )
+        test_mansion._elevators = [test_elevator]
+        dispatch = []
+        dispatch.append(ElevatorAction(3, -1))
+        test_mansion.run_mansion(dispatch)
+        test_mansion.run_mansion(dispatch)  # t = 1.0
+        # print(test_mansion.state, "\nworld time is", world.raw_time)
+        state = test_mansion.state
+        self.assertAlmostEqual(state.ElevatorStates[0].Direction, -1)
 
 
 if __name__ == '__main__':
