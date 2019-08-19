@@ -10,7 +10,7 @@ LiftSim是一个电梯调度模拟环境
 #### 通过pip安装：
 
 ```python
-pip install rlschool
+pip install git+https://github.com/PaddlePaddle/RLSchool.git
 ```
 
 #### 在本地安装：
