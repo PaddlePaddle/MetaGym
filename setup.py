@@ -15,8 +15,9 @@
 from setuptools import setup, find_packages
 import os
 import re
+import io
 
-with open('README.md', 'r', encoding='utf-8') as fh:
+with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setup(
