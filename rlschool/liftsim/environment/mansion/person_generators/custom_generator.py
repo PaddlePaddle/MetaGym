@@ -26,69 +26,6 @@ from rlschool.liftsim.environment.mansion.mansion_config import MansionConfig
 from rlschool.liftsim.environment.mansion.person_generators.person_generator import PersonGeneratorBase
 
 
-def resample_solver(in_flow_vec, out_flow_vec, f_lambda, max_iteration):
-    """
-    Given In/Out flow of the floor, it will inference the pedestrian flow in each direction
-    """
-    shape = np.shape(in_flow_vec)
-    shape_2 = np.shape(out_flow_vec)
-    assert len(shape) == 1 and shape == shape_2
-    n = shape[0]
-    row = 2 * n
-    col = n * (n - 1)
-
-    def transfer(i, j):
-        #transfer flow from i to j to a index
-        if(i > j):
-            return i * (n - 1) + j
-        elif(i < j):
-            return i * (n - 1) + j - 1
-        else:
-            return None
-
-    A = np.zeros(shape=[row, col], dtype = 'float32')
-    res_b = np.zeros(shape=[2 * n], dtype = 'float32')
-    for i in range(n):
-        for j in range(n):
-            #The flow from every floor j to floor i
-            if(i != j):
-                A[i, transfer(j, i)] = in_flow_vec[j]
-                #The flow out of every floor i
-                A[i + n, transfer(i, j)] = 1.0
-        res_b[i] = out_flow_vec[i]
-        res_b[i + n] = 1.0
-
-    error = np.linalg.norm(res_b)
-    M = np.matmul(A.transpose(), A) + f_lambda * np.eye(col, dtype = 'float32')
-    inv_M = np.linalg.inv(M)
-
-    res = np.zeros(shape = [col], dtype='float32')
-    iteration = 0
-    while(iteration < max_iteration and error > 1.0e-5):
-        y = np.matmul(A.transpose(), res_b)
-        tmp_res = np.matmul(inv_M, y)
-
-        np.clip(res, 0, None)
-        res_b = res_b - np.matmul(A, tmp_res)
-        error = np.linalg.norm(res_b)
-        res += tmp_res
-        iteration += 1
-        print(error)
-
-    fin_res = np.zeros(shape=[n, n],dtype='float32')
-    for i in range(n):
-        for j in range(n):
-            if(i != j):
-                fin_res[i][j] = res[transfer(i, j)]
-
-    for i in range(n):
-        fin_res[i] /= np.sum(fin_res[i])
-
-    #print (np.matmul(fin_res.transpose(), in_flow_vec) - out_flow_vec)
-    return fin_res
-
-  
-
 class CustomGenerator(PersonGeneratorBase):
     '''
     A customized generator by reading person flow data from data file.
@@ -106,25 +43,28 @@ class CustomGenerator(PersonGeneratorBase):
         self._pedestrian_flow = np.load(self._data_file)
         #data format: time, floor_in_flow, floor_out_flow
         self._data_len = self._pedestrian_flow.shape[0]
-        self._floor_number = (self._pedestrian_flow.shape[1] - 1) // 2
+        self._floor_number = int(self._pedestrian_flow[0][0])
+        self._pedestrian_flow = self._pedestrian_flow[:, 1:]
         self._in_density = np.zeros([self._data_len, self._floor_number], dtype = 'float32')
-        self._out_density = np.zeros([self._data_len, self._floor_number], dtype = 'float32')
-        self._out_prob = np.zeros([self._data_len, self._floor_number], dtype = 'float32')
-        assert (self._pedestrian_flow.shape[1] % 2 == 1), \
-            "The column of the npy file must be singular"
+        self._out_prob = np.zeros([self._data_len, self._floor_number, self._floor_number], dtype = 'float32')
+        assert (self._pedestrian_flow.shape[1] == 1 + self._floor_number * (self._floor_number + 1)), \
+            "The column of the dataset file do not match the mansion, %d and %d"%(
+                self._pedestrian_flow.shape[1], 1 + self._floor_number * (self._floor_number + 1)
+                )
         assert (self._pedestrian_flow[-1][0] < 86400), \
             "The time of the day must < 86400 sec"
         assert (self._pedestrian_flow[0][0] < 0.0), \
             "The start time of the day must < 0.0 sec"
+        print ("waiting for loading the environment data")
         for i in range(self._data_len):
             if(i < self._data_len - 1):
                 tmp_val = self._pedestrian_flow[i + 1][0] - self._pedestrian_flow[i][0]
             else:
                 tmp_val = 86400 - self._pedestrian_flow[i][0]
             assert(tmp_val > 0.0), "The time interval must be above zero"
-            self._in_density[i] = 1.0 / tmp_val * self._pedestrian_flow[i][1:(self._floor_number+1)]
-            self._out_density[i] = 1.0 / tmp_val * self._pedestrian_flow[i][(self._floor_number+1):(2*self._floor_number+1)]
-            self._out_prob[i] = resample_solver(self._in_density[i], self._out_density[i], 1.0e-3, 10)
+            for j in range(self._floor_number):
+              self._in_density[i][j] = 1.0 / tmp_val * self._pedestrian_flow[i][j * (self._floor_number + 1) + 1]
+              self._out_prob[i][j] =  self._pedestrian_flow[i][(j * (self._floor_number + 1) + 2) : ((j + 1) * (self._floor_number + 1) + 1)]
             
         self._cur_time_index = 0
         self._cur_id = 0
@@ -134,7 +74,9 @@ class CustomGenerator(PersonGeneratorBase):
         self._last_generate_time = self._config.raw_time
 
         assert (self._floor_number == self._config.number_of_floors), \
-            "The dimension of the data file must match the floor number" 
+            "The dimension of the data file does not match the floor number, %d and %d"%(
+                self._floor_number, self._config.number_of_floors
+                ) 
 
     def _weight_generator(self):
         return random.normalvariate(50, 10)
@@ -176,15 +118,16 @@ class CustomGenerator(PersonGeneratorBase):
         flow_in_person = np.random.poisson(tmp_in_lambda, size = tmp_in_lambda.shape)
         for i in range(self._floor_number):
             if(flow_in_person[i] > 0):
-            sample_out_floor = np.random.multinomial(flow_in_person[i], self._out_prob[i], size = 1)
-            for j in sample_out_floor:
-                for _ in sample_out_floor:
-                    ret_persons.append(PersonType(
-                      self._cur_id,
-                      self._weight_generator(), 
-                      i + 1, 
-                      j + 1,
-                      self._config.raw_time))
+                sample_prob = self._out_prob[self._cur_time_index][i] / (1.0e-5 + self._out_prob[self._cur_time_index][i].sum())
+                sample_out_floor = np.random.multinomial(flow_in_person[i], sample_prob)
+                for j in range(len(sample_out_floor)):
+                    for _ in range(sample_out_floor[j]):
+                        ret_persons.append(PersonType(
+                        self._cur_id,
+                        self._weight_generator(), 
+                        i + 1, 
+                        j + 1,
+                        self._config.raw_time))
                     self._cur_id += 1
 
         self._last_generate_time = self._config.raw_time
