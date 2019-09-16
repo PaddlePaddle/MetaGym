@@ -18,17 +18,18 @@
 
 import sys
 import random
+import numpy as np
 from six import integer_types
 from rlschool.liftsim.environment.mansion.utils import PersonType
 from rlschool.liftsim.environment.mansion.person_generators.uniform_generator import UniformPersonGenerator
-from rlschool.liftsim.environment.mansion.person_generators.office_generator import OfficePersonGenerator
+from rlschool.liftsim.environment.mansion.person_generators.custom_generator import CustomGenerator
 
 
 def PersonGenerator(gen_type):
     if(gen_type == "UNIFORM"):
         return UniformPersonGenerator()
-    elif(gen_type == "OFFICE"):
-        return OfficePersonGenerator()
+    elif(gen_type == "CUSTOM"):
+        return CustomGenerator()
     else:
         raise RuntimeError("No such generator type: %s" % gen_type)
 
@@ -42,3 +43,4 @@ def set_seed(seed):
             'Seed must be a non-negative integer or omitted, not {}'.format(seed))
     else:
         random.seed(seed)
+        np.random.seed(seed)

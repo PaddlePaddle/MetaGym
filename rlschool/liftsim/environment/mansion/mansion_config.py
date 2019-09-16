@@ -41,7 +41,8 @@ class MansionConfig(object):
                  pulley_radius=0.27,
                  motor_efficiency=0.8,
                  motor_gear_ratio=1.0,
-                 gear_efficiency=1.0):
+                 gear_efficiency=1.0,
+                 gear_radius = 1.0):
 
         self._start_time = start_time
         self._current_time = start_time
@@ -72,6 +73,7 @@ class MansionConfig(object):
         self.motor_efficiency = motor_efficiency
         self.motor_gear_ratio = motor_gear_ratio
         self.gear_efficiency = gear_efficiency
+        self.gear_radius = gear_radius
 
     def set_logger_level(self, level):
         if(level.find("Debug") >= 0):

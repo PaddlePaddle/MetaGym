@@ -86,8 +86,8 @@ class LiftSim():
         for i in range(self._mansion.attribute.ElevatorNumber):
             action_tuple.append(ElevatorAction(action[i*2], action[i*2+1]))
         time_consume, energy_consume, given_up_persons = self._mansion.run_mansion(action_tuple)
-        reward = - (time_consume + 0.01 * energy_consume +
-                    100 * given_up_persons) * 1.0e-4
+        reward = - (time_consume + 5e-4 * energy_consume +
+                    300 * given_up_persons) * 1.0e-4
         info = {'time_consume':time_consume, 'energy_consume':energy_consume, 'given_up_persons': given_up_persons}
         return (self._mansion.state, reward, False, info)
 

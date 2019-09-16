@@ -575,12 +575,10 @@ class Elevator(object):
         self._current_position += 0.5 * \
             (tmp_velocity + self._current_velocity) * \
             eff_dt + tmp_velocity * (self._dt - eff_dt)
-        # update the elevator velocity
-        self._current_velocity = tmp_velocity
         # calculate the true acceleration
         acceleration = (tmp_velocity - self._current_velocity) / \
             max(eff_dt, EPSILON)
-
+        
         force_1 = (self._config.net_weight + self._load_weight) * \
             (GRAVITY + acceleration)
         force_2 = self._config.rated_load * (GRAVITY - acceleration)
@@ -588,12 +586,17 @@ class Elevator(object):
         m_load = abs(net_force) * self._config.pulley_radius / \
             self._config.motor_gear_ratio / self._config.gear_efficiency
         energy_consumption = (m_load *
-                              abs(self._current_velocity) *
+                              abs((self._current_velocity+tmp_velocity)/2) /
+                              self._config.gear_radius *
                               self._config.gear_efficiency /
                               self._config.motor_efficiency *
                               eff_dt +
                               self._config.standby_power_consumption *
                               self._dt)
+ 
+        # update the elevator velocity
+        self._current_velocity = tmp_velocity
+
         if(self._is_door_opening or self._is_door_closing):
             energy_consumption += self._config.automatic_door_power * self._dt
 

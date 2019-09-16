@@ -89,6 +89,7 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 ## 示例
 
 我们提供了基于Deep Q-network实现的电梯调度算法[示例][demo]，其中含有对于MansionState以及ElevatorState的特征处理的方法，供参赛者参考。
+该基线使用第一轮数据，若用于第二轮比赛，可加入时间特征，即运行时长 (total_step * time_step) % 86400
 
 ## Reward
 
@@ -100,35 +101,74 @@ reset(self)和step(self, action)返回当前大楼的MansionState，详细含义
 
 公式：
 
+### 第一轮
+
 ```python
 reward = - (time_consume + 0.01 * energy_consume + 100 * given_up_persons) * 1e-4
 ```
 
+### 第二轮
+
+```python
+reward = - (time_consume + 5e-4 * energy_consume + 300 * given_up_persons) * 1e-4
+```
+
 ### 比赛评分
 
-计算28800 steps，即模拟环境内四小时的reward总和。
+- 第一轮：计算28800 steps，即模拟环境内四小时的reward总和。
+- 第二轮：计算86400 * 3 * 2 steps，即模拟环境内三天的reward的平均值。
+
+## 人流产生模式
+
+可以在[config.ini][config]中修改[PersonGenerator]部分来选择人流产生模式：
+
+### 均匀人流
+
+```ini
+[PersonGenerator]
+PersonGeneratorType = UNIFORM
+ParticleNumber = 12
+GenerationInterval = 150
+```
+
+PersonGeneratorType为UNIFORM时即使用均匀人流，人流产生与时间无关。修改ParticleNumber和GenerationInterval可改变人流产生密度。
+
+### 自定义人流模式
+
+```ini
+[PersonGenerator]
+PersonGeneratorType = CUSTOM
+CustomDataFile = mansion_flow.npy
+```
+PersonGeneratorType为CUSTOM时即使用自定义人流模式，人流产生与时间有关。CustomDataFile为人流分布文件。
 
 ## 提交
 
-提交文件需包括调控电梯的代码、requirements.txt文件以及运行的shell脚本：
+- 第一轮：
 
-- 代码：参赛者编写的调度算法，通过LiftSim提供的step()接口与环境交互。
+    提交文件需包括调控电梯的代码、requirements.txt文件以及运行的shell脚本：
 
-- requirements.txt：依赖包。
+    - 代码：参赛者编写的调度算法，通过LiftSim提供的step()接口与环境交互。
 
-- shell脚本：shell文件的作用是激活环境、下载requirements.txt文件以及运行代码。评估环境使用anaconda环境：". activate py2"激活Python2.7环境；". activate py3"激活Python3.6环境。**shell文件命名为run_main.sh**，示例：
-```shell
-#!/bin/bash
-# run_mansion.sh
-. activate py3 # 激活环境，可选择使用py2（Python2.7）或者py3（Python3.6）
-pip install -r requirements.txt # 安装requirements.txt文件中的依赖库
-python main.py  # 自定义代码运行命令
-```
+    - requirements.txt：依赖包。
 
-将以上文件打包成zip文件，**命名为submit_folder.zip**，我们提供了[示例][submit_folder]。参赛者在[此处][submit]提交结果。
+    - shell脚本：shell文件的作用是激活环境、下载requirements.txt文件以及运行代码。评估环境使用anaconda环境：". activate py2"激活Python2.7环境；". activate py3"激活Python3.6环境。**shell文件命名为run_main.sh**，示例：
+    ```shell
+    #!/bin/bash
+    # run_mansion.sh
+    . activate py3 # 激活环境，可选择使用py2（Python2.7）或者py3（Python3.6）
+    pip install -r requirements.txt # 安装requirements.txt文件中的依赖库
+    python main.py  # 自定义代码运行命令
+    ```
 
+    将以上文件打包成zip文件，**命名为submit_folder.zip**，我们提供了[示例][submit_folder]。参赛者在[此处][submit]提交结果。
+
+- 第二轮：
+
+    \# TODO:
 
 [gym]: https://gym.openai.com/
 [demo]: https://github.com/PaddlePaddle/PARL/tree/develop/examples/LiftSim_baseline
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
+[config]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/liftsim/config.ini

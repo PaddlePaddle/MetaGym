@@ -113,7 +113,7 @@ class TestElevator(unittest.TestCase):
 
         for i in range(4):
             test_mansion.run_mansion(dispatch)
-            print(test_mansion.state, "\nworld time is", world.raw_time)
+            # print(test_mansion.state, "\nworld time is", world.raw_time)
         state = test_mansion.state    # the door is closed, going up, t = 9.0
         self.assertAlmostEqual(state.ElevatorStates[0].Velocity, 1.0)
 
