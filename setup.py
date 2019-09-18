@@ -34,8 +34,9 @@ setup(
     packages = [package for package in find_packages()
                 if package.startswith('rlschool')],
     package_data={'rlschool':[
-        './liftsim/config.ini', 
-        './liftsim/environment/animation/resources/*.png'],
+        './liftsim/*.ini', 
+        './liftsim/environment/animation/resources/*.png',
+        './liftsim/environment/mansion/person_generators/*.npy'],
     },
     tests_require=['pytest', 'mock'],
     include_package_data=True,
