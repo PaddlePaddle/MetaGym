@@ -22,7 +22,7 @@ with io.open('README.md', 'r', encoding='utf-8') as fh:
 
 setup(
     name="rlschool",  # pypi中的名称，pip或者easy_install安装时使用的名称
-    version="0.0.1",
+    version="0.1.1",
     author="",
     author_email="",
     description=("RLSchool: Excellent environments for reinforcement Learning benchmarking"),
@@ -34,9 +34,9 @@ setup(
     packages = [package for package in find_packages()
                 if package.startswith('rlschool')],
     package_data={'rlschool':[
-        './liftsim/*.ini', 
+        './liftsim/config.ini', 
         './liftsim/environment/animation/resources/*.png',
-        './liftsim/environment/mansion/person_generators/*.npy'],
+        './liftsim/environment/mansion/person_generators/mansion_flow.npy'],
     },
     tests_require=['pytest', 'mock'],
     include_package_data=True,
