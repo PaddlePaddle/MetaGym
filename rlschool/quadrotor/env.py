@@ -14,12 +14,19 @@
 
 import os
 import sys
+import time
 import numpy as np
 from math import floor, ceil
 
 sim_path = os.path.join(os.path.dirname(__file__), 'uranusim', 'build')
 sys.path.append(sim_path)
 from liburanusim import uranusim
+
+NO_DISPLAY = False
+try:
+    from render import RenderWindow
+except Exception as e:
+    NO_DISPLAY = True
 
 
 m = 0.50
@@ -39,17 +46,20 @@ T_to_U = np.linalg.inv(U_to_T)
 
 
 class Quadrotor(object):
-    def __init__(self, map_file=None):
+    def __init__(self, map_file=None, dt=0.1):
         if map_file is None:
             map_file = os.path.join(os.path.dirname(__file__),
                                     'default_map.txt')
 
         sim_conf = os.path.join(os.path.dirname(__file__),
                                 'uranusim', 'config.xml')
+        self.dt = dt
+        self.map_config = map_file
         self.map_matrix = Quadrotor.load_map(map_file)
         self.simulator = uranusim()
         self.simulator.GetConfig(sim_conf)
         self.state = {}
+        self.viewer = None
 
         # Only for single quadrotor, also mark its start position
         y_offsets, x_offsets = np.where(self.map_matrix == -1)
@@ -67,10 +77,10 @@ class Quadrotor(object):
 
         return self.state
 
-    def step(self, action, dt=0.1):
+    def step(self, action):
         cmd = np.asarray(action, np.float32)
         act = np.matmul(T_to_U, cmd)
-        self.simulator.Step(act.tolist(), dt)
+        self.simulator.Step(act.tolist(), self.dt)
         sensor_dict = self.simulator.GetSensor()
         state_dict = self.simulator.GetState()
 
@@ -87,7 +97,16 @@ class Quadrotor(object):
         return self.state, reward, reset
 
     def render(self):
-        raise NotImplementedError
+        if self.viewer is None:
+            if NO_DISPLAY:
+                raise RuntimeError('[Error] Cannot connect to display screen.')
+            self.viewer = RenderWindow(self.map_config)
+
+        if 'x' not in self.state:
+            # It's null state
+            raise Exception('You are trying to render before calling reset()')
+
+        self.viewer.view(self.state, self.dt)
 
     def close(self):
         del self.simulator
@@ -135,11 +154,18 @@ class Quadrotor(object):
 if __name__ == '__main__':
     env = Quadrotor()
     env.reset()
+    env.render()
     reset = False
     step = 1
     while not reset:
-        action = np.array([1., 1., 1., 0.], dtype=np.float32)
+        if step < 6:
+            action = np.array([2., 2., 2., 0.], dtype=np.float32)
+        else:
+            action = np.array([0., 0., 0., 2.], dtype=np.float32)
+
         state, reward, reset = env.step(action)
+        env.render()
+        time.sleep(0.1)
         print('---------- step %s ----------' % step)
         print('state:', state)
         print('reward:', reward)
