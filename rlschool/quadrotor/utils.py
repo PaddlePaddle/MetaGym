@@ -70,3 +70,19 @@ def cube_vertices(position, n):
         # on back face
         x+n, y-n, z-n, x-n, y-n, z-n, x-n, y+n, z-n, x+n, y+n, z-n,
     ]
+
+
+def drone_vertices(position):
+    """ Return the vertices of the drone (1x1 flatten plane) at position.
+
+    Note that in `pyglet.window.Window`, x-z plane is the ground plane.
+    So here we unpack the position as `(x, z, y)` instead of `(x, y, z)`.
+
+    TODO: support to load .stl 3D model and extract Delaunay triangulation.
+    """
+    x, z, y = position
+    n = 0.5
+    return [x-n, y, z-n, x-n, y, z+n, x+n, y, z+n, x+n, y, z-n]
+
+
+DRONE_FACE = texture_coord(1, 1)

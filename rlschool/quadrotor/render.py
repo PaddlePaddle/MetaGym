@@ -7,8 +7,8 @@ from pyglet import image
 from pyglet import gl
 from pyglet.graphics import Batch, TextureGroup
 
-from utils import TEXTURE_PATH, GRASS, SAND, BRICK, STONE, FACES
-from utils import sectorize, cube_vertices
+from utils import TEXTURE_PATH, GRASS, SAND, BRICK, STONE, FACES, DRONE_FACE
+from utils import sectorize, cube_vertices, drone_vertices
 
 
 class Map(object):
@@ -29,6 +29,10 @@ class Map(object):
 
         # A mapping from position to a pyglet `VertextList` in `partial_map`
         self._partial_map = dict()
+
+        # A drone drawer, now it's just a flatten 1x1 face with SAND texture
+        # TODO: load drone 3D model and render it
+        self.drone_drawer = None
 
         # A mapping from sector to a list of positions (contiguous sub-region)
         # using sectors for fast rendering
@@ -151,8 +155,27 @@ class Map(object):
         self._partial_map[position] = self.batch.add(
             vertex_count, gl.GL_QUADS, self.group, *attributes)
 
-    def _hide_block(self, position, immediate=True):
+    def _hide_block(self, position):
         self._partial_map.pop(position).delete()
+
+    def show_drone(self, position):
+        if self.drone_drawer is not None:
+            # NOTE: it may be costly to direct remove previous drone and redraw
+            self.hide_drone()
+
+        vertex_data = drone_vertices(position)
+        texture_data = list(DRONE_FACE)
+        vertex_count = len(vertex_data) // 3
+        attributes = [
+            ('v3f/static', vertex_data),
+            ('t2f/static', texture_data)
+        ]
+        self.drone_drawer = self.batch.add(
+            vertex_count, gl.GL_QUADS, self.group, *attributes)
+
+    def hide_drone(self):
+        self.drone_drawer.delete()
+        self.drone_drawer = None
 
     def _enqueue(self, func, *args):
         self.queue.append((func, args))
@@ -260,7 +283,7 @@ class RenderWindow(pyglet.window.Window):
         # (vertical plane rotation, horizontal rotation)
         # vertical rotation: [-90, 90], horizontal rotation unbounded
         # TODO: update the rotation according the drone initial pose
-        self.rotation = (0, 0)
+        self.rotation = (-30, 0)
 
         # Config perspective
         self.perspective = [perspective_fovy, perspective_aspect,
@@ -279,6 +302,8 @@ class RenderWindow(pyglet.window.Window):
             if self.sector is None:
                 self.internal_map.process_entire_queue()
             self.sector = sector
+
+        self.internal_map.show_drone(self.position)
 
     def view(self, drone_state, dt):
         # TODO: support to udpate the view according to the pose of the drone
@@ -324,13 +349,17 @@ class RenderWindow(pyglet.window.Window):
 
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
-        x, y = self.rotation
+        y, x = self.rotation
         gl.glRotatef(x, 0, 1, 0)
         gl.glRotatef(-y, math.cos(math.radians(x)),
                      0, math.sin(math.radians(x)))
         # NOTE: for GL render, its x-z plane is the ground plane,
         # so we unpack the position using `(x, z, y)` instead of `(x, y, z)`
+
+        # TODO: add these extra perspective tune to keyword args of init func
         x, z, y = self.position
+        z += 1.3
+        y += 0.8
         gl.glTranslatef(-x, -y, -z)
 
     def _draw_label(self):
