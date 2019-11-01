@@ -47,14 +47,9 @@ T_to_U = np.linalg.inv(U_to_T)
 
 class Quadrotor(object):
     def __init__(self, map_file=None, dt=0.1):
-        if map_file is None:
-            map_file = os.path.join(os.path.dirname(__file__),
-                                    'default_map.txt')
-
         sim_conf = os.path.join(os.path.dirname(__file__),
                                 'uranusim', 'config.xml')
         self.dt = dt
-        self.map_config = map_file
         self.map_matrix = Quadrotor.load_map(map_file)
         self.simulator = uranusim()
         self.simulator.GetConfig(sim_conf)
@@ -100,7 +95,7 @@ class Quadrotor(object):
         if self.viewer is None:
             if NO_DISPLAY:
                 raise RuntimeError('[Error] Cannot connect to display screen.')
-            self.viewer = RenderWindow(self.map_config)
+            self.viewer = RenderWindow()
 
         if 'x' not in self.state:
             # It's null state
@@ -143,6 +138,11 @@ class Quadrotor(object):
 
     @staticmethod
     def load_map(map_file):
+        if map_file is None:
+            flatten_map = np.zeros([100, 100], dtype=np.int32)
+            flatten_map[50, 50] = -1
+            return flatten_map
+
         map_lists = []
         with open(map_file, 'r') as f:
             for line in f.readlines():

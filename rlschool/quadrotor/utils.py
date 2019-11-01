@@ -1,6 +1,6 @@
-def texture_coord(x, y, n=4):
+def texture_coord(x, y, n=2):
     """Return the bounding vertices of the texture square.
-    E.g. for texture.png, (1, 0) meaning the green grass texture square.
+    E.g. for texture.png, (0, 0) means the black-white tile texture.
     """
     m = 1. / n
     dx = x * m
@@ -10,7 +10,7 @@ def texture_coord(x, y, n=4):
 
 def texture_coords(top, bottom, side):
     """
-    Return the texture squares for the three faces of the cube block to render.
+    Return the texture squares for the six faces of the cube block to render.
     """
     top = texture_coord(*top)
     bottom = texture_coord(*bottom)
@@ -25,10 +25,8 @@ def texture_coords(top, bottom, side):
 SECTOR_SIZE = 8
 TEXTURE_PATH = 'texture.png'
 
-GRASS = texture_coords((1, 0), (0, 1), (0, 0))
-SAND = texture_coords((1, 1), (1, 1), (1, 1))
-BRICK = texture_coords((2, 0), (2, 0), (2, 0))
-STONE = texture_coords((2, 1), (2, 1), (2, 1))
+TILE = texture_coords((0, 0), (0, 1), (0, 1))
+WALL = texture_coords((1, 0), (1, 0), (1, 0))
 
 FACES = [
     (0, 1, 0),

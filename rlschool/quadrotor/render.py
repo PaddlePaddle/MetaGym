@@ -7,12 +7,12 @@ from pyglet import image
 from pyglet import gl
 from pyglet.graphics import Batch, TextureGroup
 
-from utils import TEXTURE_PATH, GRASS, SAND, BRICK, STONE, FACES, DRONE_FACE
+from utils import TEXTURE_PATH, TILE, FACES, DRONE_FACE
 from utils import sectorize, cube_vertices, drone_vertices
 
 
 class Map(object):
-    def __init__(self, map_config, horizon_view_size=8, init_drone_z=5):
+    def __init__(self, horizon_view_size=8, init_drone_z=5):
         self.horizon_view_size = horizon_view_size
 
         # A Batch is a collection of vertex lists for batched rendering
@@ -30,7 +30,7 @@ class Map(object):
         # A mapping from position to a pyglet `VertextList` in `partial_map`
         self._partial_map = dict()
 
-        # A drone drawer, now it's just a flatten 1x1 face with SAND texture
+        # A drone drawer, now it's just a flatten 1x1 face with black texture
         # TODO: load drone 3D model and render it
         self.drone_drawer = None
 
@@ -42,46 +42,15 @@ class Map(object):
         self.queue = deque()
 
         # Mark positions of bounding wall and obstacles in the map
-        self._initialize(map_config, init_drone_z)
+        self._initialize(init_drone_z)
 
-    def _initialize(self, map_config, init_drone_z):
-        self.map_array, drone_yx = self._load_map_txt_config(map_config)
-        self.drone_pos = [drone_yx[1], drone_yx[0], init_drone_z]
-        h, w = self.map_array.shape
+    def _initialize(self, init_drone_z):
+        h = w = 100
+        self.drone_pos = [h // 2, w // 2, init_drone_z]
         for y in range(0, h):
             for x in range(0, w):
-                assert self.map_array[y, x] >= 0, 'Error in map config'
                 # Pave the floor
-                for i in range(-4, 0):
-                    self._add_block((x, y, i), SAND, immediate=False)
-                self._add_block((x, y, 0), GRASS, immediate=False)
-
-                if self.map_array[y, x] > 0:
-                    texture = BRICK
-                    if y in [0, h-1] or x in [0, w-1]:
-                        texture = STONE
-                    # Build the bounding wall or obstacles
-                    for i in range(1, self.map_array[y, x]):
-                        self._add_block((x, y, i), texture, immediate=False)
-
-    def _load_map_txt_config(self, map_config):
-        if not os.path.exists(map_config):
-            raise ValueError('%s is an invalid txt config path.' % map_config)
-
-        map_rows = []
-        with open(map_config, 'r') as f:
-            for line in f.readlines():
-                map_rows.append([int(i) for i in line.split(' ')])
-
-        map_arr = np.array(map_rows)
-
-        # Extract the original quadrotor position
-        drones_y, drones_x = np.where(map_arr == -1)
-        assert len(drones_y) == 1   # Currently, only support single drone
-        drone_y, drone_x = drones_y[0], drones_x[0]
-        map_arr[drone_y, drone_x] = 0  # remove the drone marker
-
-        return map_arr, (drone_y, drone_x)
+                self._add_block((x, y, 0), TILE, immediate=False)
 
     def _is_exposed(self, position):
         x, y, z = position
@@ -99,7 +68,7 @@ class Map(object):
         Args:
 
         position (tuple): The (x, y, z) position of the block to add.
-        texture (list): The coordinates of the texture squares, e.g. GRASS.
+        texture (list): The coordinates of the texture squares, e.g. TILE.
         immediate (bool): Whether or not to draw the block immediately.
 
         """
@@ -252,7 +221,6 @@ class Map(object):
 
 class RenderWindow(pyglet.window.Window):
     def __init__(self,
-                 map_config,
                  horizon_view_size=8,
                  init_drone_z=5,
                  perspective_fovy=65.,
@@ -267,7 +235,6 @@ class RenderWindow(pyglet.window.Window):
             width=width, height=height, caption=caption, resizable=resizable)
 
         self.internal_map = Map(
-            map_config,
             horizon_view_size=horizon_view_size,
             init_drone_z=init_drone_z)
 
