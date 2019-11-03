@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def texture_coord(x, y, n=2):
     """Return the bounding vertices of the texture square.
     E.g. for texture.png, (0, 0) means the black-white tile texture.
@@ -93,3 +96,22 @@ def geometry_hash(geometry):
         # if visual properties are defined
         md5 += str(geometry.visual.crc())
     return md5
+
+
+def rotation_transform_mat(alpha, mode='yaw'):
+    assert mode in ['yaw', 'pitch', 'roll']
+    if mode == 'yaw':
+        axis_0, axis_1 = 0, 1
+    elif mode == 'pitch':
+        axis_0, axis_1 = 0, 2
+    elif mode == 'roll':
+        axis_0, axis_1 = 1, 2
+
+    transform = np.eye(4)
+    cos_alpha = np.cos(alpha)
+    sin_alpha = np.sin(alpha)
+    transform[axis_0, axis_0] = cos_alpha
+    transform[axis_1, axis_1] = cos_alpha
+    transform[axis_0, axis_1] = -sin_alpha
+    transform[axis_1, axis_0] = sin_alpha
+    return transform

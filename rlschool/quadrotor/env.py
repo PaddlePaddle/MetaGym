@@ -158,11 +158,7 @@ if __name__ == '__main__':
     reset = False
     step = 1
     while not reset:
-        if step < 6:
-            action = np.array([2., 2., 2., 0.], dtype=np.float32)
-        else:
-            action = np.array([0., 0., 0., 2.], dtype=np.float32)
-
+        action = np.array([2., 2., 1., 1.], dtype=np.float32)
         state, reward, reset = env.step(action)
         env.render()
         time.sleep(0.1)

@@ -10,7 +10,8 @@ from pyglet import gl
 from pyglet.graphics import Batch, TextureGroup
 
 from utils import TEXTURE_PATH, TILE, FACES
-from utils import sectorize, cube_vertices, geometry_hash
+from utils import sectorize, cube_vertices, geometry_hash, \
+    rotation_transform_mat
 
 
 class Map(object):
@@ -179,7 +180,7 @@ class Map(object):
         func, args = self.queue.popleft()
         func(*args)
 
-    def show_drone(self, position):
+    def show_drone(self, position, rotation):
         # Get the transform matrix for drone 3D model
         # TODO: support to render the rotation pose of the drone
         x, z, y = position
@@ -190,6 +191,11 @@ class Map(object):
         transform[0, 0] = 0.01
         transform[1, 1] = 0.01
         transform[2, 2] = 0.01
+
+        yaw, pitch, roll = rotation
+        transform = np.dot(transform, rotation_transform_mat(yaw, 'yaw'))
+        transform = np.dot(transform, rotation_transform_mat(pitch, 'pitch'))
+        transform = np.dot(transform, rotation_transform_mat(roll, 'roll'))
 
         # Add a new matrix to the model stack to transform the model
         gl.glPushMatrix()
@@ -336,6 +342,7 @@ class RenderWindow(pyglet.window.Window):
 
     def view(self, drone_state, dt):
         self.position = (drone_state['x'], drone_state['y'], drone_state['z'])
+        rot = (drone_state['yaw'], drone_state['pitch'], drone_state['roll'])
 
         # Actually, `dt` does not work now, as we update the state in env.py
         self.update(dt)
@@ -344,7 +351,7 @@ class RenderWindow(pyglet.window.Window):
         self._setup_3d()
         gl.glColor3d(1, 1, 1)
         self.internal_map.batch.draw()
-        self.internal_map.show_drone(self.position)
+        self.internal_map.show_drone(self.position, rot)
         self._setup_2d()
         self._draw_label()
 
