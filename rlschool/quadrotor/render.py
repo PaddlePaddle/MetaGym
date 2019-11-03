@@ -2,17 +2,19 @@ import os
 import math
 import numpy as np
 from collections import deque
+import trimesh
+from trimesh import rendering
 import pyglet
 from pyglet import image
 from pyglet import gl
 from pyglet.graphics import Batch, TextureGroup
 
-from utils import TEXTURE_PATH, TILE, FACES, DRONE_FACE
-from utils import sectorize, cube_vertices, drone_vertices
+from utils import TEXTURE_PATH, TILE, FACES
+from utils import sectorize, cube_vertices, geometry_hash
 
 
 class Map(object):
-    def __init__(self, horizon_view_size=8, init_drone_z=5):
+    def __init__(self, drone_3d_model, horizon_view_size=8, init_drone_z=5):
         self.horizon_view_size = horizon_view_size
 
         # A Batch is a collection of vertex lists for batched rendering
@@ -30,16 +32,32 @@ class Map(object):
         # A mapping from position to a pyglet `VertextList` in `partial_map`
         self._partial_map = dict()
 
-        # A drone drawer, now it's just a flatten 1x1 face with black texture
-        # TODO: load drone 3D model and render it
-        self.drone_drawer = None
-
         # A mapping from sector to a list of positions (contiguous sub-region)
         # using sectors for fast rendering
         self.sectors = dict()
 
         # Use deque to populate calling of `_show_block` and `_hide_block`
         self.queue = deque()
+
+        # A graphics batch to draw drone 3D model
+        self.drone_batch = pyglet.graphics.Batch()
+        # Load drone triangular mesh and scene
+        self.drone_name = os.path.basename(drone_3d_model)
+        self.drone_mesh = trimesh.load(drone_3d_model)
+        self.drone_scene = self.drone_mesh.scene()
+        # Drawer stores drone scene geometry as vertex list in its model space
+        self.drone_drawer = None
+        # Store drone geometry hashes for easy retrival
+        self.drone_vertex_list_hash = ''
+        # Store drone geometry rendering mode, default gl.GL_TRIANGLES
+        self.drone_vertex_list_mode = gl.GL_TRIANGLES
+        # Store drone geometry texture
+        self.drone_texture = None
+
+        # FIXME: this color doesn't work when rescale the drone to 0.01
+        color = np.array([73, 73, 73, 255], dtype=np.uint8)  # light gray
+        for facet in self.drone_mesh.facets:
+            self.drone_mesh.visual.face_colors[facet] = color
 
         # Mark positions of bounding wall and obstacles in the map
         self._initialize(init_drone_z)
@@ -52,6 +70,8 @@ class Map(object):
                 # Pave the floor
                 self._add_block((x, y, 0), TILE, immediate=False)
 
+        self._add_drone()
+
     def _is_exposed(self, position):
         x, y, z = position
         for dx, dy, dz in FACES:
@@ -59,6 +79,31 @@ class Map(object):
                 # At least one face is not covered by another cube block.
                 return True
         return False
+
+    def _add_drone(self):
+        """ Add the drone 3D model in its own model space.
+        """
+        for name, geom in self.drone_scene.geometry.items():
+            if geom.is_empty:
+                continue
+            if geometry_hash(geom) == self.drone_vertex_list_hash:
+                continue
+
+            if name == self.drone_name:
+                args = rendering.convert_to_vertexlist(geom, smooth=True)
+                self.drone_drawer = self.drone_batch.add_indexed(*args)
+                self.drone_vertex_list_hash = geometry_hash(geom)
+                self.drone_vertex_list_mode = args[1]
+
+                try:
+                    assert len(geom.visual.uv) == len(geom.vertices)
+                    has_texture = True
+                except BaseException:
+                    has_texture = False
+
+                if has_texture:
+                    self.drone_texture = rendering.material_to_texture(
+                        geom.visual.material)
 
     def _add_block(self, position, texture, immediate=True):
         """ Add a block with the given `texture` and `position` to the world.
@@ -127,31 +172,41 @@ class Map(object):
     def _hide_block(self, position):
         self._partial_map.pop(position).delete()
 
-    def show_drone(self, position):
-        if self.drone_drawer is not None:
-            # NOTE: it may be costly to direct remove previous drone and redraw
-            self.hide_drone()
-
-        vertex_data = drone_vertices(position)
-        texture_data = list(DRONE_FACE)
-        vertex_count = len(vertex_data) // 3
-        attributes = [
-            ('v3f/static', vertex_data),
-            ('t2f/static', texture_data)
-        ]
-        self.drone_drawer = self.batch.add(
-            vertex_count, gl.GL_QUADS, self.group, *attributes)
-
-    def hide_drone(self):
-        self.drone_drawer.delete()
-        self.drone_drawer = None
-
     def _enqueue(self, func, *args):
         self.queue.append((func, args))
 
     def _dequeue(self):
         func, args = self.queue.popleft()
         func(*args)
+
+    def show_drone(self, position):
+        # Get the transform matrix for drone 3D model
+        # TODO: support to render the rotation pose of the drone
+        x, z, y = position
+        transform = np.eye(4)
+        transform[:3, 3] = [x, y, z]
+
+        # NOTE: current stl model is too large, so here we manually rescale it
+        transform[0, 0] = 0.01
+        transform[1, 1] = 0.01
+        transform[2, 2] = 0.01
+
+        # Add a new matrix to the model stack to transform the model
+        gl.glPushMatrix()
+        gl.glMultMatrixf(rendering.matrix_to_gl(transform))
+
+        # Enable the target texture
+        if self.drone_texture is not None:
+            gl.glEnable(self.drone_texture.target)
+            gl.glBindTexture(self.drone_texture.target, self.drone_texture.id)
+
+        # Draw the mesh with its transform applied
+        self.drone_drawer.draw(mode=self.drone_vertex_list_mode)
+        gl.glPopMatrix()
+
+        # Disable texture after using
+        if self.drone_texture is not None:
+            gl.glDisable(self.drone_texture.target)
 
     def show_block(self, position, immediate=True):
         texture = self.whole_map[position]
@@ -183,7 +238,6 @@ class Map(object):
 
         # TODO: adjust the sector set when add extra view perspective
         # relative to the drone.
-        # TODO: check the effect when manually resize the render window
         # FIXME: when the drone flies high, the green floor immediately
         # disappear
         before_set, after_set = set(), set()
@@ -221,6 +275,7 @@ class Map(object):
 
 class RenderWindow(pyglet.window.Window):
     def __init__(self,
+                 drone_3d_model=None,
                  horizon_view_size=8,
                  init_drone_z=5,
                  perspective_fovy=65.,
@@ -231,10 +286,15 @@ class RenderWindow(pyglet.window.Window):
                  width=800, height=600,
                  caption='quadrotor',
                  resizable=False):
+        if drone_3d_model is None:
+            this_dir = os.path.realpath(os.path.dirname(__file__))
+            drone_3d_model = os.path.join(this_dir, 'quadcopter.stl')
+
         super(RenderWindow, self).__init__(
             width=width, height=height, caption=caption, resizable=resizable)
 
         self.internal_map = Map(
+            drone_3d_model,
             horizon_view_size=horizon_view_size,
             init_drone_z=init_drone_z)
 
@@ -258,7 +318,11 @@ class RenderWindow(pyglet.window.Window):
 
         self.sector = None
 
-        gl.glClearColor(*sky_rgba)
+        self._gl_set_background(sky_rgba)
+        self._gl_enable_color_material()
+        self._gl_enable_blending()
+        self._gl_enable_smooth_lines()
+        self._gl_enable_lighting(self.internal_map.drone_scene)
         self.set_visible()
 
     def update(self, dt):
@@ -270,10 +334,7 @@ class RenderWindow(pyglet.window.Window):
                 self.internal_map.process_entire_queue()
             self.sector = sector
 
-        self.internal_map.show_drone(self.position)
-
     def view(self, drone_state, dt):
-        # TODO: support to udpate the view according to the pose of the drone
         self.position = (drone_state['x'], drone_state['y'], drone_state['z'])
 
         # Actually, `dt` does not work now, as we update the state in env.py
@@ -283,6 +344,7 @@ class RenderWindow(pyglet.window.Window):
         self._setup_3d()
         gl.glColor3d(1, 1, 1)
         self.internal_map.batch.draw()
+        self.internal_map.show_drone(self.position)
         self._setup_2d()
         self._draw_label()
 
@@ -306,6 +368,10 @@ class RenderWindow(pyglet.window.Window):
     def _setup_3d(self):
         w, h = self.get_size()
         gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glDepthFunc(gl.GL_LEQUAL)
+
+        gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glEnable(gl.GL_CULL_FACE)
 
         viewport = self.get_viewport_size()
         gl.glViewport(0, 0, max(1, viewport[0]), max(1, viewport[1]))
@@ -325,10 +391,88 @@ class RenderWindow(pyglet.window.Window):
 
         # TODO: add these extra perspective tune to keyword args of init func
         x, z, y = self.position
-        z += 1.3
-        y += 0.8
+        # z += 1.3
+        # y += 0.8
+        y += 3
+        z += 3
         gl.glTranslatef(-x, -y, -z)
 
     def _draw_label(self):
         self.label.text = 'xyz: (%.2f, %.2f, %.2f)' % self.position
         self.label.draw()
+
+    @staticmethod
+    def _gl_set_background(background):
+        gl.glClearColor(*background)
+
+    @staticmethod
+    def _gl_unset_background():
+        gl.glClearColor(*[0, 0, 0, 0])
+
+    @staticmethod
+    def _gl_enable_color_material():
+        gl.glColorMaterial(gl.GL_FRONT_AND_BACK,
+                           gl.GL_AMBIENT_AND_DIFFUSE)
+        gl.glEnable(gl.GL_COLOR_MATERIAL)
+        gl.glShadeModel(gl.GL_SMOOTH)
+
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_AMBIENT,
+                        rendering.vector_to_gl(
+                            0.192250, 0.192250, 0.192250))
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_DIFFUSE,
+                        rendering.vector_to_gl(
+                            0.507540, 0.507540, 0.507540))
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_SPECULAR,
+                        rendering.vector_to_gl(
+                            .5082730, .5082730, .5082730))
+
+        gl.glMaterialf(gl.GL_FRONT,
+                       gl.GL_SHININESS,
+                       .4 * 128.0)
+
+    @staticmethod
+    def _gl_enable_blending():
+        # enable blending for transparency
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA,
+                       gl.GL_ONE_MINUS_SRC_ALPHA)
+
+    @staticmethod
+    def _gl_enable_smooth_lines():
+        # make the lines from Path3D objects less ugly
+        gl.glEnable(gl.GL_LINE_SMOOTH)
+        gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_NICEST)
+        # set the width of lines to 4 pixels
+        gl.glLineWidth(4)
+        # set PointCloud markers to 4 pixels in size
+        gl.glPointSize(4)
+
+    @staticmethod
+    def _gl_enable_lighting(scene):
+        """
+        Take the lights defined in scene.lights and
+        apply them as openGL lights.
+        """
+        gl.glEnable(gl.GL_LIGHTING)
+        # opengl only supports 7 lights?
+        for i, light in enumerate(scene.lights[:7]):
+            # the index of which light we have
+            lightN = eval('gl.GL_LIGHT{}'.format(i))
+
+            # get the transform for the light by name
+            matrix = scene.graph.get(light.name)[0]
+
+            # convert light object to glLightfv calls
+            multiargs = rendering.light_to_gl(
+                light=light,
+                transform=matrix,
+                lightN=lightN)
+
+            # enable the light in question
+            gl.glEnable(lightN)
+            # run the glLightfv calls
+            for args in multiargs:
+                gl.glLightfv(*args)

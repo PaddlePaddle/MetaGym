@@ -70,17 +70,26 @@ def cube_vertices(position, n):
     ]
 
 
-def drone_vertices(position):
-    """ Return the vertices of the drone (1x1 flatten plane) at position.
-
-    Note that in `pyglet.window.Window`, x-z plane is the ground plane.
-    So here we unpack the position as `(x, z, y)` instead of `(x, y, z)`.
-
-    TODO: support to load .stl 3D model and extract Delaunay triangulation.
+def geometry_hash(geometry):
     """
-    x, z, y = position
-    n = 0.5
-    return [x-n, y, z-n, x-n, y, z+n, x+n, y, z+n, x+n, y, z-n]
+    Get an MD5 for a geometry object
 
+    Parameters
+    ------------
+    geometry : object
 
-DRONE_FACE = texture_coord(1, 1)
+    Returns
+    ------------
+    MD5 : str
+    """
+    if hasattr(geometry, 'md5'):
+        # for most of our trimesh objects
+        md5 = geometry.md5()
+    elif hasattr(geometry, 'tostring'):
+        # for unwrapped ndarray objects
+        md5 = str(hash(geometry.tostring()))
+
+    if hasattr(geometry, 'visual'):
+        # if visual properties are defined
+        md5 += str(geometry.visual.crc())
+    return md5
