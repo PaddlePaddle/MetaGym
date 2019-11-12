@@ -9,8 +9,8 @@ from pyglet import image
 from pyglet import gl
 from pyglet.graphics import Batch, TextureGroup
 
-from utils import TEXTURE_PATH, TILE, FACES
-from utils import sectorize, cube_vertices, geometry_hash, \
+from rlschool.quadrotor.utils import TEXTURE_PATH, TILE, FACES
+from rlschool.quadrotor.utils import sectorize, cube_vertices, geometry_hash, \
     rotation_transform_mat
 
 

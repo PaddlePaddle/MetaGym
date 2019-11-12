@@ -21,8 +21,9 @@ from math import floor, ceil
 import uranusim
 
 NO_DISPLAY = False
+from rlschool.quadrotor.render import RenderWindow
 try:
-    from render import RenderWindow
+    from rlschool.quadrotor.render import RenderWindow
 except Exception as e:
     NO_DISPLAY = True
 

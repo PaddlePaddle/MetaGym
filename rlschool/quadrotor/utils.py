@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 
@@ -26,7 +27,8 @@ def texture_coords(top, bottom, side):
 
 
 SECTOR_SIZE = 8
-TEXTURE_PATH = 'texture.png'
+TEXTURE_PATH = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), 'texture.png'))
 
 TILE = texture_coords((0, 0), (0, 1), (0, 1))
 WALL = texture_coords((1, 0), (1, 0), (1, 0))
