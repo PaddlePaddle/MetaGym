@@ -13,3 +13,5 @@
 # limitations under the License.
 
 from rlschool.quadrotor.env import Quadrotor
+
+__all__ = ['Quadrotor']

@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from rlschool.liftsim import *
+from rlschool.quadrotor import *

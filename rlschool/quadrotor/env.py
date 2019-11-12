@@ -13,14 +13,12 @@
 # limitations under the License.
 
 import os
-import sys
 import time
 import numpy as np
 from math import floor, ceil
 
-sim_path = os.path.join(os.path.dirname(__file__), 'uranusim', 'build')
-sys.path.append(sim_path)
-from liburanusim import uranusim
+# Extension module
+import uranusim
 
 NO_DISPLAY = False
 try:
@@ -51,8 +49,8 @@ class Quadrotor(object):
                                 'uranusim', 'config.xml')
         self.dt = dt
         self.map_matrix = Quadrotor.load_map(map_file)
-        self.simulator = uranusim()
-        self.simulator.GetConfig(sim_conf)
+        self.simulator = uranusim.Simulator()
+        self.simulator.get_config(sim_conf)
         self.state = {}
         self.viewer = None
 
@@ -65,9 +63,9 @@ class Quadrotor(object):
         self.map_matrix[self.y_offset, self.x_offset] = 0
 
     def reset(self):
-        self.simulator.Reset()
-        sensor_dict = self.simulator.GetSensor()
-        state_dict = self.simulator.GetState()
+        self.simulator.reset()
+        sensor_dict = self.simulator.get_sensor()
+        state_dict = self.simulator.get_state()
         self._update_state(sensor_dict, state_dict)
 
         return self.state
@@ -75,9 +73,9 @@ class Quadrotor(object):
     def step(self, action):
         cmd = np.asarray(action, np.float32)
         act = np.matmul(T_to_U, cmd)
-        self.simulator.Step(act.tolist(), self.dt)
-        sensor_dict = self.simulator.GetSensor()
-        state_dict = self.simulator.GetState()
+        self.simulator.step(act.tolist(), self.dt)
+        sensor_dict = self.simulator.get_sensor()
+        state_dict = self.simulator.get_state()
 
         old_pos = [self.state['x'], self.state['y'], self.state['z']]
         self._update_state(sensor_dict, state_dict)
@@ -102,6 +100,7 @@ class Quadrotor(object):
             raise Exception('You are trying to render before calling reset()')
 
         self.viewer.view(self.state, self.dt)
+        time.sleep(self.dt)
 
     def close(self):
         del self.simulator
@@ -159,9 +158,9 @@ if __name__ == '__main__':
     step = 1
     while not reset:
         action = np.array([2., 2., 1., 1.], dtype=np.float32)
+        # action = np.array([1., 0., 0., 0.], dtype=np.float32)
         state, reward, reset = env.step(action)
         env.render()
-        time.sleep(0.1)
         print('---------- step %s ----------' % step)
         print('state:', state)
         print('reward:', reward)
