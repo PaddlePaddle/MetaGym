@@ -13,8 +13,7 @@
 
 namespace py = pybind11;
 
-namespace uranus {
-namespace uranusim {
+namespace quadrotorsim {
 const double PI = 3.1415926;
 const double GRAVITY_ACCELERATION = 9.80;
 
@@ -122,6 +121,5 @@ class Simulator {
     double _max_voltage;
     double _min_voltage;
 };
-}; // namespace uranusim
-}; // namespace uranus
+}; // namespace quadrotorsim
 #endif

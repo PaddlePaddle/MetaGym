@@ -98,7 +98,7 @@ setup(
         './liftsim/environment/mansion/person_generators/mansion_flow.npy',
         './quadrotor/quadcopter.stl',
         './quadrotor/texture.png',
-        './quadrotor/uranusim/config.xml']
+        './quadrotor/quadrotorsim/config.xml']
     },
     tests_require=['pytest', 'mock'],
     include_package_data=True,
@@ -111,7 +111,8 @@ setup(
         'networkx>=2.2',
         'scipy>=0.12.0'
     ],
-    ext_modules=[CMakeExtension('uranusim', './rlschool/quadrotor/uranusim')],
+    ext_modules=[CMakeExtension(
+        'quadrotorsim', './rlschool/quadrotor/quadrotorsim')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
 )

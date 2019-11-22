@@ -1,13 +1,14 @@
-#include "uranus_simulator.h"
+// reference paper:
+// Comprehensive Simulation of Quadrotor UAVs Using ROS and Gazebo, Meyer et al.
 #include "common_tools.h"
+#include "simulator.h"
 #include <exception>
 #include <iostream>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
-namespace uranus {
-namespace uranusim {
+namespace quadrotorsim {
 Simulator::Simulator() {
     reset();
     _configured = false;
@@ -45,7 +46,7 @@ void Simulator::reset(double g_x, double g_y, double g_z, double g_v_x,
     _state.propeller_angular_velocity(0) = 0;
     _state.propeller_angular_velocity(1) = 0;
     _state.propeller_angular_velocity(2) = 0;
-    uranus::attitude_to_rotation(roll, pitch, yaw, _state.rotation_matrix);
+    attitude_to_rotation(roll, pitch, yaw, _state.rotation_matrix);
     _body_acceleration = Eigen::Vector3f(0.0, 0.0, 0.0);
     _coordinate_converter_to_world = _state.rotation_matrix;
     _coordinate_converter_to_body = _state.rotation_matrix.inverse();
@@ -175,6 +176,10 @@ int Simulator::run_internal(ActionU &act) {
         } else if (act(i) < _min_voltage) {
             eff_act = _min_voltage;
         }
+        // NOTE: act is voltages U of four propellers
+        // me[i] = \phi * I is equation (4) in paper
+        // use me[i] / \phi * U to get energy cost of i-th propeller
+        // TODO: expose the energy cost information to state
         me[i] = _thrust_coeff_phi / _thrust_coeff_ra *
                 (eff_act -
                  _thrust_coeff_phi * _state.propeller_angular_velocity(i));
@@ -298,8 +303,8 @@ void Simulator::get_printable_state(PrintableState &state) {
     state.w_x = _state.body_angular_velocity(0);
     state.w_y = _state.body_angular_velocity(1);
     state.w_z = _state.body_angular_velocity(2);
-    uranus::rotation_to_attitude(_state.rotation_matrix, state.roll,
-                                 state.pitch, state.yaw);
+    rotation_to_attitude(_state.rotation_matrix, state.roll, state.pitch,
+                         state.yaw);
 }
 
 py::dict Simulator::get_state() {
@@ -307,13 +312,13 @@ py::dict Simulator::get_state() {
     get_printable_state(state);
 
     using namespace pybind11::literals;
-    return py::dict(
-        "x"_a = state.g_x, "y"_a = state.g_y, "z"_a = state.g_z,
-        "g_v_x"_a = state.g_v_x, "g_v_y"_a = state.g_v_y,
-        "g_v_z"_a = state.g_v_z, "b_v_x"_a = state.b_v_x,
-        "b_v_y"_a = state.b_v_y, "b_v_z"_a = state.b_v_z, "w_x"_a = state.w_x,
-        "w_y"_a = state.w_y, "w_z"_a = state.w_z, "roll"_a = state.roll,
-        "pitch"_a = state.pitch, "yaw"_a = state.yaw);
+    return py::dict("x"_a = state.g_x, "y"_a = state.g_y, "z"_a = state.g_z,
+                    "g_v_x"_a = state.g_v_x, "g_v_y"_a = state.g_v_y,
+                    "g_v_z"_a = state.g_v_z, "b_v_x"_a = state.b_v_x,
+                    "b_v_y"_a = state.b_v_y, "b_v_z"_a = state.b_v_z,
+                    "w_x"_a = state.w_x, "w_y"_a = state.w_y,
+                    "w_z"_a = state.w_z, "roll"_a = state.roll,
+                    "pitch"_a = state.pitch, "yaw"_a = state.yaw);
 }
 
 // Read output from sensor
@@ -360,14 +365,12 @@ void Simulator::step(py::list act, float dt) {
         throw std::runtime_error(
             "Unexpected Error In simulation, Check if correctly configured");
 }
-}; // namespace uranusim
-}; // namespace uranus
+}; // namespace quadrotorsim
 
-PYBIND11_MODULE(uranusim, m) {
-    m.doc() = "An uranus Simulator";
+PYBIND11_MODULE(quadrotorsim, m) {
+    m.doc() = "A Quadrotor Simulator";
 
-    // .def("reset", (void (Simulator::*)()) & Simulator::reset)
-    using namespace uranus::uranusim;
+    using namespace quadrotorsim;
     py::class_<Simulator>(m, "Simulator")
         .def(py::init())
         .def("get_config", &Simulator::py_get_config)

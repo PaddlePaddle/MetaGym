@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(uranusim)
+project(quadrotorsim)
 
-# find_package(PythonLibs 2.7 REQUIRED)
-# include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 find_package(Boost REQUIRED COMPONENTS)
@@ -13,7 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-MESSAGE( STATUS "Buiding uranus simulator Library...")
+MESSAGE( STATUS "Buiding quadrotor simulator Library...")
 INCLUDE_DIRECTORIES(./include)
 
 if(APPLE)
@@ -21,4 +19,4 @@ set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 endif(APPLE)
 
 add_subdirectory(pybind11)
-pybind11_add_module(uranusim src/uranus_simulator.cpp)
+pybind11_add_module(quadrotorsim src/simulator.cpp)

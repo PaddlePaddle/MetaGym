@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <math.h>
 
-namespace uranus {
+namespace quadrotorsim {
 void attitude_to_rotation(double roll, double pitch, double yaw,
                           Eigen::Matrix3f &rotation) {
     double c_x = cos(roll);
@@ -30,5 +30,5 @@ void rotation_to_attitude(Eigen::Matrix3f &rotation, double &roll,
                                         rotation(2, 2) * rotation(2, 2)));
     yaw = atan2(rotation(1, 0), rotation(0, 0));
 }
-} // namespace uranus
+} // namespace quadrotorsim
 #endif

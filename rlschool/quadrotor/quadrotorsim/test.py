@@ -1,5 +1,5 @@
-import uranusim
-sim = uranusim.Simulator()
+import quadrotorsim
+sim = quadrotorsim.Simulator()
 sim.get_config('../config.xml')
 sim.reset()
 print('==================== Init: ====================')

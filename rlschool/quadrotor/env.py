@@ -18,7 +18,7 @@ import numpy as np
 from math import floor, ceil
 
 # Extension module
-import uranusim
+import quadrotorsim
 
 NO_DISPLAY = False
 from rlschool.quadrotor.render import RenderWindow
@@ -47,10 +47,10 @@ T_to_U = np.linalg.inv(U_to_T)
 class Quadrotor(object):
     def __init__(self, map_file=None, dt=0.1):
         sim_conf = os.path.join(os.path.dirname(__file__),
-                                'uranusim', 'config.xml')
+                                'quadrotorsim', 'config.xml')
         self.dt = dt
         self.map_matrix = Quadrotor.load_map(map_file)
-        self.simulator = uranusim.Simulator()
+        self.simulator = quadrotorsim.Simulator()
         self.simulator.get_config(sim_conf)
         self.state = {}
         self.viewer = None
