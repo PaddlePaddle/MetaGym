@@ -55,10 +55,12 @@ class Map(object):
         # Store drone geometry texture
         self.drone_texture = None
 
-        # FIXME: this color doesn't work when rescale the drone to 0.01
-        color = np.array([73, 73, 73, 255], dtype=np.uint8)  # light gray
+        color = np.array([0, 0, 0, 255], dtype=np.uint8)
         for facet in self.drone_mesh.facets:
             self.drone_mesh.visual.face_colors[facet] = color
+            # TODO: figure how to paint the drone pretty
+            # self.drone_mesh.visual.face_colors[facet] = \
+            #     trimesh.visual.random_color()
 
         # Mark positions of bounding wall and obstacles in the map
         self._initialize(init_drone_z)
@@ -187,10 +189,10 @@ class Map(object):
         transform = np.eye(4)
         transform[:3, 3] = [x, y, z]
 
-        # NOTE: current stl model is too large, so here we manually rescale it
-        transform[0, 0] = 0.01
-        transform[1, 1] = 0.01
-        transform[2, 2] = 0.01
+        # NOTE: change the view size of drone 3D model
+        transform[0, 0] = 2.5
+        transform[1, 1] = 2.5
+        transform[2, 2] = 2.5
 
         yaw, pitch, roll = rotation
         transform = np.dot(transform, rotation_transform_mat(yaw, 'yaw'))
