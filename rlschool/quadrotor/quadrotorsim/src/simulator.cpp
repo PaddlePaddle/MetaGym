@@ -1,7 +1,7 @@
 // reference paper:
 // Comprehensive Simulation of Quadrotor UAVs Using ROS and Gazebo, Meyer et al.
-#include "common_tools.h"
 #include "simulator.h"
+#include "common_tools.h"
 #include <exception>
 #include <iostream>
 #include <pybind11/pybind11.h>
@@ -169,6 +169,8 @@ int Simulator::run_internal(ActionU &act) {
     Eigen::Vector3f prop_torque(0.0, 0.0, 0.0);
     std::vector<double> me;
     me.resize(4);
+    std::vector<double> propeller_powers;
+    propeller_powers.resize(4);
     for (int i = 0; i < 4; i++) {
         double eff_act = act(i);
         if (act(i) > _max_voltage) {
@@ -177,12 +179,12 @@ int Simulator::run_internal(ActionU &act) {
             eff_act = _min_voltage;
         }
         // NOTE: act is voltages U of four propellers
-        // me[i] = \phi * I is equation (4) in paper
-        // use me[i] / \phi * U to get energy cost of i-th propeller
-        // TODO: expose the energy cost information to state
+        // me[i] = \phi * I_A is equation (4) in paper
+        // use me[i] / \phi * U to get power of i-th propeller
         me[i] = _thrust_coeff_phi / _thrust_coeff_ra *
                 (eff_act -
                  _thrust_coeff_phi * _state.propeller_angular_velocity(i));
+        propeller_powers[i] = me[i] / _thrust_coeff_phi * eff_act;
         double d_propeller_angular_velocity =
             1.0 / _thrust_coeff_jm * (me[i] - _thrust_coeff_mm);
 
@@ -236,6 +238,8 @@ int Simulator::run_internal(ActionU &act) {
     _state.global_position += _state.global_velocity * _precision +
                               0.5 * _precision * _precision * acceleration;
     _state.global_velocity += _precision * acceleration;
+    _state.power = propeller_powers[0] + propeller_powers[1] +
+                   propeller_powers[2] + propeller_powers[3];
 
     Eigen::Vector3f tmp_angular_velocity =
         _state.body_angular_velocity +
@@ -305,6 +309,7 @@ void Simulator::get_printable_state(PrintableState &state) {
     state.w_z = _state.body_angular_velocity(2);
     rotation_to_attitude(_state.rotation_matrix, state.roll, state.pitch,
                          state.yaw);
+    state.power = _state.power;
 }
 
 py::dict Simulator::get_state() {
@@ -312,13 +317,13 @@ py::dict Simulator::get_state() {
     get_printable_state(state);
 
     using namespace pybind11::literals;
-    return py::dict("x"_a = state.g_x, "y"_a = state.g_y, "z"_a = state.g_z,
-                    "g_v_x"_a = state.g_v_x, "g_v_y"_a = state.g_v_y,
-                    "g_v_z"_a = state.g_v_z, "b_v_x"_a = state.b_v_x,
-                    "b_v_y"_a = state.b_v_y, "b_v_z"_a = state.b_v_z,
-                    "w_x"_a = state.w_x, "w_y"_a = state.w_y,
-                    "w_z"_a = state.w_z, "roll"_a = state.roll,
-                    "pitch"_a = state.pitch, "yaw"_a = state.yaw);
+    return py::dict(
+        "x"_a = state.g_x, "y"_a = state.g_y, "z"_a = state.g_z,
+        "g_v_x"_a = state.g_v_x, "g_v_y"_a = state.g_v_y,
+        "g_v_z"_a = state.g_v_z, "b_v_x"_a = state.b_v_x,
+        "b_v_y"_a = state.b_v_y, "b_v_z"_a = state.b_v_z, "w_x"_a = state.w_x,
+        "w_y"_a = state.w_y, "w_z"_a = state.w_z, "roll"_a = state.roll,
+        "pitch"_a = state.pitch, "yaw"_a = state.yaw, "power"_a = state.power);
 }
 
 // Read output from sensor

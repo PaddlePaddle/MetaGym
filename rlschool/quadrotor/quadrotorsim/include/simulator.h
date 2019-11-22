@@ -6,10 +6,10 @@
 #include <iostream>
 #include <math.h>
 #include <pthread.h>
+#include <pybind11/pybind11.h>
 #include <random>
 #include <semaphore.h>
 #include <string>
-#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
@@ -33,6 +33,7 @@ typedef struct {
     double roll;
     double pitch;
     double yaw;
+    double power;
 } PrintableState;
 
 typedef struct {
@@ -42,6 +43,7 @@ typedef struct {
     Eigen::Vector4f propeller_angular_velocity =
         Eigen::Vector4f(0.0, 0.0, 0.0, 0.0);
     Eigen::Matrix3f rotation_matrix = Eigen::Matrix3f::Identity();
+    double power = 0.0;
 } State;
 
 typedef struct {
