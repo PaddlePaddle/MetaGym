@@ -55,12 +55,21 @@ class Map(object):
         # Store drone geometry texture
         self.drone_texture = None
 
-        color = np.array([0, 0, 0, 255], dtype=np.uint8)
-        for facet in self.drone_mesh.facets:
-            self.drone_mesh.visual.face_colors[facet] = color
-            # TODO: figure how to paint the drone pretty
-            # self.drone_mesh.visual.face_colors[facet] = \
-            #     trimesh.visual.random_color()
+        black = np.array([0, 0, 0, 255], dtype=np.uint8)
+        red = np.array([255, 0, 0, 255], dtype=np.uint8)
+        green = np.array([0, 255, 0, 255], dtype=np.uint8)
+        blue = np.array([0, 0, 255, 255], dtype=np.uint8)
+        for i, facet in enumerate(self.drone_mesh.facets):
+            if i < 30:
+                self.drone_mesh.visual.face_colors[facet] = black
+            elif i < 42:
+                self.drone_mesh.visual.face_colors[facet] = red
+            elif i < 54:
+                self.drone_mesh.visual.face_colors[facet] = green
+            elif i < 66:
+                self.drone_mesh.visual.face_colors[facet] = blue
+            else:
+                self.drone_mesh.visual.face_colors[facet] = black
 
         # Mark positions of bounding wall and obstacles in the map
         self._initialize(init_drone_z)
