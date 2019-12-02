@@ -64,9 +64,11 @@ class Simulator {
     Simulator();
     ~Simulator();
 
+    // functions for config
     int get_config(const char *filename);
     void py_get_config(py::str filename);
 
+    // functions for reset
     void reset();
     void reset(State &state);
     void reset(double g_x, double g_y, double g_z, double g_v_x, double g_v_y,
@@ -74,17 +76,27 @@ class Simulator {
                double pitch, double yaw);
     void py_reset(py::kwargs kwargs);
 
-    int run_time(ActionU &U_input, double dt);
+    // functions for state
     void get_printable_state(PrintableState &state);
-    py::dict get_state();
+    py::dict py_get_state();
+
     void read_sensor(SensorOutput &output);
-    py::dict get_sensor();
-    void step(py::list act, float dt);
+    py::dict py_get_sensor();
+
+    // functions to run simulation
+    int run_time(ActionU &U_input, double dt);
+    void py_step(py::list act, float dt);
 
     int check_failure();
 
+    // functions for high-level tasks
+    py::list define_velocity_control_task(double dt, int nt, int seed);
+
   private:
     int run_internal(ActionU &U_input);
+
+    void save_state(State &state, Eigen::Vector3f &body_acc);
+    void restore_state(State &state, Eigen::Vector3f &body_acc);
 
     double _precision;
     bool _configured;
@@ -93,6 +105,9 @@ class Simulator {
     Eigen::Vector3f _body_acceleration;
     Eigen::Matrix3f _coordinate_converter_to_world;
     Eigen::Matrix3f _coordinate_converter_to_body;
+
+    // parameters for high-level tasks
+    Eigen::Vector3f _expected_next_global_velocity;
 
     // parameters relative to airplane body
     double _quality;
