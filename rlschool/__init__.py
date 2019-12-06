@@ -14,3 +14,10 @@
 
 from rlschool.liftsim import *
 from rlschool.quadrotor import *
+
+
+def make_env(env_id, **kwargs):
+    if env_id == 'LiftSim':
+        return LiftSim(**kwargs)
+    elif env_id == 'Quadrotor':
+        return Quadrotor(**kwargs)

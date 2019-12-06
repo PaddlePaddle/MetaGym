@@ -37,7 +37,7 @@ class LiftSim():
     """
     environmentation Environment
     """
-    def __init__(self, config_file=os.path.join(os.path.dirname(__file__)+'/../config.ini')):
+    def __init__(self, config_file=os.path.join(os.path.dirname(__file__)+'/../config.ini'), **kwargs):
         file_name = config_file
 
         config = configparser.ConfigParser()

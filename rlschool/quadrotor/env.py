@@ -49,7 +49,8 @@ class Quadrotor(object):
                  nt=1000,
                  seed=0,
                  task='no_collision',
-                 map_file=None):
+                 map_file=None,
+                 **kwargs):
         assert task in ['velocity_control', 'no_collision'], \
             'Invalid task setting'
         sim_conf = os.path.join(os.path.dirname(__file__),
