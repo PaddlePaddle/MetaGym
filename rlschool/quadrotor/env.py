@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-import time
 import numpy as np
 from math import floor, ceil
 
@@ -45,23 +44,40 @@ T_to_U = np.linalg.inv(U_to_T)
 
 
 class Quadrotor(object):
-    def __init__(self, map_file=None, dt=0.1):
+    def __init__(self,
+                 dt=0.01,
+                 nt=1000,
+                 seed=0,
+                 task='no_collision',
+                 map_file=None):
+        assert task in ['velocity_control', 'no_collision'], \
+            'Invalid task setting'
         sim_conf = os.path.join(os.path.dirname(__file__),
                                 'quadrotorsim', 'config.xml')
         self.dt = dt
-        self.map_matrix = Quadrotor.load_map(map_file)
+        self.nt = nt
+        self.ct = 0
+        self.task = task
         self.simulator = quadrotorsim.Simulator()
         self.simulator.get_config(sim_conf)
         self.state = {}
         self.viewer = None
+        self.x_offset = self.y_offset = self.z_offset = 0
 
-        # Only for single quadrotor, also mark its start position
-        y_offsets, x_offsets = np.where(self.map_matrix == -1)
-        assert len(y_offsets) == 1
-        self.y_offset = y_offsets[0]
-        self.x_offset = x_offsets[0]
-        self.z_offset = 5.  # TODO: setup a better init height
-        self.map_matrix[self.y_offset, self.x_offset] = 0
+        if self.task == 'velocity_control':
+            self.velocity_targets = \
+                self.simulator.define_velocity_control_task(
+                    dt, nt, seed)
+        elif self.task == 'no_collision':
+            self.map_matrix = Quadrotor.load_map(map_file)
+
+            # Only for single quadrotor, also mark its start position
+            y_offsets, x_offsets = np.where(self.map_matrix == -1)
+            assert len(y_offsets) == 1
+            self.y_offset = y_offsets[0]
+            self.x_offset = x_offsets[0]
+            self.z_offset = 5.  # TODO: setup a better init height
+            self.map_matrix[self.y_offset, self.x_offset] = 0
 
     def reset(self):
         self.simulator.reset()
@@ -72,6 +88,7 @@ class Quadrotor(object):
         return self.state
 
     def step(self, action):
+        self.ct += 1
         cmd = np.asarray(action, np.float32)
         act = np.matmul(T_to_U, cmd)
         self.simulator.step(act.tolist(), self.dt)
@@ -81,12 +98,21 @@ class Quadrotor(object):
         old_pos = [self.state['x'], self.state['y'], self.state['z']]
         self._update_state(sensor_dict, state_dict)
         new_pos = [self.state['x'], self.state['y'], self.state['z']]
-        if not self._check_collision(old_pos, new_pos):
+        if self.task == 'no_collision':
+            is_collision = self._check_collision(old_pos, new_pos)
+            reward = self._get_reward(collision=is_collision)
             reset = False
-        else:
-            reset = True
+            if is_collision:
+                reset = True
+                self.ct = 0
+        elif self.task == 'velocity_control':
+            reset = False
+            velocity_target = self.velocity_targets[self.ct - 1]
+            reward = self._get_reward(velocity_target=velocity_target)
 
-        reward = self._get_reward(collision=reset)
+        if self.ct == self.nt:
+            reset = True
+            self.ct = 0
 
         return self.state, reward, reset
 
@@ -94,22 +120,33 @@ class Quadrotor(object):
         if self.viewer is None:
             if NO_DISPLAY:
                 raise RuntimeError('[Error] Cannot connect to display screen.')
-            self.viewer = RenderWindow()
+            self.viewer = RenderWindow(task=self.task)
 
         if 'x' not in self.state:
             # It's null state
             raise Exception('You are trying to render before calling reset()')
 
-        self.viewer.view(self.state, self.dt)
-        time.sleep(self.dt)
+        if self.task == 'velocity_control':
+            self.viewer.view(
+                self.state, self.dt,
+                expected_velocity=self.velocity_targets[self.ct-1])
+        else:
+            self.viewer.view(self.state, self.dt)
 
     def close(self):
         del self.simulator
-        del self.map_matrix
 
-    def _get_reward(self, collision=False):
-        # TODO: setup reward function following spoken commands
-        return 1.
+    def _get_reward(self, collision=False, velocity_target=(0.0, 0.0, 0.0)):
+        if self.task == 'no_collision':
+            if collision:
+                return -10
+            else:
+                return 1.
+
+        elif self.task == 'velocity_control':
+            diff = self._get_velocity_diff(velocity_target)
+            reward = -diff
+            return reward
 
     def _check_collision(self, old_pos, new_pos):
         # TODO: update to consider the body size of the quadrotor
@@ -136,6 +173,20 @@ class Quadrotor(object):
         for k, v in state.items():
             self.state[k] = v
 
+        if self.task == 'velocity_control':
+            t = min(self.ct, self.nt-1)
+            next_velocity_target = self.velocity_targets[t]
+            self.state['next_target_g_v_x'] = next_velocity_target[0]
+            self.state['next_target_g_v_y'] = next_velocity_target[1]
+            self.state['next_target_g_v_z'] = next_velocity_target[2]
+
+    def _get_velocity_diff(self, velocity_target):
+        vt_x, vt_y, vt_z = velocity_target
+        diff = abs(vt_x - self.state['g_v_x']) + \
+            abs(vt_y - self.state['g_v_y']) + \
+            abs(vt_z - self.state['g_v_z'])
+        return diff
+
     @staticmethod
     def load_map(map_file):
         if map_file is None:
@@ -152,7 +203,12 @@ class Quadrotor(object):
 
 
 if __name__ == '__main__':
-    env = Quadrotor()
+    import sys
+    if len(sys.argv) == 1:
+        task = 'no_collision'
+    else:
+        task = sys.argv[1]
+    env = Quadrotor(task=task, nt=1000)
     env.reset()
     env.render()
     reset = False

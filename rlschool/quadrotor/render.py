@@ -1,7 +1,9 @@
 import os
 import math
+import time
 import numpy as np
 from collections import deque
+from colour import Color
 import trimesh
 from trimesh import rendering
 import pyglet
@@ -15,7 +17,11 @@ from rlschool.quadrotor.utils import sectorize, cube_vertices, geometry_hash, \
 
 
 class Map(object):
-    def __init__(self, drone_3d_model, horizon_view_size=8, init_drone_z=5):
+    def __init__(self, drone_3d_model, horizon_view_size=8, init_drone_z=5,
+                 task='no_collision'):
+        self.task = task
+
+        # When increase this, show more blocks in current view window
         self.horizon_view_size = horizon_view_size
 
         # A Batch is a collection of vertex lists for batched rendering
@@ -75,14 +81,24 @@ class Map(object):
         self._initialize(init_drone_z)
 
     def _initialize(self, init_drone_z):
-        h = w = 100
-        self.drone_pos = [h // 2, w // 2, init_drone_z]
-        for y in range(0, h):
-            for x in range(0, w):
-                # Pave the floor
-                self._add_block((x, y, 0), TILE, immediate=False)
+        if self.task == 'no_collision':
+            h = w = 100
+            self.drone_pos = [h // 2, w // 2, init_drone_z]
+            for y in range(0, h):
+                for x in range(0, w):
+                    # Pave the floor
+                    self._add_block((x, y, 0), TILE, immediate=False)
+        elif self.task == 'velocity_control':
+            h = w = 0
+            self.drone_pos = [h // 2, w // 2, init_drone_z]
 
         self._add_drone()
+
+        if self.task == 'velocity_control':
+            self.drone_velocity_drawer = self._add_drone_velocity(
+                np.array([0.0, 0.0, 1.0]), color=[255, 95, 63])  # orange
+            self.drone_expected_velocity_drawer = self._add_drone_velocity(
+                np.array([0.0, 0.0, 1.0]), color=[240, 210, 90])  # yellow
 
     def _is_exposed(self, position):
         x, y, z = position
@@ -116,6 +132,32 @@ class Map(object):
                 if has_texture:
                     self.drone_texture = rendering.material_to_texture(
                         geom.visual.material)
+
+    def _add_drone_velocity(self, init_velocity_vector, radius=0.008,
+                            color=[255, 0, 0]):
+        """
+        Add the drone velocity vector as a cylinder into drone drawer batch.
+        """
+        translation = np.eye(4)
+        translation[:3, 3] = [0, 0, 0.5]
+
+        height = np.linalg.norm(init_velocity_vector)
+        transform_z_axis = init_velocity_vector / height
+        transform = np.eye(4)
+        transform[:3, 2] = transform_z_axis
+        transform = np.dot(translation, transform)
+
+        velocity_axis = trimesh.creation.cylinder(
+            radius=radius, height=height, transform=transform)
+        velocity_axis.visual.face_colors = color
+        axis_origin = trimesh.creation.uv_sphere(
+            radius=radius*5, count=[10, 10])
+        axis_origin.visual.face_colors = color
+
+        merge = trimesh.util.concatenate([axis_origin, velocity_axis])
+        args = rendering.convert_to_vertexlist(merge)
+        drawer = self.drone_batch.add_indexed(*args)
+        return drawer
 
     def _add_block(self, position, texture, immediate=True):
         """ Add a block with the given `texture` and `position` to the world.
@@ -191,6 +233,23 @@ class Map(object):
         func, args = self.queue.popleft()
         func(*args)
 
+    def _get_velocity_transform(self, velocity, position):
+        height = np.linalg.norm(velocity)
+        transform = np.eye(4)
+
+        # Translation
+        x, z, y = position
+        transform[:3, 3] = [x, y, z]
+
+        # Rescale
+        transform[2, 2] = height
+
+        # Rotate
+        rotation = np.eye(4)
+        rotation[:3, 2] = velocity / height
+
+        return np.dot(transform, rotation)
+
     def show_drone(self, position, rotation):
         # Get the transform matrix for drone 3D model
         # TODO: support to render the rotation pose of the drone
@@ -224,6 +283,28 @@ class Map(object):
         # Disable texture after using
         if self.drone_texture is not None:
             gl.glDisable(self.drone_texture.target)
+
+    def show_velocity(self, position, velocity, expected_velocity=None):
+        if not hasattr(self, 'drone_velocity_drawer'):
+            return
+
+        transform = self._get_velocity_transform(velocity, position)
+        gl.glPushMatrix()
+        gl.glMultMatrixf(rendering.matrix_to_gl(transform))
+
+        self.drone_velocity_drawer.draw(mode=self.drone_vertex_list_mode)
+        gl.glPopMatrix()
+
+        if expected_velocity is not None and \
+           hasattr(self, 'drone_expected_velocity_drawer'):
+            transform = self._get_velocity_transform(
+                expected_velocity, position)
+            gl.glPushMatrix()
+            gl.glMultMatrixf(rendering.matrix_to_gl(transform))
+
+            self.drone_expected_velocity_drawer.draw(
+                mode=self.drone_vertex_list_mode)
+            gl.glPopMatrix()
 
     def show_block(self, position, immediate=True):
         texture = self.whole_map[position]
@@ -302,7 +383,8 @@ class RenderWindow(pyglet.window.Window):
                  sky_rgba=(0.5, 0.69, 1.0, 1),
                  width=800, height=600,
                  caption='quadrotor',
-                 resizable=False):
+                 resizable=False,
+                 task='no_collision'):
         if drone_3d_model is None:
             this_dir = os.path.realpath(os.path.dirname(__file__))
             drone_3d_model = os.path.join(this_dir, 'quadcopter.stl')
@@ -310,15 +392,17 @@ class RenderWindow(pyglet.window.Window):
         super(RenderWindow, self).__init__(
             width=width, height=height, caption=caption, resizable=resizable)
 
+        self.task = task
         self.internal_map = Map(
             drone_3d_model,
             horizon_view_size=horizon_view_size,
-            init_drone_z=init_drone_z)
+            init_drone_z=init_drone_z,
+            task=task)
 
         # The label to display in the top-left of the canvas
         self.label = pyglet.text.Label(
             '', font_name='Arial', font_size=18, x=10, y=self.height - 10,
-            anchor_x='left', anchor_y='top', color=(0, 0, 0, 255))
+            anchor_x='left', anchor_y='top', color=(255, 0, 0, 255))
 
         # Current (x, y, z) position of the drone in the world,
         # specified with floats.
@@ -335,11 +419,17 @@ class RenderWindow(pyglet.window.Window):
 
         self.sector = None
 
-        self._gl_set_background(sky_rgba)
+        light_blue = Color('#00d4ff')
+        dark_blue = Color('#020024')
+        self.colors = [list(i.rgb) + [1.0] for i in
+                       list(light_blue.range_to(dark_blue, 700))]
+
+        self._gl_set_background(self.colors[0])
+        # self._gl_set_background(sky_rgba)
         self._gl_enable_color_material()
         self._gl_enable_blending()
         self._gl_enable_smooth_lines()
-        self._gl_enable_lighting(self.internal_map.drone_scene)
+        # self._gl_enable_lighting(self.internal_map.drone_scene)
         self.set_visible()
 
     def update(self, dt):
@@ -351,9 +441,19 @@ class RenderWindow(pyglet.window.Window):
                 self.internal_map.process_entire_queue()
             self.sector = sector
 
-    def view(self, drone_state, dt):
+    def view(self, drone_state, dt, expected_velocity=None):
         self.position = (drone_state['x'], drone_state['y'], drone_state['z'])
         rot = (drone_state['yaw'], drone_state['pitch'], drone_state['roll'])
+
+        if self.task == 'velocity_control':
+            assert expected_velocity is not None
+            ev_x, ev_y, ev_z = expected_velocity
+            expected_velocity = np.array([ev_x, ev_z, ev_y])
+            velocity = np.array([drone_state['g_v_x'], drone_state['g_v_z'],
+                                 drone_state['g_v_y']])
+
+        cid = abs(int(drone_state['z'] / 0.1)) % len(self.colors)
+        self._gl_set_background(self.colors[cid])
 
         # Actually, `dt` does not work now, as we update the state in env.py
         self.update(dt)
@@ -363,11 +463,18 @@ class RenderWindow(pyglet.window.Window):
         gl.glColor3d(1, 1, 1)
         self.internal_map.batch.draw()
         self.internal_map.show_drone(self.position, rot)
+
+        if self.task == 'velocity_control':
+            self.internal_map.show_velocity(
+                self.position, velocity, expected_velocity)
+
         self._setup_2d()
         self._draw_label()
 
         self.dispatch_events()
         self.flip()
+
+        time.sleep(dt)
 
     def _setup_2d(self):
         w, h = self.get_size()
