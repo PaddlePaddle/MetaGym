@@ -8,7 +8,7 @@
 
 **Python dependencies**:
 * Numpy
-* Pyglet v1.4 (or less than v1.4)
+* Pyglet
 * Trimesh (for loading stl model file)
 
 ## Install
@@ -26,5 +26,9 @@ Note that this simulator has been tested in Python 2.7 and Python 3.6 environmen
 ## Test Visualization
 
 ```sh
+# For 'no_collision' task
 python -m rlschool.quadrotor.env
+
+# For 'velocity_control' task
+python -m rlschool.quadrotor.env velocity_control
 ```

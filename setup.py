@@ -109,6 +109,7 @@ setup(
         'configparser>=3.7.4',
         'trimesh>=3.2.39',
         'networkx>=2.2',
+        'colour>=0.1.5',
         'scipy>=0.12.0'
     ],
     ext_modules=[CMakeExtension(

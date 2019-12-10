@@ -20,47 +20,49 @@ from math import floor, ceil
 import quadrotorsim
 
 NO_DISPLAY = False
-from rlschool.quadrotor.render import RenderWindow
 try:
     from rlschool.quadrotor.render import RenderWindow
 except Exception as e:
     NO_DISPLAY = True
 
 
-m = 0.50
-U_T = 0.025
-I_1 = 1.35e-2
-I_2 = 1.35e-2
-I_3 = 2.40e-2
-L = 0.25
-C = 2.50
-
-U_to_T = np.asarray(
-    [[U_T / m, U_T / m, U_T / m, U_T / m],
-     [-L * U_T / I_1, -L * U_T / I_1, L * U_T / I_1, L * U_T / I_1],
-     [-L * U_T / I_2, L * U_T / I_2, L * U_T / I_2, -L * U_T / I_2],
-     [C * U_T, -C * U_T, C * U_T, -C * U_T]], 'float32')
-T_to_U = np.linalg.inv(U_to_T)
-
-
 class Quadrotor(object):
+    """
+    Quadrotor environment.
+
+    Args:
+        dt (float): duration of single step (in seconds).
+        nt (int): number of steps of single episode if no collision
+            occurs.
+        seed (int): seed to generate target velocity trajectory.
+        task (str): name of the task setting. Currently, support
+            `no_collision` and `velocity_control`.
+        map_file (None|str): path to txt map config file, default
+            map is a 100x100 flatten floor.
+        simulator_conf (None|str): path to simulator config xml file.
+    """
     def __init__(self,
                  dt=0.01,
                  nt=1000,
                  seed=0,
                  task='no_collision',
                  map_file=None,
+                 simulator_conf=None,
                  **kwargs):
         assert task in ['velocity_control', 'no_collision'], \
             'Invalid task setting'
-        sim_conf = os.path.join(os.path.dirname(__file__),
-                                'quadrotorsim', 'config.xml')
+        if simulator_conf is None:
+            simulator_conf = os.path.join(os.path.dirname(__file__),
+                                          'quadrotorsim', 'config.xml')
+        assert os.path.exists(simulator_conf), \
+            'Simulator config xml does not exist'
+
         self.dt = dt
         self.nt = nt
         self.ct = 0
         self.task = task
         self.simulator = quadrotorsim.Simulator()
-        self.simulator.get_config(sim_conf)
+        self.simulator.get_config(simulator_conf)
         self.state = {}
         self.viewer = None
         self.x_offset = self.y_offset = self.z_offset = 0
@@ -91,8 +93,7 @@ class Quadrotor(object):
     def step(self, action):
         self.ct += 1
         cmd = np.asarray(action, np.float32)
-        act = np.matmul(T_to_U, cmd)
-        self.simulator.step(act.tolist(), self.dt)
+        self.simulator.step(cmd.tolist(), self.dt)
         sensor_dict = self.simulator.get_sensor()
         state_dict = self.simulator.get_state()
 
@@ -138,16 +139,25 @@ class Quadrotor(object):
         del self.simulator
 
     def _get_reward(self, collision=False, velocity_target=(0.0, 0.0, 0.0)):
+        """
+        Reward function setting for different tasks.
+
+        The default penalty is the cost of energy. In addition,
+        for `no_collision` task, a strong penalty is added for
+        collision, otherwise get +1 reward; for `velocity_control`
+        task, an extra penalty for velocity difference is added.
+        """
+        reward = - self.dt * self.state['power']
         if self.task == 'no_collision':
             if collision:
-                return -10
+                reward -= 10.0
             else:
-                return 1.
-
+                reward += 1.
         elif self.task == 'velocity_control':
             diff = self._get_velocity_diff(velocity_target)
-            reward = -diff
-            return reward
+            reward -= diff
+
+        return reward
 
     def _check_collision(self, old_pos, new_pos):
         # TODO: update to consider the body size of the quadrotor
@@ -223,3 +233,4 @@ if __name__ == '__main__':
         print('state:', state)
         print('reward:', reward)
         step += 1
+    env.close()

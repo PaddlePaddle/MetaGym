@@ -1,3 +1,17 @@
+#   Copyright (c) 2019 PaddlePaddle Authors. All Rights Reserved.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 import math
 import time
@@ -17,6 +31,23 @@ from rlschool.quadrotor.utils import sectorize, cube_vertices, geometry_hash, \
 
 
 class Map(object):
+    """
+    Map is an object to describe the virtual world.
+
+    For `no_collision` task, the `Map` contains a floor and other optional
+    obstacle walls. Drone is rendered as 3D model with flighting pose.
+
+    For `velocity_control` task, the `Map` ONLY contains a 3D drone model.
+    Moreover, the velocity vector of the drone is shown with an orange arrow;
+    the expected velocity vector of the drone is shown with a yellow arrow.
+
+    Args:
+        drone_3d_model (str): path to 3D STL model of the drone.
+        horizon_view_size (int): number of blocks to show in horizon view.
+        init_drone_z (float): the initial height of the drone.
+        task (str): name of the task setting. Currently, support
+            `no_collision` and `velocity_control`.
+    """
     def __init__(self, drone_3d_model, horizon_view_size=8, init_drone_z=5,
                  task='no_collision'):
         self.task = task
@@ -251,8 +282,10 @@ class Map(object):
         return np.dot(transform, rotation)
 
     def show_drone(self, position, rotation):
+        """
+        Show the drone 3D model with corresponding translation and rotation.
+        """
         # Get the transform matrix for drone 3D model
-        # TODO: support to render the rotation pose of the drone
         x, z, y = position
         transform = np.eye(4)
         transform[:3, 3] = [x, y, z]
@@ -285,6 +318,9 @@ class Map(object):
             gl.glDisable(self.drone_texture.target)
 
     def show_velocity(self, position, velocity, expected_velocity=None):
+        """
+        Show velocity vector as a thin cylinder arrow.
+        """
         if not hasattr(self, 'drone_velocity_drawer'):
             return
 
@@ -332,8 +368,9 @@ class Map(object):
                 self.hide_block(position, immediate=False)
 
     def change_sectors(self, before, after):
-        # Find the changed sectors and trigger show or hide operations
-
+        """
+        Find the changed sectors and trigger show or hide operations
+        """
         # TODO: adjust the sector set when add extra view perspective
         # relative to the drone.
         # FIXME: when the drone flies high, the green floor immediately
@@ -372,6 +409,32 @@ class Map(object):
 
 
 class RenderWindow(pyglet.window.Window):
+    """
+    Pyglet window to render the `Map`.
+
+    Args:
+        drone_3d_model (str): path to 3D STL model of the drone.
+        horizon_view_size (int): number of blocks to show in horizon view.
+        init_drone_z (float): the initial height of the drone.
+        perspective_fovy (float): the field of view angle in degrees,
+            in the y direction.
+        perspective_aspect (float): the ratio of x (width) to y (height).
+        perspective_zNear (float): the distance from the viewer to the
+            near clipping plane.
+        perspective_zFar (float): the distance from the viewer to the
+            far clipping plane.
+        perspective_y_offset (float): the distance from the viewer to
+            the drone model along the y direction.
+        perspective_z_offset (float): the distance from the viewer to
+            the drone model along the z direction.
+        sky_light_blue (str): hex color to set the light blue color.
+        sky_dark_blue (str): hex color to set the dark blue color.
+        width (int): width of the pyglet viewer window.
+        height (int): height of the pyglet viewer window.
+        caption (str): title of the pyglet viewer window.
+        task (str): name of the task setting. Currently, support
+            `no_collision` and `velocity_control`.
+    """
     def __init__(self,
                  drone_3d_model=None,
                  horizon_view_size=8,
@@ -380,17 +443,20 @@ class RenderWindow(pyglet.window.Window):
                  perspective_aspect=4/3.,  # i.e. 800/600
                  perspective_zNear=0.1,
                  perspective_zFar=60.,
-                 sky_rgba=(0.5, 0.69, 1.0, 1),
-                 width=800, height=600,
+                 perspective_y_offset=3,
+                 perspective_z_offset=3,
+                 sky_light_blue='#00d4ff',
+                 sky_dark_blue='#020024',
+                 width=800,
+                 height=600,
                  caption='quadrotor',
-                 resizable=False,
                  task='no_collision'):
         if drone_3d_model is None:
             this_dir = os.path.realpath(os.path.dirname(__file__))
             drone_3d_model = os.path.join(this_dir, 'quadcopter.stl')
 
         super(RenderWindow, self).__init__(
-            width=width, height=height, caption=caption, resizable=resizable)
+            width=width, height=height, caption=caption, resizable=False)
 
         self.task = task
         self.internal_map = Map(
@@ -416,16 +482,17 @@ class RenderWindow(pyglet.window.Window):
         # Config perspective
         self.perspective = [perspective_fovy, perspective_aspect,
                             perspective_zNear, perspective_zFar]
+        self.perspective_over_drone = [
+            perspective_y_offset, perspective_z_offset]
 
         self.sector = None
 
-        light_blue = Color('#00d4ff')
-        dark_blue = Color('#020024')
+        light_blue = Color(sky_light_blue)
+        dark_blue = Color(sky_dark_blue)
         self.colors = [list(i.rgb) + [1.0] for i in
                        list(light_blue.range_to(dark_blue, 700))]
 
         self._gl_set_background(self.colors[0])
-        # self._gl_set_background(sky_rgba)
         self._gl_enable_color_material()
         self._gl_enable_blending()
         self._gl_enable_smooth_lines()
@@ -513,13 +580,9 @@ class RenderWindow(pyglet.window.Window):
                      0, math.sin(math.radians(x)))
         # NOTE: for GL render, its x-z plane is the ground plane,
         # so we unpack the position using `(x, z, y)` instead of `(x, y, z)`
-
-        # TODO: add these extra perspective tune to keyword args of init func
         x, z, y = self.position
-        # z += 1.3
-        # y += 0.8
-        y += 3
-        z += 3
+        y += self.perspective_over_drone[0]
+        z += self.perspective_over_drone[1]
         gl.glTranslatef(-x, -y, -z)
 
     def _draw_label(self):

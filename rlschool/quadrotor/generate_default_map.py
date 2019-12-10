@@ -1,3 +1,6 @@
+"""
+Helper script to generate an example txt map config.
+"""
 import numpy as np
 
 
