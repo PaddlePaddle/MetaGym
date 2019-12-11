@@ -1,0 +1,77 @@
+<simulator>
+
+    <quality> 1.00 </quality>
+
+    <inertia>
+        <xx> 1.35e-2 </xx>
+        <xy> 0.0 </xy>
+        <xz> 0.0 </xz>
+        <yy> 1.35e-2 </yy>
+        <yz> 0.0 </yz>
+        <zz> 2.4e-2 </zz>
+    </inertia>
+
+    <drag>
+        <m_xx> 0.074 </m_xx>
+        <m_yy> 0.074 </m_yy>
+        <m_zz> 0.0506 </m_zz>
+        <f_xx> 0.12 </f_xx>
+        <f_yy> 0.12 </f_yy>
+        <f_zz> 0.10 </f_zz>
+    </drag>
+
+    <gravity_center>
+        <x> 0.0 </x>
+        <y> 0.0 </y>
+        <z> 0.0 </z>
+    </gravity_center>
+
+    <thrust>
+        <CT>
+            <0> 1.538e-5 </0>
+            <1> -2.5e-4 </1>
+            <2> 0.0 </2>
+        </CT>
+        <Mm> 0.010 </Mm>
+        <Jm> 2.573e-4 </Jm>
+        <RA> 0.2010 </RA>
+        <phi> 0.017242179827506 </phi>
+    </thrust>
+
+    <precision> 1.0e-3 </precision>
+
+    <propeller>
+        <1>
+            <x> 0.18 </x>
+            <y> 0.18 </y>
+            <z> 0.0 </z>
+        </1>
+        <2>
+            <x> -0.18 </x>
+            <y> 0.18 </y>
+            <z> 0.0 </z>
+        </2>
+        <3>
+            <x> -0.18 </x>
+            <y> -0.18 </y>
+            <z> 0.0 </z>
+        </3>
+        <4>
+            <x> 0.18 </x>
+            <y> -0.18 </y>
+            <z> 0.0 </z>
+        </4>
+    </propeller>
+
+    <fail>
+        <velocity> 100.0 </velocity>
+        <w> 1000.0 </w>
+        <range> 1000.0 </range>
+    </fail>
+
+    <electric>
+        <min_voltage> 0.10 </min_voltage>
+        <max_voltage> 15.0 </max_voltage>
+    </electric>
+
+</simulator>
