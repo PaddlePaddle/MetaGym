@@ -21,3 +21,5 @@ def make_env(env_id, **kwargs):
         return LiftSim(**kwargs)
     elif env_id == 'Quadrotor':
         return Quadrotor(**kwargs)
+    else:
+        raise ValueError('Unknown environment ID.')
