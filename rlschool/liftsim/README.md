@@ -34,9 +34,9 @@ pip install .
 
 ```python
 # 以下是一个简单可运行的电梯模拟器的例子
-from rlschool import LiftSim
+from rlschool import make_env
 
-env = LiftSim()
+env = make_env('LiftSim')
 observation = env.reset()
 action = [2, 0, 4, 0, 7, 0, 10, 0]
 for i in range(100):

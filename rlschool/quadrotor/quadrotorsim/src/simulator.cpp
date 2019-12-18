@@ -18,6 +18,7 @@
 #include "common_tools.h"
 #include <exception>
 #include <iostream>
+#include <map>
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -213,11 +214,9 @@ py::dict Simulator::py_get_sensor() {
 
     using namespace pybind11::literals;
     return py::dict(
-        "imu_x"_a = output.imu_acc(0), "imu_y"_a = output.imu_acc(1),
-        "imu_z"_a = output.imu_acc(2), "gyro_x"_a = output.imu_gyro(0),
-        "gyro_y"_a = output.imu_gyro(1), "gyro_z"_a = output.imu_gyro(2),
-        "vio_x"_a = output.vio(0), "vio_y"_a = output.vio(1),
-        "vio_z"_a = output.vio(2));
+        "acc_x"_a = output.imu_acc(0), "acc_y"_a = output.imu_acc(1),
+        "acc_z"_a = output.imu_acc(2), "gyro_x"_a = output.imu_gyro(0),
+        "gyro_y"_a = output.imu_gyro(1), "gyro_z"_a = output.imu_gyro(2));
 }
 
 int Simulator::run_time(ActionU &act, double dt) {
