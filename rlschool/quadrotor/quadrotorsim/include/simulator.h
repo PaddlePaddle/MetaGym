@@ -80,7 +80,7 @@ class Simulator {
 
     // functions for config
     int get_config(const char *filename);
-    void py_get_config(py::str filename);
+    py::dict py_get_config(py::str filename);
 
     // functions for reset
     void reset();

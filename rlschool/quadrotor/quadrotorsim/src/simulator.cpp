@@ -101,9 +101,14 @@ int Simulator::get_config(const char *filename) {
     return 0;
 }
 
-void Simulator::py_get_config(py::str filename) {
+py::dict Simulator::py_get_config(py::str filename) {
     std::string file = py::cast<std::string>(filename);
     get_config(file.c_str());
+
+    using namespace pybind11::literals;
+    return py::dict("action_space_low"_a = _min_voltage,
+                    "action_space_high"_a = _max_voltage,
+                    "range"_a = _fail_max_range);
 }
 
 void Simulator::reset() {

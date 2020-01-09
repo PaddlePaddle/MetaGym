@@ -15,6 +15,7 @@
 import os
 import numpy as np
 from math import floor, ceil
+from collections import namedtuple
 
 # Extension module
 import quadrotorsim
@@ -48,6 +49,7 @@ class Quadrotor(object):
                  task='no_collision',
                  map_file=None,
                  simulator_conf=None,
+                 obs_as_dict=False,
                  **kwargs):
         assert task in ['velocity_control', 'no_collision'], \
             'Invalid task setting'
@@ -61,8 +63,39 @@ class Quadrotor(object):
         self.nt = nt
         self.ct = 0
         self.task = task
+        self.obs_as_dict = obs_as_dict
         self.simulator = quadrotorsim.Simulator()
-        self.simulator.get_config(simulator_conf)
+
+        cfg_dict = self.simulator.get_config(simulator_conf)
+        self.action_space = namedtuple(
+            'action_space', ['shape', 'high', 'low', 'sample'])
+        self.action_space.shape = [4]
+        self.action_space.high = [cfg_dict['action_space_high']] * 4
+        self.action_space.low = [cfg_dict['action_space_low']] * 4
+        self.action_space.sample = Quadrotor.random_action(
+            cfg_dict['action_space_low'], cfg_dict['action_space_high'], 4)
+
+        # self.position_keys = ['x', 'y', 'z']
+        self.position_keys = ['z']
+        self.global_velocity_keys = ['g_v_x', 'g_v_y', 'g_v_z']
+        self.body_velocity_keys = ['b_v_x', 'b_v_y', 'b_v_z']
+        self.angular_velocity_keys = ['w_x', 'w_y', 'w_z']
+        self.flight_pose_keys = ['pitch', 'roll', 'yaw']
+        self.accelerator_keys = ['acc_x', 'acc_y', 'acc_z']
+        self.gyroscope_keys = ['gyro_x', 'gyro_y', 'gyro_z']
+        self.extra_info_keys = ['power']
+        self.task_velocity_control_keys = \
+            ['next_target_g_v_x', 'next_target_g_v_y', 'next_target_g_v_z']
+
+        obs_dim = len(self.position_keys) + len(self.global_velocity_keys) + \
+            len(self.body_velocity_keys) + len(self.angular_velocity_keys) + \
+            len(self.flight_pose_keys) + len(self.accelerator_keys) + \
+            len(self.gyroscope_keys) + len(self.extra_info_keys)
+        if self.task == 'velocity_control':
+            obs_dim += len(self.task_velocity_control_keys)
+        self.observation_space = namedtuple('observation_space', ['shape'])
+        self.observation_space.shape = [obs_dim]
+
         self.state = {}
         self.viewer = None
         self.x_offset = self.y_offset = self.z_offset = 0
@@ -88,7 +121,10 @@ class Quadrotor(object):
         state_dict = self.simulator.get_state()
         self._update_state(sensor_dict, state_dict)
 
-        return self.state
+        if self.obs_as_dict:
+            return self.state
+        else:
+            return self._convert_state_to_ndarray()
 
     def step(self, action):
         self.ct += 1
@@ -116,7 +152,10 @@ class Quadrotor(object):
             reset = True
             self.ct = 0
 
-        return self.state, reward, reset
+        if self.obs_as_dict:
+            return self.state, reward, reset
+        else:
+            return self._convert_state_to_ndarray(), reward, reset
 
     def render(self):
         if self.viewer is None:
@@ -138,6 +177,18 @@ class Quadrotor(object):
     def close(self):
         del self.simulator
 
+    def _convert_state_to_ndarray(self):
+        keys_order = self.position_keys + self.global_velocity_keys + \
+            self.body_velocity_keys + self.angular_velocity_keys + \
+            self.flight_pose_keys + self.accelerator_keys + \
+            self.gyroscope_keys + self.extra_info_keys
+
+        if self.task == 'velocity_control':
+            keys_order.extend(self.task_velocity_control_keys)
+
+        ndarray = np.array([self.state[k] for k in keys_order])
+        return ndarray
+
     def _get_reward(self, collision=False, velocity_target=(0.0, 0.0, 0.0)):
         """
         Reward function setting for different tasks.
@@ -155,7 +206,7 @@ class Quadrotor(object):
                 reward += 1.
         elif self.task == 'velocity_control':
             diff = self._get_velocity_diff(velocity_target)
-            reward -= diff
+            reward -= diff * 0.001
 
         return reward
 
@@ -212,6 +263,13 @@ class Quadrotor(object):
 
         return np.array(map_lists)
 
+    @staticmethod
+    def random_action(low, high, dim):
+        def sample():
+            act = np.random.random_sample((dim,))
+            return (high - low) * act + low
+        return sample
+
 
 if __name__ == '__main__':
     import sys
@@ -220,6 +278,7 @@ if __name__ == '__main__':
     else:
         task = sys.argv[1]
     env = Quadrotor(task=task, nt=1000)
+    import ipdb; ipdb.set_trace()
     env.reset()
     env.render()
     reset = False
