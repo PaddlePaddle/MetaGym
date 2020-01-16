@@ -82,7 +82,7 @@ with io.open('README.md', 'r', encoding='utf-8') as fh:
 
 setup(
     name='rlschool',
-    version='0.1.1',
+    version='0.2.0',
     author='parl_dev',
     author_email='',
     description=('RLSchool: Excellent environments for reinforcement Learning benchmarking'),

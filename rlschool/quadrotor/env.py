@@ -41,6 +41,7 @@ class Quadrotor(object):
         map_file (None|str): path to txt map config file, default
             map is a 100x100 flatten floor.
         simulator_conf (None|str): path to simulator config xml file.
+        obs_as_dict (bool): whether to return observation as dict.
     """
     def __init__(self,
                  dt=0.01,
