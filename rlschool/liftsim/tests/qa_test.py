@@ -183,9 +183,6 @@ def state_check(state, next_state, action):
         print('\nthis: ', next_ele)
         print('\n========================== please check\n\n')
         fail_flag = True
-        # print('==========================next state')
-        # print_next_state(next_state)
-        # exit(1)
 
 def print_state(state, action):
     assert isinstance(state, MansionState)
