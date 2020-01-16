@@ -29,7 +29,9 @@ class TestQuadrotorEnv(unittest.TestCase):
             os.path.dirname(__file__), 'conf', 'invalid_config.xml')
 
     def test_load_valid_conf(self):
-        env = make_env('Quadrotor', task='no_collision',
+        env = make_env('Quadrotor',
+                       task='no_collision',
+                       obs_as_dict=True,
                        simulator_conf=self.valid_config)
         state = env.reset()
         self.assertTrue('x' in state)
@@ -43,7 +45,9 @@ class TestQuadrotorEnv(unittest.TestCase):
             self.assertTrue('quality' in str(e))
 
     def test_no_collision_task(self):
-        env = make_env('Quadrotor', task='no_collision',
+        env = make_env('Quadrotor',
+                       task='no_collision',
+                       obs_as_dict=True,
                        simulator_conf=self.valid_config)
         state = env.reset()
         init_x, init_y = state['x'], state['y']
@@ -55,7 +59,9 @@ class TestQuadrotorEnv(unittest.TestCase):
             self.assertEqual(state['y'], init_y, msg % 'y')
 
     def test_velocity_control_task(self):
-        env = make_env('Quadrotor', task='velocity_control',
+        env = make_env('Quadrotor',
+                       task='velocity_control',
+                       obs_as_dict=True,
                        simulator_conf=self.valid_config)
         state = env.reset()
         reset = False
