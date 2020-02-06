@@ -13,76 +13,156 @@
 # limitations under the License.
 
 import os
-import re
 import io
 import sys
-import platform
-import subprocess
+import setuptools
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
-from distutils.version import LooseVersion
+
+__version__ = '0.2.0'
 
 
-class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir=''):
-        Extension.__init__(self, name, sources=[])
-        self.sourcedir = os.path.abspath(sourcedir)
+class get_pybind_include(object):
+    """Helper class to determine the pybind11 include path
+
+    The purpose of this class is to postpone importing pybind11
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked. """
+
+    def __init__(self, user=False):
+        self.user = user
+
+    def __str__(self):
+        import pybind11
+        return pybind11.get_include(self.user)
 
 
-class CMakeBuild(build_ext):
-    def run(self):
+class find_system_cpp_include(object):
+    """Helper class to find C++ dependencies include path from system.
+
+    For RLSchool, this class helps to find include path for Boost and Eigen3.
+    """
+
+    def __init__(self, name='boost', hint=None, with_name=False):
+        self.name = name
+        self.include_path = None
+
+        search_dirs = [] if hint is None else hint
+        search_dirs.extend([
+            "/usr/local/include",
+            "/usr/local/homebrew/include",
+            "/opt/local/var/macports/software",
+            "/opt/local/include",
+            "/usr/include",
+            "/usr/include/local"
+        ])
+
+        for d in search_dirs:
+            path = os.path.join(d, name)
+            if os.path.exists(path):
+                if with_name:
+                    self.include_path = path
+                else:
+                    self.include_path = d
+                break
+
+        if self.include_path is None:
+            raise RuntimeError('Cannot find include_path for %s' % self.name)
+
+    def __str__(self):
+        return self.include_path
+
+
+# As of Python 3.6, CCompiler has a `has_flag` method.
+# cf http://bugs.python.org/issue26689
+def has_flag(compiler, flagname):
+    """Return a boolean indicating whether a flag name is supported on
+    the specified compiler.
+    """
+    import tempfile
+    with tempfile.NamedTemporaryFile('w', suffix='.cpp') as f:
+        f.write('int main (int argc, char **argv) { return 0; }')
         try:
-            out = subprocess.check_output(['cmake', '--version'])
-        except OSError:
-            raise RuntimeError(
-                'CMake must be installed to build the following '
-                'extensions: ' + ', '.join(e.name for e in self.extensions))
+            compiler.compile([f.name], extra_postargs=[flagname])
+        except setuptools.distutils.errors.CompileError:
+            return False
+    return True
 
-        if platform.system() == 'Windows':
-            cmake_version = LooseVersion(
-                re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-            if cmake_version < '3.1.0':
-                raise RuntimeError('CMake >= 3.1.0 is required on Windows')
 
+def cpp_flag(compiler):
+    """Return the -std=c++[11/14/17] compiler flag.
+
+    The newer version is prefered over c++11 (when it is available).
+    """
+    flags = ['-std=c++11', '-std=c++14', '-std=c++17']
+
+    for flag in flags:
+        if has_flag(compiler, flag):
+            return flag
+
+    raise RuntimeError('Unsupported compiler -- at least C++11 support '
+                       'is needed!')
+
+
+class BuildExt(build_ext):
+    """A custom build extension for adding compiler-specific options."""
+    c_opts = {
+        'msvc': ['/EHsc'],
+        'unix': [],
+    }
+    l_opts = {
+        'msvc': [],
+        'unix': [],
+    }
+
+    if sys.platform == 'darwin':
+        darwin_opts = ['-stdlib=libc++', '-mmacosx-version-min=10.7']
+        c_opts['unix'] += darwin_opts
+        l_opts['unix'] += darwin_opts
+
+    def build_extensions(self):
+        ct = self.compiler.compiler_type
+        opts = self.c_opts.get(ct, [])
+        link_opts = self.l_opts.get(ct, [])
+        distribution_ver = self.distribution.get_version()
+        if ct == 'unix':
+            opts.append('-DVERSION_INFO="%s"' % distribution_ver)
+            opts.append(cpp_flag(self.compiler))
+            if has_flag(self.compiler, '-fvisibility=hidden'):
+                opts.append('-fvisibility=hidden')
+        elif ct == 'msvc':
+            opts.append('/DVERSION_INFO=\\"%s\\"' % distribution_ver)
         for ext in self.extensions:
-            self.build_extension(ext)
-
-    def build_extension(self, ext):
-        extdir = os.path.abspath(
-            os.path.dirname(self.get_ext_fullpath(ext.name)))
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
-                      '-DPYTHON_EXECUTABLE=' + sys.executable]
-
-        cfg = 'Debug' if self.debug else 'Release'
-        build_args = ['--config', cfg]
-
-        if platform.system() == 'Windows':
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(
-                cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
-        else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
-
-        env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
-            env.get('CXXFLAGS', ''), self.distribution.get_version())
-        if not os.path.exists(self.build_temp):
-            os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args,
-                              cwd=self.build_temp, env=env)
-        subprocess.check_call(['cmake', '--build', '.'] + build_args,
-                              cwd=self.build_temp)
+            ext.extra_compile_args = opts
+            ext.extra_link_args = link_opts
+        build_ext.build_extensions(self)
 
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
+ext_modules = [
+    Extension(
+        'quadrotorsim',
+        ['rlschool/quadrotor/quadrotorsim/src/simulator.cpp'],
+        include_dirs=[
+            # Path to Boost headers
+            find_system_cpp_include(name='boost', with_name=False),
+            # Path to Eigen3 headers
+            find_system_cpp_include(name='eigen3', with_name=True),
+            # Path to pybind11 headers
+            get_pybind_include(),
+            get_pybind_include(user=True),
+            # Path to quadrotorsim headers
+            'rlschool/quadrotor/quadrotorsim/include'
+        ],
+        language='c++'
+    )
+]
+
 setup(
     name='rlschool',
-    version='0.2.0',
+    version=__version__,
     author='parl_dev',
     author_email='',
     description=('RLSchool: Excellent environments for reinforcement Learning benchmarking'),
@@ -103,6 +183,7 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
+        'pybind11>=2.4',
         'pyglet>=1.2.0,<=1.4.0',
         'six>=1.12.0',
         'numpy>=1.16.4',
@@ -112,8 +193,8 @@ setup(
         'colour>=0.1.5',
         'scipy>=0.12.0'
     ],
-    ext_modules=[CMakeExtension(
-        'quadrotorsim', './rlschool/quadrotor/quadrotorsim')],
-    cmdclass=dict(build_ext=CMakeBuild),
+    setup_requires=['pybind11>=2.4'],
+    ext_modules=ext_modules,
+    cmdclass=dict(build_ext=BuildExt),
     zip_safe=False,
 )
