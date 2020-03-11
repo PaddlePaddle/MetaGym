@@ -15,11 +15,22 @@
 import os
 import io
 import sys
+import traceback
 import setuptools
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
 __version__ = '0.2.0'
+
+# Force pip to install pybind11 before building extension
+setup_requires = ['pybind11>=2.4']
+try:
+    os.system('{} -m pip install {}'.format(
+        sys.executable, ' '.join(setup_requires)))
+    setup_requires = []
+except Exception:
+    # Going to use easy_install for
+    traceback.print_exc()
 
 
 class get_pybind_include(object):
@@ -183,7 +194,6 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
-        'pybind11>=2.4',
         'pyglet>=1.2.0,<=1.4.0',
         'six>=1.12.0',
         'numpy>=1.16.4',
@@ -192,8 +202,8 @@ setup(
         'networkx>=2.2',
         'colour>=0.1.5',
         'scipy>=0.12.0'
-    ],
-    setup_requires=['pybind11>=2.4'],
+    ] + setup_requires,
+    setup_requires=setup_requires,
     ext_modules=ext_modules,
     cmdclass=dict(build_ext=BuildExt),
     zip_safe=False,
