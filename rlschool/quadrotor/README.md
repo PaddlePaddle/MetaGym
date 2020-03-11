@@ -12,13 +12,6 @@ For Ubuntu, you can install them using following commands:
 sudo apt-get install libeigen3-dev libboost-all-dev
 ```
 
-Or, for Anaconda users, you can install them using:
-
-```sh
-conda install -c anaconda boost
-conda install -c omnia eigen3
-```
-
 **Python dependencies**:
 * Numpy
 * Pyglet
@@ -29,7 +22,7 @@ conda install -c omnia eigen3
 For local installation, execute following commands:
 
 ```sh
-git clone --recursive https://github.com/PaddlePaddle/RLSchool
+git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
 pip install .
 ```

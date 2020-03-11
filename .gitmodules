@@ -1,3 +1,0 @@
-[submodule "rlschool/quadrotor/quadrotorsim/pybind11"]
-	path = rlschool/quadrotor/quadrotorsim/pybind11
-	url = https://github.com/pybind/pybind11.git
