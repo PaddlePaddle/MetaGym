@@ -16,6 +16,8 @@ import pyglet
 import os
 import random
 
+from PIL import Image
+import glob
 
 pyglet.resource.path = [(os.path.dirname(__file__)+'/resources')]
 pyglet.resource.reindex()
@@ -32,6 +34,14 @@ class Render(pyglet.window.Window):
         super(Render, self).__init__(width=self.screen_x, height=self.screen_y)
         self.create_window()
         
+        self.frame = []
+        self.image_count = 0
+        self.gif_count = 0
+        if not os.path.exists('./image_buffer'):
+            os.makedirs('./image_buffer')
+
+        if not os.path.exists('./animation_buffer'):
+            os.makedirs('./animation_buffer')
 
     def create_window(self):
         self.set_size(self.screen_x, self.screen_y)
@@ -166,4 +176,21 @@ class Render(pyglet.window.Window):
         for i in range(self.elevator_num):
             self.elevator_batch[i].draw()
 
+        # save the current window image
+        pyglet.image.get_buffer_manager().get_color_buffer().save('./image_buffer/image{}.png'.format(str(self.image_count)))
+        image = glob.glob("./image_buffer/image{}.png".format(str(self.image_count)))
+        new_frame = Image.open(image[0])
+        self.frame.append(new_frame)
+        self.image_count += 1
+
+        # print the window
         self.flip()
+
+        if self.image_count == 1000:
+            # combine images in self.frame to gif and save
+            self.frame[0].save('./animation_buffer/animation{}.gif'.format(str(self.gif_count)), 
+                               format='GIF', append_images=self.frame[1:], 
+                               save_all=True, duration=10, loop=0)
+            self.frame = []
+            self.image_count = 0
+            self.gif_count += 1
