@@ -20,7 +20,7 @@ import setuptools
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 # Force pip to install pybind11 before building extension
 setup_requires = ['pybind11>=2.4']
