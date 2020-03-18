@@ -15,22 +15,12 @@
 import os
 import io
 import sys
-import traceback
 import setuptools
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
+from setuptools.command.install import install
 
 __version__ = '0.2.0'
-
-# Force pip to install pybind11 before building extension
-setup_requires = ['pybind11>=2.4']
-try:
-    os.system('{} -m pip install {}'.format(
-        sys.executable, ' '.join(setup_requires)))
-    setup_requires = []
-except Exception:
-    # Going to use easy_install for
-    traceback.print_exc()
 
 
 class get_pybind_include(object):
@@ -115,6 +105,40 @@ def cpp_flag(compiler):
                        'is needed!')
 
 
+
+with io.open('README.md', 'r', encoding='utf-8') as fh:
+    long_description = fh.read()
+
+ext_modules, cpp_deps_errors = [], None
+try:
+    ext_modules = [
+        Extension(
+            'quadrotorsim',
+            ['rlschool/quadrotor/quadrotorsim/src/simulator.cpp'],
+            include_dirs=[
+                # Path to Boost headers
+                find_system_cpp_include(name='boost', with_name=False),
+                # Path to Eigen3 headers
+                find_system_cpp_include(name='eigen3', with_name=True),
+                # Path to pybind11 headers
+                get_pybind_include(),
+                get_pybind_include(user=True),
+                # Path to quadrotorsim headers
+                'rlschool/quadrotor/quadrotorsim/include'
+            ],
+            language='c++'
+        )
+    ]
+except RuntimeError as e:
+    cpp_deps_errors = str(e)
+
+# Force pip to install pybind11 before building extension
+if len(ext_modules) > 0:
+    setup_requires = ['pybind11>=2.4']
+    os.system('{} -m pip install {}'.format(
+        sys.executable, ' '.join(setup_requires)))
+
+
 class BuildExt(build_ext):
     """A custom build extension for adding compiler-specific options."""
     c_opts = {
@@ -149,27 +173,14 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 
-with io.open('README.md', 'r', encoding='utf-8') as fh:
-    long_description = fh.read()
+class PostInstall(install):
+    def run(self):
+        install.run(self)
+        if cpp_deps_errors is not None:
+            # Only show this with `-v' arg
+            print('[WARNING] {}'.format(cpp_deps_errors))
+            print('Failed to install environments with cpp extensions.')
 
-ext_modules = [
-    Extension(
-        'quadrotorsim',
-        ['rlschool/quadrotor/quadrotorsim/src/simulator.cpp'],
-        include_dirs=[
-            # Path to Boost headers
-            find_system_cpp_include(name='boost', with_name=False),
-            # Path to Eigen3 headers
-            find_system_cpp_include(name='eigen3', with_name=True),
-            # Path to pybind11 headers
-            get_pybind_include(),
-            get_pybind_include(user=True),
-            # Path to quadrotorsim headers
-            'rlschool/quadrotor/quadrotorsim/include'
-        ],
-        language='c++'
-    )
-]
 
 setup(
     name='rlschool',
@@ -202,9 +213,8 @@ setup(
         'networkx>=2.2',
         'colour>=0.1.5',
         'scipy>=0.12.0'
-    ] + setup_requires,
-    setup_requires=setup_requires,
+    ],
     ext_modules=ext_modules,
-    cmdclass=dict(build_ext=BuildExt),
+    cmdclass=dict(build_ext=BuildExt, install=PostInstall),
     zip_safe=False,
 )

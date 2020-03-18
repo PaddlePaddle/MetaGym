@@ -12,6 +12,12 @@ For Ubuntu, you can install them using following commands:
 sudo apt-get install libeigen3-dev libboost-all-dev
 ```
 
+For MacOS, use commands:
+
+```sh
+brew install boost eigen
+```
+
 **Python dependencies**:
 * Numpy
 * Pyglet
