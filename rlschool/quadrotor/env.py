@@ -18,12 +18,16 @@ from math import floor, ceil
 from collections import namedtuple
 
 # Extension module
-import quadrotorsim
+HAS_CPP_EXT = True
+try:
+    import quadrotorsim
+except Exception:
+    HAS_CPP_EXT = False
 
 NO_DISPLAY = False
 try:
     from rlschool.quadrotor.render import RenderWindow
-except Exception as e:
+except Exception:
     NO_DISPLAY = True
 
 
@@ -52,6 +56,13 @@ class Quadrotor(object):
                  simulator_conf=None,
                  obs_as_dict=False,
                  **kwargs):
+        if not HAS_CPP_EXT:
+            err_msg = '''
+Not successfully installed RLSchool with C++ dependencies.
+Check https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor#dependencies for details.
+            '''
+            raise RuntimeError(err_msg)
+
         assert task in ['velocity_control', 'no_collision'], \
             'Invalid task setting'
         if simulator_conf is None:
@@ -279,7 +290,6 @@ if __name__ == '__main__':
     else:
         task = sys.argv[1]
     env = Quadrotor(task=task, nt=1000)
-    import ipdb; ipdb.set_trace()
     env.reset()
     env.render()
     reset = False
