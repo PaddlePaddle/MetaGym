@@ -205,7 +205,8 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
-        'pyglet>=1.5.0',
+        'pyglet==1.5.0; python_version>="3"',
+        'pyglet==1.4.0; python_version<"3"',
         'six>=1.12.0',
         'numpy>=1.16.4',
         'configparser>=3.7.4',
