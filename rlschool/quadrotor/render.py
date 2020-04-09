@@ -112,17 +112,16 @@ class Map(object):
         self._initialize(init_drone_z)
 
     def _initialize(self, init_drone_z):
-        if self.task == 'no_collision':
+        if self.task in ['no_collision', 'hovering_control']:
             h = w = 100
-            self.drone_pos = [h // 2, w // 2, init_drone_z]
             for y in range(0, h):
                 for x in range(0, w):
                     # Pave the floor
                     self._add_block((x, y, 0), TILE, immediate=False)
         elif self.task == 'velocity_control':
             h = w = 0
-            self.drone_pos = [h // 2, w // 2, init_drone_z]
 
+        self.drone_pos = [h // 2, w // 2, init_drone_z]
         self._add_drone()
 
         if self.task == 'velocity_control':
@@ -415,7 +414,12 @@ class RenderWindow(pyglet.window.Window):
     Args:
         drone_3d_model (str): path to 3D STL model of the drone.
         horizon_view_size (int): number of blocks to show in horizon view.
-        init_drone_z (float): the initial height of the drone.
+        x_offset (float): the offset between init drone position and
+            map (0, 0, 0) position from x-axis.
+        y_offset (float): the offset between init drone position and
+            map (0, 0, 0) position from y-axis.
+        z_offset (float): the offset between init drone position and
+            map (0, 0, 0) position from z-axis.
         perspective_fovy (float): the field of view angle in degrees,
             in the y direction.
         perspective_aspect (float): the ratio of x (width) to y (height).
@@ -438,7 +442,9 @@ class RenderWindow(pyglet.window.Window):
     def __init__(self,
                  drone_3d_model=None,
                  horizon_view_size=8,
-                 init_drone_z=5,
+                 x_offset=0,
+                 y_offset=0,
+                 z_offset=0,
                  perspective_fovy=65.,
                  perspective_aspect=4/3.,  # i.e. 800/600
                  perspective_zNear=0.1,
@@ -459,10 +465,13 @@ class RenderWindow(pyglet.window.Window):
             width=width, height=height, caption=caption, resizable=False)
 
         self.task = task
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+        self.z_offset = z_offset
         self.internal_map = Map(
             drone_3d_model,
             horizon_view_size=horizon_view_size,
-            init_drone_z=init_drone_z,
+            init_drone_z=self.z_offset,
             task=task)
 
         # The label to display in the top-left of the canvas
@@ -509,7 +518,9 @@ class RenderWindow(pyglet.window.Window):
             self.sector = sector
 
     def view(self, drone_state, dt, expected_velocity=None):
-        self.position = (drone_state['x'], drone_state['y'], drone_state['z'])
+        self.position = (drone_state['x'] + self.x_offset,
+                         drone_state['y'] + self.x_offset,
+                         drone_state['z'] + self.z_offset)
         rot = (drone_state['yaw'], drone_state['pitch'], drone_state['roll'])
 
         if self.task == 'velocity_control':
@@ -586,7 +597,10 @@ class RenderWindow(pyglet.window.Window):
         gl.glTranslatef(-x, -y, -z)
 
     def _draw_label(self):
-        self.label.text = 'xyz: (%.2f, %.2f, %.2f)' % self.position
+        x, y, z = self.position
+        x -= self.x_offset
+        y -= self.y_offset
+        self.label.text = 'xyz: (%.2f, %.2f, %.2f)' % (x, y, z)
         self.label.draw()
 
     @staticmethod

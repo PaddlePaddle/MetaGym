@@ -12,66 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import unittest
-
 from rlschool import make_env
 
 
 class TestQuadrotorEnv(unittest.TestCase):
-    def setUp(self):
-        # Another valid config
-        self.valid_config = os.path.join(
-            os.path.dirname(__file__), 'conf', 'config1.xml')
-
-        # An invalid config, missing `quality`
-        self.invalid_config = os.path.join(
-            os.path.dirname(__file__), 'conf', 'invalid_config.xml')
-
-    def test_load_valid_conf(self):
-        env = make_env('Quadrotor',
-                       task='no_collision',
-                       obs_as_dict=True,
-                       simulator_conf=self.valid_config)
-        state = env.reset()
-        self.assertTrue('x' in state)
-
-    def test_load_invalid_conf(self):
-        try:
-            env = make_env('Quadrotor', task='no_collision',
-                           simulator_conf=self.invalid_config)
-            env.reset()
-        except RuntimeError as e:
-            self.assertTrue('quality' in str(e))
-
     def test_no_collision_task(self):
-        env = make_env('Quadrotor',
-                       task='no_collision',
-                       obs_as_dict=True,
-                       simulator_conf=self.valid_config)
+        env = make_env('Quadrotor', task='no_collision')
         state = env.reset()
-        init_x, init_y = state['x'], state['y']
+        act = env.action_space.sample()
         reset = False
         while not reset:
-            state, reward, reset = env.step([1., 1., 1., 1.])
-            msg = 'quadrotor gets wrong movement in %s direction.'
-            self.assertEqual(state['x'], init_x, msg % 'x')
-            self.assertEqual(state['y'], init_y, msg % 'y')
+            state, reward, reset, info = env.step(act)
+            act = env.action_space.sample()
 
     def test_velocity_control_task(self):
-        env = make_env('Quadrotor',
-                       task='velocity_control',
-                       obs_as_dict=True,
-                       simulator_conf=self.valid_config)
+        env = make_env('Quadrotor', task='velocity_control')
         state = env.reset()
         reset = False
         step = 0
         while not reset:
-            state, reward, reset = env.step([1., 1., 1., 1.])
-            self.assertTrue('next_target_g_v_x' in state)
+            state, reward, reset, info = env.step([1., 1., 1., 1.])
+            self.assertTrue('next_target_g_v_x' in info)
             step += 1
 
         self.assertEqual(step, env.nt)
+
+    def test_hovering_control_task(self):
+        env = make_env('Quadrotor', task='hovering_control')
+        state = env.reset()
+        act = env.action_space.sample()
+        reset = False
+        while not reset:
+            state, reward, reset, info = env.step(act)
+            act = env.action_space.sample()
 
 
 if __name__ == '__main__':
