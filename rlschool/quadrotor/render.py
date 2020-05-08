@@ -48,9 +48,14 @@ class Map(object):
         task (str): name of the task setting. Currently, support
             `no_collision` and `velocity_control`.
     """
-    def __init__(self, drone_3d_model, horizon_view_size=8, init_drone_z=5,
-                 task='no_collision'):
+    def __init__(self,
+                 drone_3d_model,
+                 horizon_view_size=8,
+                 init_drone_z=5,
+                 task='no_collision',
+                 debug_mode=False):
         self.task = task
+        self.debug_mode = debug_mode
 
         # When increase this, show more blocks in current view window
         self.horizon_view_size = horizon_view_size
@@ -294,7 +299,18 @@ class Map(object):
         transform[1, 1] = 2.5
         transform[2, 2] = 2.5
 
+        # Match drone model space x-y-z to openGL x-z-y
+        # TODO: read the config.json and match the propeller positions
+        model_space_transform = rotation_transform_mat(-np.pi / 2, 'roll')
+        transform = np.dot(transform, model_space_transform)
+
         yaw, pitch, roll = rotation
+        if self.debug_mode:
+            # NOTE: manually set values to debug rotation,
+            # it's useful when input act is in form [c, c, c, c].
+            yaw = np.pi / 2
+            # pitch = np.pi / 2
+            # roll = np.pi / 2
         transform = np.dot(transform, rotation_transform_mat(yaw, 'yaw'))
         transform = np.dot(transform, rotation_transform_mat(pitch, 'pitch'))
         transform = np.dot(transform, rotation_transform_mat(roll, 'roll'))
@@ -456,7 +472,8 @@ class RenderWindow(pyglet.window.Window):
                  width=800,
                  height=600,
                  caption='quadrotor',
-                 task='no_collision'):
+                 task='no_collision',
+                 debug_mode=False):
         if drone_3d_model is None:
             this_dir = os.path.realpath(os.path.dirname(__file__))
             drone_3d_model = os.path.join(this_dir, 'quadcopter.stl')
@@ -465,6 +482,7 @@ class RenderWindow(pyglet.window.Window):
             width=width, height=height, caption=caption, resizable=False)
 
         self.task = task
+        self.debug_mode = debug_mode
         self.x_offset = x_offset
         self.y_offset = y_offset
         self.z_offset = z_offset
@@ -472,7 +490,8 @@ class RenderWindow(pyglet.window.Window):
             drone_3d_model,
             horizon_view_size=horizon_view_size,
             init_drone_z=self.z_offset,
-            task=task)
+            task=task,
+            debug_mode=debug_mode)
 
         # The label to display in the top-left of the canvas
         self.label = pyglet.text.Label(
@@ -487,6 +506,8 @@ class RenderWindow(pyglet.window.Window):
         # vertical rotation: [-90, 90], horizontal rotation unbounded
         # TODO: update the rotation according the drone initial pose
         self.rotation = (-30, 0)
+        if debug_mode:
+            self.rotation = (0, 0)
 
         # Config perspective
         self.perspective = [perspective_fovy, perspective_aspect,
@@ -518,8 +539,13 @@ class RenderWindow(pyglet.window.Window):
             self.sector = sector
 
     def view(self, drone_state, dt, expected_velocity=None):
+        # NOTE: because sim coord is (x => left, y => inner, z => up),
+        # gl coord is (x => left, y => up, z => outer),
+        # we remap gl-y to sim-z, gl-z to sim-y, then reverse sim-y
+        # In this way, we can transform gl coord to sim coord.
+        # Here use `-drone_state[y]'.
         self.position = (drone_state['x'] + self.x_offset,
-                         drone_state['y'] + self.x_offset,
+                         -drone_state['y'] + self.y_offset,
                          drone_state['z'] + self.z_offset)
         rot = (drone_state['yaw'], drone_state['pitch'], drone_state['roll'])
 
@@ -592,7 +618,8 @@ class RenderWindow(pyglet.window.Window):
         # NOTE: for GL render, its x-z plane is the ground plane,
         # so we unpack the position using `(x, z, y)` instead of `(x, y, z)`
         x, z, y = self.position
-        y += self.perspective_over_drone[0]
+        if not self.debug_mode:
+            y += self.perspective_over_drone[0]
         z += self.perspective_over_drone[1]
         gl.glTranslatef(-x, -y, -z)
 
@@ -600,6 +627,7 @@ class RenderWindow(pyglet.window.Window):
         x, y, z = self.position
         x -= self.x_offset
         y -= self.y_offset
+        y = -y
         self.label.text = 'xyz: (%.2f, %.2f, %.2f)' % (x, y, z)
         self.label.draw()
 
