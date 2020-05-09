@@ -38,6 +38,12 @@ Yellow arrow is the expected velocity vector; orange arrow is the real velocity 
 
 <img src="demo/demo_hovering_control.gif" width="400"/>
 
+Notice that the coordinate system is shown as following:
+
+<img src="demo/sim_coord.jpg" width="200"/>
+
+And the initial position of the drone is (0, 0, 5).
+
 ## Example
 
 Quadrotor environment follows the standard [gym][gym] APIs to create, run, render and close an environment. Currently, Quadrotor supports two tasks: "no_collision" and "velocity_control".
