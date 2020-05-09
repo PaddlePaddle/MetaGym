@@ -297,6 +297,7 @@ class Quadrotor(object):
 
     @staticmethod
     def random_action(low, high, dim):
+        @staticmethod
         def sample():
             act = np.random.random_sample((dim,))
             return (high - low) * act + low

@@ -4,7 +4,6 @@
 result1
 result2
 stable_diff
-*.json
 
 build/
 rlschool.egg-info/

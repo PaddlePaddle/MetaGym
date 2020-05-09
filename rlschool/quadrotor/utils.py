@@ -128,6 +128,12 @@ def rotation_transform_mat(alpha, mode='yaw'):
     sin_alpha = np.sin(alpha)
     transform[axis_0, axis_0] = cos_alpha
     transform[axis_1, axis_1] = cos_alpha
-    transform[axis_0, axis_1] = -sin_alpha
-    transform[axis_1, axis_0] = sin_alpha
+
+    if mode in ['yaw', 'roll']:
+        transform[axis_0, axis_1] = -sin_alpha
+        transform[axis_1, axis_0] = sin_alpha
+    elif mode == 'pitch':
+        transform[axis_0, axis_1] = sin_alpha
+        transform[axis_1, axis_0] = -sin_alpha
+
     return transform
