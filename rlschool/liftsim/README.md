@@ -162,7 +162,7 @@ PersonGeneratorType为CUSTOM时即使用自定义人流模式，人流产生与�
     将以上文件打包成zip文件，我们提供了[示例][submit_folder]。参赛者在[此处][submit]提交结果。
 
 [gym]: https://gym.openai.com/
-[demo]: https://github.com/PaddlePaddle/PARL/tree/develop/examples/LiftSim_baseline
+[demo]: https://github.com/PaddlePaddle/PARL/tree/r1.3/examples/LiftSim_baseline/DQN
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
 [config]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/liftsim/config.ini
