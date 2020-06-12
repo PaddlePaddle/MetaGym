@@ -1,5 +1,18 @@
 # 四轴飞行器环境
 
+如果该环境对您的研究有帮助，请考虑引用:
+
+```txt
+@misc{Quadrotor,
+    author = {Yang Xue, Fan Wang and Bo Zhou},
+    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
+}
+```
+
 ## 安装
 
 ```
