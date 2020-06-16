@@ -238,6 +238,21 @@ class QuadrotorSim(object):
 
     def reset(self):
         self._zero_state()
+        if hasattr(self, 'cfg') and 'init_velocity' in self.cfg:
+            init_velocity = self.cfg['init_velocity']
+            sign = ((np.random.random(3) > 0.5).astype(np.int) * 2) - 1.0
+            noisy = float(init_velocity['noisy']) * np.random.random(3)
+            self.global_velocity = np.array(
+                [init_velocity['x'], init_velocity['y'],
+                 init_velocity['z']], dtype=np.float32) + noisy * sign
+        if hasattr(self, 'cfg') and 'init_velocity' in self.cfg:
+            init_angular_velocity = self.cfg['init_angular_velocity']
+            sign = ((np.random.random(3) > 0.5).astype(np.int) * 2) - 1.0
+            noisy = float(init_angular_velocity['noisy']) * np.random.random(3)
+            self.body_angular_velocity = np.array(
+                [init_angular_velocity['x'], init_angular_velocity['y'],
+                 init_angular_velocity['z']], dtype=np.float32) + noisy * sign
+
         self.coordination_converter_to_world = self.rotation_matrix
         self.coordination_converter_to_body = np.linalg.inv(
             self.rotation_matrix)
@@ -245,10 +260,15 @@ class QuadrotorSim(object):
     def get_state(self):
         body_velocity = np.matmul(self._coordination_converter_to_body,
                                   self.global_velocity)
+        body_position = np.matmul(self._coordination_converter_to_body,
+                                  self.global_position)
         return {
             'b_v_x': body_velocity[0],
             'b_v_y': body_velocity[1],
-            'b_v_z': body_velocity[2]
+            'b_v_z': body_velocity[2],
+            'b_x': body_position[0],
+            'b_y': body_position[1],
+            'b_z': body_position[2]
         }
 
     def get_sensor(self):

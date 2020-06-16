@@ -1,4 +1,19 @@
+English | [简体中文](./README_zh.md)
+
 # Quadrotor
+
+Please consider to cite this environment if it can help your research.
+
+```txt
+@misc{Quadrotor,
+    author = {Yang Xue, Fan Wang and Bo Zhou},
+    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
+}
+```
 
 ## Install
 

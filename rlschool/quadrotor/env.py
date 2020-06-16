@@ -48,7 +48,7 @@ class Quadrotor(object):
                  task='no_collision',
                  map_file=None,
                  simulator_conf=None,
-                 healthy_reward=10.0,
+                 healthy_reward=1.0,
                  **kwargs):
         # TODO: other possible tasks: precision_landing
         assert task in ['velocity_control', 'no_collision',
@@ -77,6 +77,7 @@ class Quadrotor(object):
             cfg_dict['action_space_low'], cfg_dict['action_space_high'], 4)
 
         self.body_velocity_keys = ['b_v_x', 'b_v_y', 'b_v_z']
+        self.body_position_keys = ['b_x', 'b_y', 'b_z']
         self.accelerator_keys = ['acc_x', 'acc_y', 'acc_z']
         self.gyroscope_keys = ['gyro_x', 'gyro_y', 'gyro_z']
         self.flight_pose_keys = ['pitch', 'roll', 'yaw']
@@ -84,9 +85,10 @@ class Quadrotor(object):
         self.task_velocity_control_keys = \
             ['next_target_g_v_x', 'next_target_g_v_y', 'next_target_g_v_z']
 
-        obs_dim = len(self.body_velocity_keys) + len(self.accelerator_keys) + \
-            len(self.gyroscope_keys) + len(self.flight_pose_keys) + \
-            len(self.barometer_keys)
+        obs_dim = len(self.body_velocity_keys) + \
+            len(self.body_position_keys) + \
+            len(self.accelerator_keys) + len(self.gyroscope_keys) + \
+            len(self.flight_pose_keys) + len(self.barometer_keys)
         if self.task == 'velocity_control':
             obs_dim += len(self.task_velocity_control_keys)
         self.observation_space = namedtuple('observation_space', ['shape'])
@@ -182,9 +184,9 @@ class Quadrotor(object):
         del self.simulator
 
     def _convert_state_to_ndarray(self):
-        keys_order = self.body_velocity_keys + self.accelerator_keys + \
-            self.gyroscope_keys + self.flight_pose_keys + \
-            self.barometer_keys
+        keys_order = self.body_velocity_keys + self.body_position_keys + \
+            self.accelerator_keys + self.gyroscope_keys + \
+            self.flight_pose_keys + self.barometer_keys
 
         if self.task == 'velocity_control':
             keys_order.extend(self.task_velocity_control_keys)
