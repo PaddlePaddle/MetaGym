@@ -313,11 +313,7 @@ class QuadrotorSim(object):
                 low=self._min_voltage, high=self._max_voltage, size=4)
             act = act.astype(np.float32)
             self.step(act, dt)
-
-            body_velocity = np.matmul(
-                self._coordination_converter_to_body,
-                self.global_velocity)
-            velocity_lst.append(list(body_velocity))
+            velocity_lst.append(list(self.global_velocity))
 
         self._restore_state(current_state)
         return velocity_lst
