@@ -253,8 +253,8 @@ class QuadrotorSim(object):
                 [init_angular_velocity['x'], init_angular_velocity['y'],
                  init_angular_velocity['z']], dtype=np.float32) + noisy * sign
 
-        self.coordination_converter_to_world = self.rotation_matrix
-        self.coordination_converter_to_body = np.linalg.inv(
+        self._coordination_converter_to_world = self.rotation_matrix
+        self._coordination_converter_to_body = np.linalg.inv(
             self.rotation_matrix)
 
     def get_state(self):
