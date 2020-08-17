@@ -148,8 +148,11 @@ class Quadrotor(object):
                 self.ct = 0
         elif self.task == 'velocity_control':
             reset = False
-            velocity_target = self.velocity_targets[self.ct - 1]
-            reward = self._get_reward(velocity_target=velocity_target)
+            global_velocity_target = self.velocity_targets[self.ct - 1]
+            body_velocity_target = np.matmul(
+                self.simulator._coordination_converter_to_body,
+                global_velocity_target)
+            reward = self._get_reward(velocity_target=body_velocity_target)
 
         if self.ct == self.nt:
             reset = True
