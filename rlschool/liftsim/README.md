@@ -4,6 +4,19 @@ English | [简体中文](./README_zh.md)
 
 LiftSim is a light-weight elevator simulator
 
+Please consider to cite this environment if it can help your research.
+
+```txt
+@misc{LiftSim,
+    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
+    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
+}
+```
+
 <img src="demo_image.gif" width="400"/>
 
 

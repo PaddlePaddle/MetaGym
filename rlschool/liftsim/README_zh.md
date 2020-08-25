@@ -1,6 +1,18 @@
 # LiftSim
 
 LiftSim是一个电梯调度模拟环境。
+如在您研究工作中使用了该环境，请引用下面的标记
+
+```txt
+@misc{LiftSim,
+    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
+    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
+}
+```
 
 <img src="demo_image.gif" width="400"/>
 
