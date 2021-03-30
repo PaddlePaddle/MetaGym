@@ -36,8 +36,10 @@ class QuadrotorSim(object):
         current_rot_mat = np.copy(self.rotation_matrix)
         current_power = self.power
 
-        return [current_position, current_velocity, current_body_acc,
-                current_body_w, current_prop_w, current_rot_mat, current_power]
+        return [
+            current_position, current_velocity, current_body_acc,
+            current_body_w, current_prop_w, current_rot_mat, current_power
+        ]
 
     def _restore_state(self, state):
         self.global_position, self.global_velocity, self.body_acceleration, \
@@ -113,8 +115,8 @@ class QuadrotorSim(object):
                           self.rotation_matrix[2, 2])
         pitch = np.arctan2(
             -self.rotation_matrix[2, 0],
-            np.sqrt(self.rotation_matrix[2, 1] ** 2 +
-                    self.rotation_matrix[2, 2] ** 2))
+            np.sqrt(self.rotation_matrix[2, 1]**2 +
+                    self.rotation_matrix[2, 2]**2))
         yaw = np.arctan2(self.rotation_matrix[1, 0],
                          self.rotation_matrix[0, 0])
         return pitch, roll, yaw
@@ -146,8 +148,8 @@ class QuadrotorSim(object):
             l_m = np.linalg.norm(self._propeller_coord[i])
             body_velocity = np.matmul(self._coordination_converter_to_body,
                                       self.global_velocity)
-            bw_to_v = np.cross(
-                self.body_angular_velocity, self._propeller_coord[i]) * l_m
+            bw_to_v = np.cross(self.body_angular_velocity,
+                               self._propeller_coord[i]) * l_m
             v_1 = body_velocity[2] + bw_to_v[2]
             sign = 1.0 if v_1 > 0 else -1.0
 
@@ -243,15 +245,18 @@ class QuadrotorSim(object):
             sign = ((np.random.random(3) > 0.5).astype(np.int) * 2) - 1.0
             noisy = float(init_velocity['noisy']) * np.random.random(3)
             self.global_velocity = np.array(
-                [init_velocity['x'], init_velocity['y'],
-                 init_velocity['z']], dtype=np.float32) + noisy * sign
+                [init_velocity['x'], init_velocity['y'], init_velocity['z']],
+                dtype=np.float32) + noisy * sign
         if hasattr(self, 'cfg') and 'init_velocity' in self.cfg:
             init_angular_velocity = self.cfg['init_angular_velocity']
             sign = ((np.random.random(3) > 0.5).astype(np.int) * 2) - 1.0
             noisy = float(init_angular_velocity['noisy']) * np.random.random(3)
             self.body_angular_velocity = np.array(
-                [init_angular_velocity['x'], init_angular_velocity['y'],
-                 init_angular_velocity['z']], dtype=np.float32) + noisy * sign
+                [
+                    init_angular_velocity['x'], init_angular_velocity['y'],
+                    init_angular_velocity['z']
+                ],
+                dtype=np.float32) + noisy * sign
 
         self._coordination_converter_to_world = self.rotation_matrix
         self._coordination_converter_to_body = np.linalg.inv(
