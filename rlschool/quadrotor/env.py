@@ -53,12 +53,11 @@ class Quadrotor(gym.Env):
                  healthy_reward=1.0,
                  **kwargs):
         # TODO: other possible tasks: precision_landing
-        assert task in [
-            'velocity_control', 'no_collision', 'hovering_control'
-        ], 'Invalid task setting'
+        assert task in ['velocity_control', 'no_collision',
+                        'hovering_control'], 'Invalid task setting'
         if simulator_conf is None:
-            simulator_conf = os.path.join(
-                os.path.dirname(__file__), 'config.json')
+            simulator_conf = os.path.join(os.path.dirname(__file__),
+                                          'config.json')
         assert os.path.exists(simulator_conf), \
             'Simulator config file does not exist'
 
@@ -132,17 +131,13 @@ class Quadrotor(gym.Env):
         sensor_dict = self.simulator.get_sensor()
         state_dict = self.simulator.get_state()
 
-        old_pos = [
-            self.simulator.global_position[0] + self.x_offset,
-            self.simulator.global_position[1] + self.y_offset,
-            self.simulator.global_position[2] + self.z_offset
-        ]
+        old_pos = [self.simulator.global_position[0] + self.x_offset,
+                   self.simulator.global_position[1] + self.y_offset,
+                   self.simulator.global_position[2] + self.z_offset]
         self._update_state(sensor_dict, state_dict)
-        new_pos = [
-            self.simulator.global_position[0] + self.x_offset,
-            self.simulator.global_position[1] + self.y_offset,
-            self.simulator.global_position[2] + self.z_offset
-        ]
+        new_pos = [self.simulator.global_position[0] + self.x_offset,
+                   self.simulator.global_position[1] + self.y_offset,
+                   self.simulator.global_position[2] + self.z_offset]
         if self.task in ['no_collision', 'hovering_control']:
             is_collision = self._check_collision(old_pos, new_pos)
             reward = self._get_reward(collision=is_collision)
@@ -170,11 +165,10 @@ class Quadrotor(gym.Env):
         if self.viewer is None:
             if NO_DISPLAY:
                 raise RuntimeError('[Error] Cannot connect to display screen.')
-            self.viewer = RenderWindow(
-                task=self.task,
-                x_offset=self.x_offset,
-                y_offset=self.y_offset,
-                z_offset=self.z_offset)
+            self.viewer = RenderWindow(task=self.task,
+                                       x_offset=self.x_offset,
+                                       y_offset=self.y_offset,
+                                       z_offset=self.z_offset)
 
         if 'z' not in self.state:
             # It's null state
@@ -183,9 +177,8 @@ class Quadrotor(gym.Env):
         state = self._get_state_for_viewer()
         if self.task == 'velocity_control':
             self.viewer.view(
-                state,
-                self.dt,
-                expected_velocity=self.velocity_targets[self.ct - 1])
+                state, self.dt,
+                expected_velocity=self.velocity_targets[self.ct-1])
         else:
             self.viewer.view(state, self.dt)
 
@@ -216,7 +209,7 @@ class Quadrotor(gym.Env):
         """
         # Make sure energy cost always smaller than healthy reward,
         # to encourage longer running
-        reward = -min(self.dt * self.simulator.power, self.healthy_reward)
+        reward = - min(self.dt * self.simulator.power, self.healthy_reward)
         if self.task == 'no_collision':
             task_reward = 0.0 if collision else self.healthy_reward
             reward += task_reward
@@ -226,7 +219,8 @@ class Quadrotor(gym.Env):
         elif self.task == 'hovering_control':
             task_reward = 0.0 if collision else self.healthy_reward
 
-            velocity_norm = np.linalg.norm(self.simulator.global_velocity)
+            velocity_norm = np.linalg.norm(
+                self.simulator.global_velocity)
             angular_velocity_norm = np.linalg.norm(
                 self.simulator.body_angular_velocity)
 
@@ -254,7 +248,7 @@ class Quadrotor(gym.Env):
         y_min, y_max = min_max(old_pos, new_pos, 1)
         z_min, z_max = min_max(old_pos, new_pos, 2)
 
-        taken_pos = self.map_matrix[y_min:y_max + 1, x_min:x_max + 1]
+        taken_pos = self.map_matrix[y_min:y_max+1, x_min:x_max+1]
         if z_min < np.any(taken_pos) or z_max < np.any(taken_pos):
             return True
         else:
@@ -268,7 +262,7 @@ class Quadrotor(gym.Env):
             self.state[k] = v
 
         if self.task == 'velocity_control':
-            t = min(self.ct, self.nt - 1)
+            t = min(self.ct, self.nt-1)
             next_velocity_target = self.velocity_targets[t]
             self.state['next_target_g_v_x'] = next_velocity_target[0]
             self.state['next_target_g_v_y'] = next_velocity_target[1]

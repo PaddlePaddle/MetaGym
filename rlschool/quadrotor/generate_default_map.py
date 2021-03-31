@@ -26,8 +26,8 @@ def generate_map(length, width, height, map_file):
     pos_len = len(str(height))
     with open(map_file, 'w') as f:
         for i in range(width):
-            line = ' '.join(
-                [str(pos).zfill(pos_len) for pos in list(map_matrix[i, :])])
+            line = ' '.join([str(pos).zfill(pos_len) for pos in
+                             list(map_matrix[i, :])])
             f.write(line + '\n')
 
 

@@ -48,7 +48,6 @@ class Map(object):
         task (str): name of the task setting. Currently, support
             `no_collision` and `velocity_control`.
     """
-
     def __init__(self,
                  drone_3d_model,
                  horizon_view_size=8,
@@ -139,7 +138,7 @@ class Map(object):
     def _is_exposed(self, position):
         x, y, z = position
         for dx, dy, dz in FACES:
-            if (x + dx, y + dy, z + dz) not in self.whole_map:
+            if (x+dx, y+dy, z+dz) not in self.whole_map:
                 # At least one face is not covered by another cube block.
                 return True
         return False
@@ -169,9 +168,7 @@ class Map(object):
                     self.drone_texture = rendering.material_to_texture(
                         geom.visual.material)
 
-    def _add_drone_velocity(self,
-                            init_velocity_vector,
-                            radius=0.008,
+    def _add_drone_velocity(self, init_velocity_vector, radius=0.008,
                             color=[255, 0, 0]):
         """
         Add the drone velocity vector as a cylinder into drone drawer batch.
@@ -189,7 +186,7 @@ class Map(object):
             radius=radius, height=height, transform=transform)
         velocity_axis.visual.face_colors = color
         axis_origin = trimesh.creation.uv_sphere(
-            radius=radius * 5, count=[10, 10])
+            radius=radius*5, count=[10, 10])
         axis_origin.visual.face_colors = color
 
         merge = trimesh.util.concatenate([axis_origin, velocity_axis])
@@ -240,7 +237,7 @@ class Map(object):
     def _check_neighbors(self, position):
         x, y, z = position
         for dx, dy, dz in FACES:
-            pos = (x + dx, y + dy, z + dz)
+            pos = (x+dx, y+dy, z+dz)
             if pos not in self.whole_map:
                 continue
             if self._is_exposed(pos):
@@ -253,11 +250,13 @@ class Map(object):
     def _show_block(self, position, texture):
         vertex_data = cube_vertices(position, 0.5)  # 12x6=72
         texture_data = list(texture)  # 8x6=48
-        vertex_count = len(vertex_data) // 3  # 24
-        attributes = [('v3f/static', vertex_data), ('t2f/static',
-                                                    texture_data)]
-        self._partial_map[position] = self.batch.add(vertex_count, gl.GL_QUADS,
-                                                     self.group, *attributes)
+        vertex_count = len(vertex_data) // 3   # 24
+        attributes = [
+            ('v3f/static', vertex_data),
+            ('t2f/static', texture_data)
+        ]
+        self._partial_map[position] = self.batch.add(
+            vertex_count, gl.GL_QUADS, self.group, *attributes)
 
     def _hide_block(self, position):
         self._partial_map.pop(position).delete()
@@ -349,8 +348,8 @@ class Map(object):
 
         if expected_velocity is not None and \
            hasattr(self, 'drone_expected_velocity_drawer'):
-            transform = self._get_velocity_transform(expected_velocity,
-                                                     position)
+            transform = self._get_velocity_transform(
+                expected_velocity, position)
             gl.glPushMatrix()
             gl.glMultMatrixf(rendering.matrix_to_gl(transform))
 
@@ -393,17 +392,17 @@ class Map(object):
         # disappear
         before_set, after_set = set(), set()
         pad = self.horizon_view_size // 2
-        for dx in range(-pad, pad + 1):
-            for dy in range(-pad, pad + 1):
+        for dx in range(-pad, pad+1):
+            for dy in range(-pad, pad+1):
                 dz = 0
-                if dx**2 + dy**2 + dz**2 > (pad + 1)**2:
+                if dx ** 2 + dy ** 2 + dz ** 2 > (pad + 1) ** 2:
                     continue
                 if before:
                     x, y, z = before
-                    before_set.add((x + dx, y + dy, z + dz))
+                    before_set.add((x+dx, y+dy, z+dz))
                 if after:
                     x, y, z = after
-                    after_set.add((x + dx, y + dy, z + dz))
+                    after_set.add((x+dx, y+dy, z+dz))
 
         show = after_set - before_set
         hide = before_set - after_set
@@ -456,27 +455,25 @@ class RenderWindow(pyglet.window.Window):
         task (str): name of the task setting. Currently, support
             `no_collision` and `velocity_control`.
     """
-
-    def __init__(
-            self,
-            drone_3d_model=None,
-            horizon_view_size=8,
-            x_offset=0,
-            y_offset=0,
-            z_offset=0,
-            perspective_fovy=65.,
-            perspective_aspect=4 / 3.,  # i.e. 800/600
-            perspective_zNear=0.1,
-            perspective_zFar=60.,
-            perspective_y_offset=3,
-            perspective_z_offset=3,
-            sky_light_blue='#00d4ff',
-            sky_dark_blue='#020024',
-            width=800,
-            height=600,
-            caption='quadrotor',
-            task='no_collision',
-            debug_mode=False):
+    def __init__(self,
+                 drone_3d_model=None,
+                 horizon_view_size=8,
+                 x_offset=0,
+                 y_offset=0,
+                 z_offset=0,
+                 perspective_fovy=65.,
+                 perspective_aspect=4/3.,  # i.e. 800/600
+                 perspective_zNear=0.1,
+                 perspective_zFar=60.,
+                 perspective_y_offset=3,
+                 perspective_z_offset=3,
+                 sky_light_blue='#00d4ff',
+                 sky_dark_blue='#020024',
+                 width=800,
+                 height=600,
+                 caption='quadrotor',
+                 task='no_collision',
+                 debug_mode=False):
         if drone_3d_model is None:
             this_dir = os.path.realpath(os.path.dirname(__file__))
             drone_3d_model = os.path.join(this_dir, 'quadcopter.stl')
@@ -498,14 +495,8 @@ class RenderWindow(pyglet.window.Window):
 
         # The label to display in the top-left of the canvas
         self.label = pyglet.text.Label(
-            '',
-            font_name='Arial',
-            font_size=18,
-            x=10,
-            y=self.height - 10,
-            anchor_x='left',
-            anchor_y='top',
-            color=(255, 0, 0, 255))
+            '', font_name='Arial', font_size=18, x=10, y=self.height - 10,
+            anchor_x='left', anchor_y='top', color=(255, 0, 0, 255))
 
         # Current (x, y, z) position of the drone in the world,
         # specified with floats.
@@ -519,22 +510,17 @@ class RenderWindow(pyglet.window.Window):
             self.rotation = (0, 0)
 
         # Config perspective
-        self.perspective = [
-            perspective_fovy, perspective_aspect, perspective_zNear,
-            perspective_zFar
-        ]
+        self.perspective = [perspective_fovy, perspective_aspect,
+                            perspective_zNear, perspective_zFar]
         self.perspective_over_drone = [
-            perspective_y_offset, perspective_z_offset
-        ]
+            perspective_y_offset, perspective_z_offset]
 
         self.sector = None
 
         light_blue = Color(sky_light_blue)
         dark_blue = Color(sky_dark_blue)
-        self.colors = [
-            list(i.rgb) + [1.0]
-            for i in list(light_blue.range_to(dark_blue, 700))
-        ]
+        self.colors = [list(i.rgb) + [1.0] for i in
+                       list(light_blue.range_to(dark_blue, 700))]
 
         self._gl_set_background(self.colors[0])
         self._gl_enable_color_material()
@@ -567,10 +553,8 @@ class RenderWindow(pyglet.window.Window):
             assert expected_velocity is not None
             ev_x, ev_y, ev_z = expected_velocity
             expected_velocity = np.array([ev_x, ev_z, ev_y])
-            velocity = np.array([
-                drone_state['g_v_x'], drone_state['g_v_z'],
-                drone_state['g_v_y']
-            ])
+            velocity = np.array([drone_state['g_v_x'], drone_state['g_v_z'],
+                                 drone_state['g_v_y']])
 
         cid = abs(int(drone_state['z'] / 0.1)) % len(self.colors)
         self._gl_set_background(self.colors[cid])
@@ -585,8 +569,8 @@ class RenderWindow(pyglet.window.Window):
         self.internal_map.show_drone(self.position, rot)
 
         if self.task == 'velocity_control':
-            self.internal_map.show_velocity(self.position, velocity,
-                                            expected_velocity)
+            self.internal_map.show_velocity(
+                self.position, velocity, expected_velocity)
 
         self._setup_2d()
         self._draw_label()
@@ -629,8 +613,8 @@ class RenderWindow(pyglet.window.Window):
         gl.glLoadIdentity()
         y, x = self.rotation
         gl.glRotatef(x, 0, 1, 0)
-        gl.glRotatef(-y, math.cos(math.radians(x)), 0, math.sin(
-            math.radians(x)))
+        gl.glRotatef(-y, math.cos(math.radians(x)),
+                     0, math.sin(math.radians(x)))
         # NOTE: for GL render, its x-z plane is the ground plane,
         # so we unpack the position using `(x, z, y)` instead of `(x, y, z)`
         x, z, y = self.position
@@ -657,24 +641,34 @@ class RenderWindow(pyglet.window.Window):
 
     @staticmethod
     def _gl_enable_color_material():
-        gl.glColorMaterial(gl.GL_FRONT_AND_BACK, gl.GL_AMBIENT_AND_DIFFUSE)
+        gl.glColorMaterial(gl.GL_FRONT_AND_BACK,
+                           gl.GL_AMBIENT_AND_DIFFUSE)
         gl.glEnable(gl.GL_COLOR_MATERIAL)
         gl.glShadeModel(gl.GL_SMOOTH)
 
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_AMBIENT,
-                        rendering.vector_to_gl(0.192250, 0.192250, 0.192250))
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_DIFFUSE,
-                        rendering.vector_to_gl(0.507540, 0.507540, 0.507540))
-        gl.glMaterialfv(gl.GL_FRONT, gl.GL_SPECULAR,
-                        rendering.vector_to_gl(.5082730, .5082730, .5082730))
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_AMBIENT,
+                        rendering.vector_to_gl(
+                            0.192250, 0.192250, 0.192250))
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_DIFFUSE,
+                        rendering.vector_to_gl(
+                            0.507540, 0.507540, 0.507540))
+        gl.glMaterialfv(gl.GL_FRONT,
+                        gl.GL_SPECULAR,
+                        rendering.vector_to_gl(
+                            .5082730, .5082730, .5082730))
 
-        gl.glMaterialf(gl.GL_FRONT, gl.GL_SHININESS, .4 * 128.0)
+        gl.glMaterialf(gl.GL_FRONT,
+                       gl.GL_SHININESS,
+                       .4 * 128.0)
 
     @staticmethod
     def _gl_enable_blending():
         # enable blending for transparency
         gl.glEnable(gl.GL_BLEND)
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA,
+                       gl.GL_ONE_MINUS_SRC_ALPHA)
 
     @staticmethod
     def _gl_enable_smooth_lines():
@@ -703,7 +697,9 @@ class RenderWindow(pyglet.window.Window):
 
             # convert light object to glLightfv calls
             multiargs = rendering.light_to_gl(
-                light=light, transform=matrix, lightN=lightN)
+                light=light,
+                transform=matrix,
+                lightN=lightN)
 
             # enable the light in question
             gl.glEnable(lightN)
