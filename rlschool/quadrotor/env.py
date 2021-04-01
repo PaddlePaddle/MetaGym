@@ -16,6 +16,7 @@ import os
 import numpy as np
 from math import floor, ceil
 from collections import namedtuple
+import gym
 
 from rlschool.quadrotor.quadrotorsim import QuadrotorSim
 
@@ -26,7 +27,7 @@ except Exception:
     NO_DISPLAY = True
 
 
-class Quadrotor(object):
+class Quadrotor(gym.Env):
     """
     Quadrotor environment.
 
@@ -41,6 +42,7 @@ class Quadrotor(object):
             map is a 100x100 flatten floor.
         simulator_conf (None|str): path to simulator config xml file.
     """
+
     def __init__(self,
                  dt=0.01,
                  nt=1000,
@@ -68,13 +70,11 @@ class Quadrotor(object):
 
         cfg_dict = self.simulator.get_config(simulator_conf)
         self.valid_range = cfg_dict['range']
-        self.action_space = namedtuple(
-            'action_space', ['shape', 'high', 'low', 'sample'])
-        self.action_space.shape = [4]
-        self.action_space.high = [cfg_dict['action_space_high']] * 4
-        self.action_space.low = [cfg_dict['action_space_low']] * 4
-        self.action_space.sample = Quadrotor.random_action(
-            cfg_dict['action_space_low'], cfg_dict['action_space_high'], 4)
+        self.action_space = gym.spaces.Box(
+            low=np.array([cfg_dict['action_space_low']] * 4, dtype='float32'),
+            high=np.array(
+                [cfg_dict['action_space_high']] * 4, dtype='float32'),
+            shape=[4])
 
         self.body_velocity_keys = ['b_v_x', 'b_v_y', 'b_v_z']
         self.body_position_keys = ['b_x', 'b_y', 'b_z']
@@ -91,8 +91,7 @@ class Quadrotor(object):
             len(self.flight_pose_keys) + len(self.barometer_keys)
         if self.task == 'velocity_control':
             obs_dim += len(self.task_velocity_control_keys)
-        self.observation_space = namedtuple('observation_space', ['shape'])
-        self.observation_space.shape = [obs_dim]
+        self.observation_space = gym.Space(shape=[obs_dim], dtype='float32')
 
         self.state = {}
         self.viewer = None
@@ -299,14 +298,6 @@ class Quadrotor(object):
                 map_lists.append([int(i) for i in line.split(' ')])
 
         return np.array(map_lists)
-
-    @staticmethod
-    def random_action(low, high, dim):
-        @staticmethod
-        def sample():
-            act = np.random.random_sample((dim,))
-            return (high - low) * act + low
-        return sample
 
 
 if __name__ == '__main__':

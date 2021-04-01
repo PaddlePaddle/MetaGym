@@ -52,7 +52,8 @@ setup(
         'trimesh>=3.2.39',
         'networkx>=2.2',
         'colour>=0.1.5',
-        'scipy>=0.12.0'
+        'scipy>=0.12.0',
+        'gym==0.18.0',
     ],
     zip_safe=False,
 )
