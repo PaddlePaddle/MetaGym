@@ -43,7 +43,7 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
-        'pyglet==1.5.0; python_version>="3"',
+        'pyglet==1.5.15; python_version>="3"',
         'pyglet==1.4.0; python_version<"3"',
         'Pillow>=6.2.2',
         'six>=1.12.0',
