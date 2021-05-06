@@ -15,7 +15,7 @@
 import io
 from setuptools import setup, find_packages
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -43,7 +43,7 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
-        'pyglet==1.5.15; python_version>="3"',
+        'pyglet==1.5.0; python_version>="3"',
         'pyglet==1.4.0; python_version<"3"',
         'Pillow>=6.2.2',
         'six>=1.12.0',
