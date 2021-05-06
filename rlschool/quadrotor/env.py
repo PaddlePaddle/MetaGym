@@ -127,17 +127,20 @@ class Quadrotor(gym.Env):
     def step(self, action):
         self.ct += 1
         cmd = np.asarray(action, np.float32)
-        self.simulator.step(cmd.tolist(), self.dt)
-        sensor_dict = self.simulator.get_sensor()
-        state_dict = self.simulator.get_state()
 
         old_pos = [self.simulator.global_position[0] + self.x_offset,
                    self.simulator.global_position[1] + self.y_offset,
                    self.simulator.global_position[2] + self.z_offset]
+
+        self.simulator.step(cmd.tolist(), self.dt)
+        sensor_dict = self.simulator.get_sensor()
+        state_dict = self.simulator.get_state()
         self._update_state(sensor_dict, state_dict)
+
         new_pos = [self.simulator.global_position[0] + self.x_offset,
                    self.simulator.global_position[1] + self.y_offset,
                    self.simulator.global_position[2] + self.z_offset]
+
         if self.task in ['no_collision', 'hovering_control']:
             is_collision = self._check_collision(old_pos, new_pos)
             reward = self._get_reward(collision=is_collision)
