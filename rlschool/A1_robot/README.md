@@ -43,7 +43,8 @@ There are nine predefined tasks in this environment.
 "balancebeam": Walk over a balance beam with width of 10 cm
 "cliff": Gallop over big gaps with width of 50 cm
 "Cave": Crawl into caves with height of 18 cm
-<img src="nine_block.gif" width="400"/>
+
+<img src="nine_block.gif" width="1000"/>
 
 To specify a task, we can change the value of task in make_env function, for example to select "balancebeam"
 
