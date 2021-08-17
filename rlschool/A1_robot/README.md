@@ -1,9 +1,10 @@
-#Quadrupedal
+# Quadrupedal
 Quadrupedal is a physical simulation platform for unitree A1 robot based on pybullet and https://github.com/google-research/motion_imitation.
 
 Please consider to cite this environment if it can help your research.
 
 <img src="demo.gif" width="400"/>
+
 ## Install
 
 ```python
