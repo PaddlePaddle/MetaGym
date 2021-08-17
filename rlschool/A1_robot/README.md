@@ -34,14 +34,23 @@ for i in range(100):
 There are nine predefined tasks in this environment.
 
 "stairstair": Climb up and down stairs
+
 "stairslope": Climb up stairs and down slopes
+
 "slopestair": Climb up slopes and down stairs
+
 "slopeslope": Climb up and down slopes
+
 (Above stair height is 8 cm and width is 25 cm, slope is around 20 degree)
-"highstair": Climb up stairs with stair height of 13 cm 
+
+"highstair": Climb up stairs with stair height of 13 cm
+
 "heightfield": Walk over heightfield
+
 "balancebeam": Walk over a balance beam with width of 10 cm
+
 "cliff": Gallop over big gaps with width of 50 cm
+
 "Cave": Crawl into caves with height of 18 cm
 
 <img src="nine_block.gif" width="1000"/>
