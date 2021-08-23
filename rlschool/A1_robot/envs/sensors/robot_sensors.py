@@ -1,18 +1,7 @@
-# coding=utf-8
-# Copyright 2020 The Google Research Authors.
+# Third party code
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# The following code are copied or modified from:
+# https://github.com/google-research/motion_imitation
 """Simple sensors related to the robot."""
 
 from __future__ import absolute_import
@@ -30,7 +19,6 @@ import typing
 
 from robots import minitaur_pose_utils
 from rlschool.A1_robot.envs.sensors import sensor
-from rlschool.A1_robot.robots import a1_robot_velocity_estimator
 
 _ARRAY = typing.Iterable[float] #pylint: disable=invalid-name
 _FLOAT_OR_ARRAY = typing.Union[float, _ARRAY] #pylint: disable=invalid-name
@@ -224,31 +212,6 @@ class MinitaurLegPoseSensor(sensor.BoxSpaceSensor):
       return np.hstack((np.cos(leg_pose), np.sin(leg_pose)))
     else:
       return leg_pose
-
-class VelocityEstimatorSensor(sensor.BoxSpaceSensor):
-  def __init__(self,
-              lower_bound: _FLOAT_OR_ARRAY = -1,
-              upper_bound: _FLOAT_OR_ARRAY = 1,
-              noise: bool = False,
-              normal: int = 0,
-              dt: float = 0.026,
-              name: typing.Text = "BaseDisplacement",
-              dtype: typing.Type[typing.Any] = np.float64) -> None:
-    
-    super(VelocityEstimatorSensor, self).__init__(
-        name=name,
-        shape=(3,),
-        lower_bound=np.array([lower_bound] * 3),
-        upper_bound=np.array([upper_bound] * 3),
-        dtype=dtype)
-    self._velocity_estimator = a1_robot_velocity_estimator.VelocityEstimator()
-  
-  def get_observation(self,robot_state,robot) -> _ARRAY:
-    self._velocity_estimator.update(robot_state,robot)
-    return self._velocity_estimator.estimated_velocity.copy()
-
-  def reset(self):
-    self._velocity_estimator.reset()
 
 
 class BaseDisplacementSensor(sensor.BoxSpaceSensor):

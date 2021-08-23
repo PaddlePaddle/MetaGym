@@ -1,18 +1,7 @@
-# coding=utf-8
-# Copyright 2020 The Google Research Authors.
+# Third party code
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# The following code are copied or modified from:
+# https://github.com/google-research/motion_imitation
 """Two types of filters which can be applied to policy output sequences.
 
 1. Simple exponential filter
@@ -35,7 +24,6 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
-from absl import logging
 import numpy as np
 from scipy.signal import butter
 
@@ -93,8 +81,8 @@ class ActionFilter(object):
     else:
       raise ValueError('%s filter type not supported' % (ftype))
 
-    logging.info('Filter shapes: a: %s, b: %s', self.a.shape, self.b.shape)
-    logging.info('Filter type:%s', ftype)
+    # logging.info('Filter shapes: a: %s, b: %s', self.a.shape, self.b.shape)
+    # logging.info('Filter type:%s', ftype)
 
     self.yhist = collections.deque(maxlen=self.hist_len)
     self.xhist = collections.deque(maxlen=self.hist_len)
@@ -181,10 +169,10 @@ class ActionFilterButter(ActionFilter):
         raise ValueError('Highcut must be > 0')
 
       b, a = self.butter_filter(l, h, sampling_rate, order)
-      logging.info(
-          'Butterworth filter: joint: %d, lowcut: %f, highcut: %f, '
-          'sampling rate: %d, order: %d, num joints: %d', i, l, h,
-          sampling_rate, order, num_joints)
+      # logging.info(
+      #     'Butterworth filter: joint: %d, lowcut: %f, highcut: %f, '
+      #     'sampling rate: %d, order: %d, num joints: %d', i, l, h,
+      #     sampling_rate, order, num_joints)
       b_coeffs.append(b)
       a_coeffs.append(a)
 
@@ -233,7 +221,7 @@ class ActionFilterExp(ActionFilter):
       num_joints: robot DOF
     """
     self.alphas = [float(x) for x in alpha]
-    logging.info('Exponential filter: alpha: %d', self.alphas)
+    # logging.info('Exponential filter: alpha: %d', self.alphas)
 
     a_coeffs = []
     b_coeffs = []

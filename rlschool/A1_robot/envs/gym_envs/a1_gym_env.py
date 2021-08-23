@@ -1,4 +1,8 @@
-"""Wrapper to make the a1 environment suitable for OpenAI gym."""
+# Third party code
+#
+# The following code are copied or modified from:
+# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/gym_envs/a1_gym_env.py
+
 import gym
 
 from rlschool.A1_robot.envs import env_builder

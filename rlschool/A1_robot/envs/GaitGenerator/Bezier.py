@@ -1,3 +1,8 @@
+# Third party code
+#
+# The following code are copied or modified from:
+# https://github.com/OpenQuadruped/spot_mini_mini/blob/spot/spotmicro/GaitGenerator/Bezier.py
+
 import numpy as np
 from rlschool.A1_robot.robots.LieAlgebra import TransToRp
 import copy

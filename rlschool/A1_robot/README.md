@@ -19,7 +19,7 @@ Quadrupedal environment follows the standard gym APIs to create, run and close a
 import rlschool
 import numpy as np
 env = rlschool.make_env('Quadrupedal',render=1,task="stairstair")
-observation,info = env.reset()
+observation = env.reset()
 for i in range(100):
     action = np.random.uniform(-0.3,0.3,size=12)
     next_obs, reward, done, info = env.step(action)
@@ -55,10 +55,6 @@ To specify a task, we can change the value of task in make_env function, for exa
 import rlschool
 import numpy as np
 env = rlschool.make_env('Quadrupedal',render=1,task="balancebeam")
-observation,info = env.reset()
-for i in range(100):
-    action = np.random.uniform(-0.3,0.3,size=12)
-    next_obs, reward, done, info = env.step(action)
 ```
 
 ## Action

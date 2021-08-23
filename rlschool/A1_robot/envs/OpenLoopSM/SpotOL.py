@@ -1,3 +1,8 @@
+# Third party code
+#
+# The following code are copied or modified from:
+# https://github.com/OpenQuadruped/spot_mini_mini/blob/spot/spotmicro/OpenLoopSM/SpotOL.py
+
 """ Open Loop Controller for Spot Micro. Takes GUI params or uses default
 """
 import numpy as np

@@ -56,9 +56,6 @@ setup(
         'gym==0.18.0',
         'pybullet==3.0.7',
         'attrs==20.3.0',
-        'numba==0.52.0',
-        'filterpy==1.4.5',
-        'absl-py==0.11.0',
     ],
     zip_safe=False,
 )
