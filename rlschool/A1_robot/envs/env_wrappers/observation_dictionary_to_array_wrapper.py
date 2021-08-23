@@ -48,10 +48,8 @@ class ObservationDictionaryToArrayWrapper(gym.Env):
 
   def step(self, action):
     """Steps the wrapped environment.
-
     Args:
       action: Numpy array. The input action from an NN agent.
-
     Returns:
       The tuple containing the flattened observation, the reward, the epsiode
         end indicator.

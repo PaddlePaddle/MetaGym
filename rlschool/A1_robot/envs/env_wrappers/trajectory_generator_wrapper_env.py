@@ -24,18 +24,15 @@ class TrajectoryGeneratorWrapperEnv(object):
 
   def __init__(self, gym_env, trajectory_generator):
     """Initialzes the wrapped env.
-
     Args:
       gym_env: An instance of LocomotionGymEnv.
       trajectory_generator: A trajectory_generator that can potentially modify
         the action and observation. Typticall generators includes the PMTG and
         openloop signals. Expected to have get_action and get_observation
         interfaces.
-
     Raises:
       ValueError if the controller does not implement get_action and
       get_observation.
-
     """
     self._gym_env = gym_env
     if not hasattr(trajectory_generator, 'get_action') or not hasattr(
@@ -65,21 +62,20 @@ class TrajectoryGeneratorWrapperEnv(object):
     if getattr(self._trajectory_generator, 'reset'):
       self._trajectory_generator.reset()
     observation,info = self._gym_env.reset(**kwargs)
-    return self._modify_observation(observation),info
+    if "info" in kwargs.keys() and kwargs["info"]:
+      return self._modify_observation(observation),info
+    else:
+      return self._modify_observation(observation)[0]
 
   def step(self, action):
     """Steps the wrapped environment.
-
     Args:
       action: Numpy array. The input action from an NN agent.
-
     Returns:
       The tuple containing the modified observation, the reward, the epsiode end
       indicator.
-
     Raises:
       ValueError if input action is None.
-
     """
 
     if action is None:
