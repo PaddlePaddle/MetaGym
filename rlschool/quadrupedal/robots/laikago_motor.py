@@ -1,9 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_config.py
-
-
+# https://github.com/google-research/motion_imitation
 """Motor model for laikago."""
 import os
 import inspect
@@ -14,7 +12,7 @@ os.sys.path.insert(0, parentdir)
 import collections
 import numpy as np
 
-from rlschool.A1_robot.robots import robot_config
+from rlschool.quadrupedal.robots import robot_config
 
 NUM_MOTORS = 12
 

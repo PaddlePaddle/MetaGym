@@ -1,7 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_config.py
+# https://github.com/google-research/motion_imitation
 
 """A gin-config class for locomotion_gym_env.
 
@@ -9,7 +9,7 @@ This should be identical to locomotion_gym_config.proto.
 """
 import attr
 import typing
-from rlschool.A1_robot.robots import robot_config
+from rlschool.quadrupedal.robots import robot_config
 
 
 @attr.s

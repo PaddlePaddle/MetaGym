@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_env.py
-
+# https://github.com/google-research/motion_imitation
 """This file implements the locomotion gym env."""
 import collections
 import time
@@ -13,12 +12,12 @@ import numpy as np
 import pybullet  # pytype: disable=import-error
 import pybullet_utils.bullet_client as bullet_client
 import pybullet_data as pd
-from rlschool.A1_robot.envs.utilities.heightfield import HeightField
-from rlschool.A1_robot.robots import robot_config
-from rlschool.A1_robot.envs.sensors import sensor
-from rlschool.A1_robot.envs.sensors import space_utils
-from rlschool.A1_robot.envs.utilities.terrain import upstair_terrain, downstair_terrain,upslope_terrain
-from rlschool.A1_robot.envs.utilities.env_utils import flatten_observations
+from rlschool.quadrupedal.envs.utilities.heightfield import HeightField
+from rlschool.quadrupedal.robots import robot_config
+from rlschool.quadrupedal.envs.sensors import sensor
+from rlschool.quadrupedal.envs.sensors import space_utils
+from rlschool.quadrupedal.envs.utilities.terrain import upstair_terrain, downstair_terrain,upslope_terrain
+from rlschool.quadrupedal.envs.utilities.env_utils import flatten_observations
 _ACTION_EPS = 0.01
 _NUM_SIMULATION_ITERATION_STEPS = 300
 _LOG_BUFFER_LENGTH = 5000

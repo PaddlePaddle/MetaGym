@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/sensors/space_utils.py
-
+# https://github.com/google-research/motion_imitation
 
 """Converts a list of sensors to gym space."""
 
@@ -21,7 +20,7 @@ from gym import spaces
 import numpy as np
 import typing
 
-from rlschool.A1_robot.envs.sensors import sensor
+from rlschool.quadrupedal.envs.sensors import sensor
 
 
 class UnsupportedConversionError(Exception):

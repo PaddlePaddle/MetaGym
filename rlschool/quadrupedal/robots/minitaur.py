@@ -1,9 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_config.py
-
-
+# https://github.com/google-research/motion_imitation
 """This file implements the functionalities of a minitaur using pybullet."""
 from __future__ import absolute_import
 from __future__ import division
@@ -20,11 +18,11 @@ import copy
 import math
 import re
 import numpy as np
-from rlschool.A1_robot.robots import minitaur_constants
-from rlschool.A1_robot.robots import minitaur_motor
-from rlschool.A1_robot.robots import robot_config
-from rlschool.A1_robot.robots import action_filter
-from rlschool.A1_robot.robots import kinematics
+from rlschool.quadrupedal.robots import minitaur_constants
+from rlschool.quadrupedal.robots import minitaur_motor
+from rlschool.quadrupedal.robots import robot_config
+from rlschool.quadrupedal.robots import action_filter
+from rlschool.quadrupedal.robots import kinematics
 
 INIT_POSITION = [0, 0, .2]
 INIT_RACK_POSITION = [0, 0, 1]

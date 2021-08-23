@@ -1,9 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_config.py
-
-
+# https://github.com/google-research/motion_imitation
 """This file implements an accurate motor model."""
 
 import os
@@ -13,7 +11,7 @@ parentdir = os.path.dirname(os.path.dirname(currentdir))
 os.sys.path.insert(0, parentdir)
 import numpy as np
 
-from rlschool.A1_robot.robots import robot_config
+from rlschool.quadrupedal.robots import robot_config
 
 VOLTAGE_CLIPPING = 50
 OBSERVED_TORQUE_LIMIT = 5.7

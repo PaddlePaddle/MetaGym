@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/env_wrappers/gait_generator_env.py
-
+# https://github.com/google-research/motion_imitation
 
 """A wrapped MinitaurGymEnv with a built-in controller."""
 
@@ -11,10 +10,10 @@ from __future__ import division
 from __future__ import print_function
 import numpy as np
 import copy
-from rlschool.A1_robot.envs.GaitGenerator.Bezier import BezierGait
-from rlschool.A1_robot.envs.OpenLoopSM.SpotOL import BezierStepper
+from rlschool.quadrupedal.envs.GaitGenerator.Bezier import BezierGait
+from rlschool.quadrupedal.envs.OpenLoopSM.SpotOL import BezierStepper
 from gym import spaces
-from rlschool.A1_robot.robots import laikago_pose_utils
+from rlschool.quadrupedal.robots import laikago_pose_utils
 import attr
 
 class GaitGeneratorWrapperEnv(object):

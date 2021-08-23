@@ -3,7 +3,7 @@ Quadrupedal is a physical simulation platform for unitree A1 robot based on pybu
 
 Please consider to cite this environment if it can help your research.
 
-<img src="simu.gif" width="1000"/>
+<img src="simu.png" width="1000"/>
 
 ## Install
 ```python

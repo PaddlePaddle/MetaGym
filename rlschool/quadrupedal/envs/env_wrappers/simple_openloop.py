@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/env_wrappers/simple_openloop.py
-
+# https://github.com/google-research/motion_imitation
 
 """Simple openloop trajectory generators."""
 
@@ -20,8 +19,8 @@ import attr
 from gym import spaces
 import numpy as np
 
-from rlschool.A1_robot.robots import laikago_pose_utils
-from rlschool.A1_robot.robots import minitaur_pose_utils
+from rlschool.quadrupedal.robots import laikago_pose_utils
+from rlschool.quadrupedal.robots import minitaur_pose_utils
 
 class MinitaurPoseOffsetGenerator(object):
   """A trajectory generator that return a constant leg pose."""

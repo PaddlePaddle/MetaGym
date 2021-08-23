@@ -9,16 +9,16 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(os.path.dirname(currentdir))
 os.sys.path.insert(0, parentdir)
 
-from rlschool.A1_robot.envs import locomotion_gym_env
-from rlschool.A1_robot.envs import locomotion_gym_config
-from rlschool.A1_robot.envs.env_wrappers import observation_dictionary_to_array_wrapper as obs_dict_to_array_wrapper
-from rlschool.A1_robot.envs.env_wrappers import trajectory_generator_wrapper_env
-from rlschool.A1_robot.envs.env_wrappers import simple_openloop
-from rlschool.A1_robot.envs.env_wrappers import simple_forward_task
-from rlschool.A1_robot.envs.sensors import robot_sensors
-from rlschool.A1_robot.robots import a1
-from rlschool.A1_robot.robots import robot_config
-from rlschool.A1_robot.envs.env_wrappers.gait_generator_env import GaitGeneratorWrapperEnv
+from rlschool.quadrupedal.envs import locomotion_gym_env
+from rlschool.quadrupedal.envs import locomotion_gym_config
+from rlschool.quadrupedal.envs.env_wrappers import observation_dictionary_to_array_wrapper as obs_dict_to_array_wrapper
+from rlschool.quadrupedal.envs.env_wrappers import trajectory_generator_wrapper_env
+from rlschool.quadrupedal.envs.env_wrappers import simple_openloop
+from rlschool.quadrupedal.envs.env_wrappers import simple_forward_task
+from rlschool.quadrupedal.envs.sensors import robot_sensors
+from rlschool.quadrupedal.robots import a1
+from rlschool.quadrupedal.robots import robot_config
+from rlschool.quadrupedal.envs.env_wrappers.gait_generator_env import GaitGeneratorWrapperEnv
 
 
 SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"CPG":0}

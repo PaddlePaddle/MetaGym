@@ -18,7 +18,7 @@ import numpy as np
 import typing
 
 from robots import minitaur_pose_utils
-from rlschool.A1_robot.envs.sensors import sensor
+from rlschool.quadrupedal.envs.sensors import sensor
 
 _ARRAY = typing.Iterable[float] #pylint: disable=invalid-name
 _FLOAT_OR_ARRAY = typing.Union[float, _ARRAY] #pylint: disable=invalid-name

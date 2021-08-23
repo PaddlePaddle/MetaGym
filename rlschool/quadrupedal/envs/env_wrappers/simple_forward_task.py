@@ -10,7 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-from rlschool.A1_robot.envs.utilities import pose3d
+from rlschool.quadrupedal.envs.utilities import pose3d
 from pybullet_utils import transformations
 
 class SimpleForwardTask(object):

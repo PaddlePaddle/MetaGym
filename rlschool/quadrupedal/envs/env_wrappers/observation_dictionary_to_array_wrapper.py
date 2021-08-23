@@ -1,11 +1,10 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/env_wrappers/observation_dictionary_to_array_wrapper.py
-
+# https://github.com/google-research/motion_imitation
 """An env wrapper that flattens the observation dictionary to an array."""
 import gym
-from rlschool.A1_robot.envs.utilities import env_utils
+from rlschool.quadrupedal.envs.utilities import env_utils
 
 
 class ObservationDictionaryToArrayWrapper(gym.Env):

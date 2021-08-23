@@ -1,6 +1,6 @@
 import pybullet as p
 import numpy as np
-from rlschool.A1_robot.envs.utilities.pose3d import QuaternionFromAxisAngle
+from rlschool.quadrupedal.envs.utilities.pose3d import QuaternionFromAxisAngle
 import time
 
 STEP_HEIGHT_INTERVAL = 0.002

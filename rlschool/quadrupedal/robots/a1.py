@@ -16,11 +16,11 @@ import re
 import numpy as np
 import pybullet as pyb  # pytype: disable=import-error
 
-from rlschool.A1_robot.robots import laikago_constants
-from rlschool.A1_robot.robots import laikago_motor
-from rlschool.A1_robot.robots import minitaur
-from rlschool.A1_robot.robots import robot_config
-from rlschool.A1_robot.envs import locomotion_gym_config
+from rlschool.quadrupedal.robots import laikago_constants
+from rlschool.quadrupedal.robots import laikago_motor
+from rlschool.quadrupedal.robots import minitaur
+from rlschool.quadrupedal.robots import robot_config
+from rlschool.quadrupedal.envs import locomotion_gym_config
 
 NUM_MOTORS = 12
 NUM_LEGS = 4

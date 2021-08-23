@@ -14,7 +14,7 @@
 
 from rlschool.liftsim import *
 from rlschool.quadrotor import *
-from rlschool.A1_robot import *
+from rlschool.quadrupedal import *
 
 def make_env(env_id, **kwargs):
     if env_id == 'LiftSim':

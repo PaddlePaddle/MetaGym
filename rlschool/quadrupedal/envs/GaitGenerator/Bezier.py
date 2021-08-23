@@ -4,7 +4,7 @@
 # https://github.com/OpenQuadruped/spot_mini_mini/blob/spot/spotmicro/GaitGenerator/Bezier.py
 
 import numpy as np
-from rlschool.A1_robot.robots.LieAlgebra import TransToRp
+from rlschool.quadrupedal.robots.LieAlgebra import TransToRp
 import copy
 
 STANCE = 0

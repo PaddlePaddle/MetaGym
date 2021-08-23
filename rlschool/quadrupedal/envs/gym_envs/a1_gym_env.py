@@ -1,13 +1,12 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/gym_envs/a1_gym_env.py
-
+# https://github.com/google-research/motion_imitation
 import gym
 
-from rlschool.A1_robot.envs import env_builder
-from rlschool.A1_robot.robots import a1
-from rlschool.A1_robot.robots import robot_config
+from rlschool.quadrupedal.envs import env_builder
+from rlschool.quadrupedal.robots import a1
+from rlschool.quadrupedal.robots import robot_config
 
 SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":1,"CPG":0}
 
