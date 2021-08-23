@@ -119,9 +119,9 @@ def upstair_terrain(stepwidth=0.33,stepheight=0.05,slope=0.05,stepnum=40,mode="t
         add_height = 5
         balance_beam(stepwidth,stepheight)
         env_info.append([-10,100,np.zeros(7)])
-    elif mode == "cliff":
+    elif mode == "gallop":
         add_height = 5
-        cliff(stepwidth)
+        gallop(stepwidth)
         env_info.append([-10,100,np.zeros(7)])
     elif mode == "hurdle":
         hurdle(stepwidth,stepheight)
@@ -267,7 +267,7 @@ def balance_beam(stepwidth=0.1,stepheight=1):
                             basePosition = [stepheight/2.0+0.2,0,5],baseOrientation=[0.0,0.0,0.0,1])
     p.changeDynamics(id_balance,-1,lateralFriction=FRICTION)
 
-def cliff(stepwidth = 0.3,stepnum=30):
+def gallop(stepwidth = 0.3,stepnum=30):
     boxHalfLength = 2.5 
     boxHalfWidth = 2.5
     boxHalfHeight = 0.01

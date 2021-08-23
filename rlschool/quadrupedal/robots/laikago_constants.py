@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/locomotion_gym_config.py
-
+# https://github.com/google-research/motion_imitation
 
 # Lint as: python3
 """Defines the laikago robot related constants and URDF specs."""

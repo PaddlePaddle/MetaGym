@@ -43,7 +43,7 @@ There are nine predefined tasks in this environment.
 
 "balancebeam": Walk over the balance beam with width of 10 cm
 
-"cliff": Gallop over big gaps with width of 50 cm
+"gallop": Gallop over big gaps with width of 50 cm
 
 "Cave": Crawl into caves with height of 18 cm
 

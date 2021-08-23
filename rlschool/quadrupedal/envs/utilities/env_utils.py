@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/utilities/env_utils.py
-
+# https://github.com/google-research/motion_imitation
 
 """Utility functions to manipulate environment."""
 

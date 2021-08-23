@@ -315,8 +315,8 @@ class LocomotionGymEnv(gym.Env):
         self.add_height,self.env_info = upstair_terrain(mode="special",env_vecs=upslope_downstair)
       elif self.task_mode == "slopeslope":
         self.add_height,self.env_info = upstair_terrain(mode="special",env_vecs=upslope_downslope)
-      elif self.task_mode == "cliff":
-        self.add_height,self.env_info = upstair_terrain(stepwidth=0.5,mode="cliff")
+      elif self.task_mode == "gallop":
+        self.add_height,self.env_info = upstair_terrain(stepwidth=0.5,mode="gallop")
       elif self.task_mode == "cave":
         self.add_height,self.env_info = upstair_terrain(stepheight=0.18,mode="cave")
       elif self.task_mode == "balancebeam":

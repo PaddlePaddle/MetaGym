@@ -1,8 +1,7 @@
 # Third party code
 #
 # The following code are copied or modified from:
-# https://github.com/google-research/motion_imitation/blob/master/motion_imitation/envs/utilities/pose3d.py
-
+# https://github.com/google-research/motion_imitation
 """Utilities for 3D pose conversion."""
 import math
 import numpy as np
