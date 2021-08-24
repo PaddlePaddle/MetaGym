@@ -8,7 +8,7 @@ from rlschool.quadrupedal.envs import env_builder
 from rlschool.quadrupedal.robots import a1
 from rlschool.quadrupedal.robots import robot_config
 
-SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":1,"CPG":0}
+SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"CPG":0}
 
 class A1GymEnv(gym.Env):
   """A1 environment that supports the gym interface."""

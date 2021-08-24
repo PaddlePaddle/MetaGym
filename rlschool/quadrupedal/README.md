@@ -61,7 +61,9 @@ env = rlschool.make_env('Quadrupedal',render=1,task="balancebeam")
 
 Our action a(t) is a 12 dimen vector, corresponding to the desired joint angle of 12 joints. The desired joint angle will be sent to a low level PD controller to control the motor.
 
-Note that we have defined a default joint angle as J_default = [0,0.9,-1.8,0,0.9,-1.8,0,0.9,-1.8,0,0.9,-1.8], the final output will be J_final = a(t) + J_default.
+Note that we have defined a default joint angle as J_default = [0,0.9,-1.8]*4, the final output will be J_final = a(t) + J_default.
+
+The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188,-0.916]. In our experiments we use action bound of [-0.7]*12 to [0.7]*12.
 
 ## Observation
 
