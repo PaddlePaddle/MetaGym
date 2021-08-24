@@ -63,7 +63,7 @@ Our action a(t) is a 12 dimen vector, corresponding to the desired joint angle o
 
 Note that we have defined a default joint angle as J_default = [0,0.9,-1.8]*4, the final output will be J_final = a(t) + J_default.
 
-The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188,-0.916]. In our experiments we use action bound of [-0.7]*12 to [0.7]*12.
+The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188,-0.916]*4. In our experiments we use action bound of [-0.7]*12 to [0.7]*12.
 
 ## Observation
 
