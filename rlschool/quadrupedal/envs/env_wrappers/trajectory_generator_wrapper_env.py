@@ -54,7 +54,7 @@ class TrajectoryGeneratorWrapperEnv(object):
       self._trajectory_generator.reset()
     observation,info = self._gym_env.reset(**kwargs)
     if "info" in kwargs.keys() and kwargs["info"]:
-      return self._modify_observation(observation),info
+      return self._modify_observation(observation)[0],info
     else:
       return self._modify_observation(observation)[0]
 
@@ -79,4 +79,4 @@ class TrajectoryGeneratorWrapperEnv(object):
 
     info['real_action'] = new_action
 
-    return self._modify_observation(original_observation), reward, done, info
+    return self._modify_observation(original_observation)[0], reward, done, info

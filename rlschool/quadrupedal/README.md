@@ -24,6 +24,23 @@ for i in range(100):
     action = np.random.uniform(-0.3,0.3,size=12)
     next_obs, reward, done, info = env.step(action)
 ```
+
+## Arguments
+
+| Name                    | Type    | Description                                |
+| :----------------------:| :-----: | :----------------------------------------: |
+| render                   | bool   | Render the environment or not.                 |
+| task            | string     | Select the task.                |
+| sensor_mode                | dict   | Select the sensors used for observation.         |
+| normal            | bool   | Normalize the observation or not.              |
+| random_param               | dict     | Randomize the dynamic parameters and external force.          |
+| reward_param               | dict     | Specify the weight of each reward term.          |
+| vel_d               | float     | The maximum of desired speed.           |
+| step_y               | float     | Specify the foot position at y axis for balance beam task.           |
+| ETG               | bool     | Use ETG to produce open loop control signals or not.          |
+| ETG_path               | string     | The path of ETG params.          |
+| ETG_T               | float     | The period of ETG.          |
+
 ## Specify a Task
 There are nine predefined tasks in this environment.
 
@@ -57,13 +74,28 @@ import numpy as np
 env = rlschool.make_env('Quadrupedal',render=1,task="balancebeam")
 ```
 
+## ETG mode
+
+If we use ETG mode, we should modify the arguments ETG and ETG_path, for example
+
+```python
+import rlschool
+import numpy as np
+env = rlschool.make_env('Quadrupedal',render=1,task="stairstair",ETG=True,ETG_path="ESStair_origin.npz")
+```
+
+
 ## Action
 
 Our action a(t) is a 12 dimen vector, corresponding to the desired joint angle of 12 joints. The desired joint angle will be sent to a low level PD controller to control the motor.
 
 Note that we have defined a default joint angle as J_default = [0,0.9,-1.8]*4, the final output will be J_final = a(t) + J_default.
 
+If we use the ETG mode, then the final output will be  J_final = ETG(t)+ a(t) + J_default.
+
 The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188,-0.916]*4. In our experiments we use action bound of [-0.7]*12 to [0.7]*12.
+
+
 
 ## Observation
 
@@ -74,10 +106,21 @@ The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188
 | Motor Angle ACC                | 12   | The accelerate of motor angle         |
 | IMU            | 6   | Yaw, Pitch, Roll, d_Yaw, d_Pitch, d_Roll              |
 | Contact               | 4     | Four bool variables indicating if the whether foot is touching the ground.          |
+| CPG               | 12     | CPG ouput.          |
+| footpose               | 12     | Four feet position at the body coordinate.          |
+
+By default we use [Speed, Motor Angle, Motor Angle ACC, IMU , Contact] as our observation.
 
 ## Reward
 
-We want the quadrupedal robot to traverse the challenging scenarios. The reward function depends on the movement speed of the body along the x axis.
+| Name                        | Description                                |
+| :----------------------:|  :----------------------------------------: |
+| torso                    | Reward the speed of the robot body along desired direction at the global coordinate.                 |
+| up                 | Reward to keep roll and pitch term small.         |
+| feet                  | Reward to move the feet forward along desired direction.         |
+| tau               | Punish the energy cost.     |
+| footcontact                   | Reward the time of foot contact with the ground.          |
+| badfoot                   | Punish other joints except foot to contact with the ground.         |
 
 
 
