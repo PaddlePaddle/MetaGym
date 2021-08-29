@@ -106,7 +106,7 @@ The action bound of J_final is between [-0.802,-1.047,-2.696]*4 and [0.802,4.188
 | Motor Angle ACC                | 12   | The accelerate of motor angle         |
 | IMU            | 6   | Yaw, Pitch, Roll, d_Yaw, d_Pitch, d_Roll              |
 | Contact               | 4     | Four bool variables indicating if the whether foot is touching the ground.          |
-| CPG               | 12     | CPG ouput.          |
+| ETG               | 12     | ETG ouput.          |
 | footpose               | 12     | Four feet position at the body coordinate.          |
 
 By default we use [Speed, Motor Angle, Motor Angle ACC, IMU , Contact] as our observation.

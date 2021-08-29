@@ -6,21 +6,21 @@ import pybullet
 from rlschool.quadrupedal.robots import robot_config
 from rlschool import quadrupedal
 from rlschool.quadrupedal.robots import action_filter
-from rlschool.quadrupedal.envs.utilities.CPG_model import CPG_layer,CPG_model
+from rlschool.quadrupedal.envs.utilities.ETG_model import ETG_layer,ETG_model
 from copy import copy
 
 Param_Dict = {'torso':1.0,'up':0.3,'feet':0.2,'tau':0.1,'done':1,'velx':0,'badfoot':0.1,'footcontact':0.1}
 Random_Param_Dict = {'random_dynamics':0,'random_force':0}
-def EnvWrapper(env,param,sensor_mode,normal=0,CPG_T=0.5,enable_action_filter=False,
-                reward_p=1,CPG=1,CPG_path="",CPG_T2=0.5,random_param=None,
-                CPG_H=20,act_mode="traj",vel_d=0.6,vel_mode="max",
+def EnvWrapper(env,param,sensor_mode,normal=0,ETG_T=0.5,enable_action_filter=False,
+                reward_p=1,ETG=1,ETG_path="",ETG_T2=0.5,random_param=None,
+                ETG_H=20,act_mode="traj",vel_d=0.6,vel_mode="max",
                 task_mode="normal",step_y=0.05):
-    env = CPGWrapper(env=env,CPG=CPG,CPG_T=CPG_T,CPG_path=CPG_path,
-                    CPG_T2=CPG_T2,CPG_H=CPG_H,act_mode=act_mode,
+    env = ETGWrapper(env=env,ETG=ETG,ETG_T=ETG_T,ETG_path=ETG_path,
+                    ETG_T2=ETG_T2,ETG_H=ETG_H,act_mode=act_mode,
                     task_mode=task_mode,step_y=step_y)
     env = ActionFilterWrapper(env=env,enable_action_filter=enable_action_filter)
     env = RandomWrapper(env=env,random_param=random_param)
-    env = ObservationWrapper(env=env,CPG=CPG,sensor_mode=sensor_mode,normal=normal,CPG_H = CPG_H)
+    env = ObservationWrapper(env=env,ETG=ETG,sensor_mode=sensor_mode,normal=normal,ETG_H = ETG_H)
     env = RewardShaping(env=env,param=param,reward_p=reward_p,vel_d=vel_d,vel_mode=vel_mode)
     return env
 
@@ -31,7 +31,7 @@ class ActionFilterWrapper(gym.Wrapper):
         self.pybullet_client = self.env.pybullet_client
         self.observation_space = self.env.observation_space
         self.action_space = self.env.action_space
-        self.enable_action_filter = enable_action_filter and self.env.CPG.endswith("sac")
+        self.enable_action_filter = enable_action_filter and self.env.ETG.endswith("sac")
         if self.enable_action_filter:
             self._action_filter = self._BuildActionFilter()
 
@@ -75,7 +75,7 @@ class ActionFilterWrapper(gym.Wrapper):
         return filtered_action    
 
 class ObservationWrapper(gym.Wrapper):
-    def __init__(self, env,CPG,sensor_mode,normal,CPG_H):
+    def __init__(self, env,ETG,sensor_mode,normal,ETG_H):
         gym.Wrapper.__init__(self, env) 
         # print("env_time:",self.env.env_time_step)
         self.robot = self.env.robot
@@ -84,25 +84,25 @@ class ObservationWrapper(gym.Wrapper):
         self.action_space = self.env.action_space
         self.sensor_mode = sensor_mode
         self.normal = normal
-        self.CPG_H = CPG_H
-        self.CPG = CPG
-        self.CPG_mean = np.array([2.1505982e-02,  3.6674485e-02, -6.0444288e-02,
+        self.ETG_H = ETG_H
+        self.ETG = ETG
+        self.ETG_mean = np.array([2.1505982e-02,  3.6674485e-02, -6.0444288e-02,
                                 2.4625482e-02,  1.5869144e-02, -3.2513142e-02,  2.1506395e-02,
                                 3.1869926e-02, -6.0140789e-02,  2.4625063e-02,  1.1628972e-02,
                                 -3.2163858e-02])
-        self.CPG_std = np.array([4.5967497e-02,2.0340437e-01, 3.7410179e-01, 4.6187632e-02, 1.9441207e-01, 3.9488649e-01,
+        self.ETG_std = np.array([4.5967497e-02,2.0340437e-01, 3.7410179e-01, 4.6187632e-02, 1.9441207e-01, 3.9488649e-01,
                                 4.5966785e-02 ,2.0323379e-01, 3.7382501e-01, 4.6188373e-02 ,1.9457331e-01, 3.9302582e-01])
-        if self.CPG:
-            if "CPG" in self.sensor_mode.keys() and sensor_mode["CPG"] :
+        if self.ETG:
+            if "ETG" in self.sensor_mode.keys() and sensor_mode["ETG"] :
                 sensor_shape = self.observation_space.high.shape[0]
                 obs_h = np.array([1]*(sensor_shape+12))
                 obs_l = np.array([0]*(sensor_shape+12))
                 self.observation_space = gym.spaces.Box(obs_l,obs_h,dtype=np.float32)
 
-            if "CPG_obs" in self.sensor_mode.keys() and sensor_mode["CPG_obs"] :
+            if "ETG_obs" in self.sensor_mode.keys() and sensor_mode["ETG_obs"] :
                 sensor_shape = self.observation_space.high.shape[0]
-                obs_h = np.array([1]*(sensor_shape+self.CPG_H))
-                obs_l = np.array([0]*(sensor_shape+self.CPG_H))
+                obs_h = np.array([1]*(sensor_shape+self.ETG_H))
+                obs_l = np.array([0]*(sensor_shape+self.ETG_H))
                 self.observation_space = gym.spaces.Box(obs_l,obs_h,dtype=np.float32)
 
         if "force_vec" in self.sensor_mode.keys() and sensor_mode["force_vec"]:
@@ -136,16 +136,16 @@ class ObservationWrapper(gym.Wrapper):
     def reset(self,**kwargs):
         obs,info = self.env.reset(**kwargs)
         self.dynamic_info = info["dynamics"]
-        if self.CPG:
-            if "CPG" in self.sensor_mode.keys() and self.sensor_mode["CPG"] :
-                CPG_out = info["CPG_act"]
+        if self.ETG:
+            if "ETG" in self.sensor_mode.keys() and self.sensor_mode["ETG"] :
+                ETG_out = info["ETG_act"]
                 if self.normal:
-                    CPG_out = (CPG_out-self.CPG_mean)/self.CPG_std
-                obs = np.concatenate((obs,CPG_out),axis = 0)
+                    ETG_out = (ETG_out-self.ETG_mean)/self.ETG_std
+                obs = np.concatenate((obs,ETG_out),axis = 0)
 
-            if "CPG_obs" in self.sensor_mode.keys() and self.sensor_mode["CPG_obs"] :
-                CPG_obs = info["CPG_obs"]
-                obs = np.concatenate((obs,CPG_obs),axis = 0)
+            if "ETG_obs" in self.sensor_mode.keys() and self.sensor_mode["ETG_obs"] :
+                ETG_obs = info["ETG_obs"]
+                obs = np.concatenate((obs,ETG_obs),axis = 0)
 
         if "force_vec" in self.sensor_mode.keys() and self.sensor_mode["force_vec"]:
             force_vec = info["force_vec"]
@@ -180,16 +180,16 @@ class ObservationWrapper(gym.Wrapper):
 
     def step(self,action,**kwargs):
         obs, rew, done, info = self.env.step(action, **kwargs)
-        if self.CPG:
-            if "CPG" in self.sensor_mode.keys() and  self.sensor_mode["CPG"] :
-                CPG_out = info["CPG_act"]
+        if self.ETG:
+            if "ETG" in self.sensor_mode.keys() and  self.sensor_mode["ETG"] :
+                ETG_out = info["ETG_act"]
                 if self.normal:
-                    CPG_out = (CPG_out-self.CPG_mean)/self.CPG_std
-                obs = np.concatenate((obs,CPG_out),axis = 0)
+                    ETG_out = (ETG_out-self.ETG_mean)/self.ETG_std
+                obs = np.concatenate((obs,ETG_out),axis = 0)
 
-            if "CPG_obs" in self.sensor_mode.keys() and self.sensor_mode["CPG_obs"] :
-                CPG_obs = info["CPG_obs"]
-                obs = np.concatenate((obs,CPG_obs),axis = 0)
+            if "ETG_obs" in self.sensor_mode.keys() and self.sensor_mode["ETG_obs"] :
+                ETG_obs = info["ETG_obs"]
+                obs = np.concatenate((obs,ETG_obs),axis = 0)
         
         if "force_vec" in self.sensor_mode.keys() and self.sensor_mode["force_vec"]:
             force_vec = info["force_vec"]
@@ -221,63 +221,63 @@ class ObservationWrapper(gym.Wrapper):
                 obs = np.array(obs_list).reshape(-1)
         return obs,rew,done,info
 
-class CPGWrapper(gym.Wrapper):
-    def __init__(self, env,CPG,CPG_T,CPG_path,CPG_T2,CPG_H=20,act_mode="traj",task_mode="normal",step_y=0.05):
+class ETGWrapper(gym.Wrapper):
+    def __init__(self, env,ETG,ETG_T,ETG_path,ETG_T2,ETG_H=20,act_mode="traj",task_mode="normal",step_y=0.05):
         gym.Wrapper.__init__(self, env) 
         self.robot = self.env.robot
         self.pybullet_client = self.env.pybullet_client
         self.observation_space = self.env.observation_space
         self.action_space = self.env.action_space
-        self.CPG_T2 = CPG_T2
-        self.CPG_T = CPG_T
-        self.CPG_H = CPG_H
+        self.ETG_T2 = ETG_T2
+        self.ETG_T = ETG_T
+        self.ETG_H = ETG_H
         self.act_mode = act_mode
         self.step_y = step_y
         self.task_mode = task_mode
-        self.CPG = CPG
+        self.ETG = ETG
         phase = np.array([-np.pi/2,0])
-        if self.CPG:
-            self.CPG_agent = CPG_layer(self.CPG_T,self.env.env_time_step,self.CPG_H,0.04,phase,0.2,self.CPG_T2)
-            self.CPG_weight = 1
-            if len(CPG_path)>1 and os.path.exists(CPG_path):
-                info = np.load(CPG_path)
-                self.CPG_w = info["w"]
-                self.CPG_b = info["b"]
+        if self.ETG:
+            self.ETG_agent = ETG_layer(self.ETG_T,self.env.env_time_step,self.ETG_H,0.04,phase,0.2,self.ETG_T2)
+            self.ETG_weight = 1
+            if len(ETG_path)>1 and os.path.exists(ETG_path):
+                info = np.load(ETG_path)
+                self.ETG_w = info["w"]
+                self.ETG_b = info["b"]
             else:
-                self.CPG_w = np.zeros((3,CPG_H))
-                self.CPG_b = np.zeros(3)
-            self.CPG_model = CPG_model(task_mode=self.task_mode,act_mode=act_mode,step_y=self.step_y)   
-            self.last_CPG_act = np.zeros(12)
-            self.last_CPG_obs = np.zeros(self.CPG_H)
+                self.ETG_w = np.zeros((3,ETG_H))
+                self.ETG_b = np.zeros(3)
+            self.ETG_model = ETG_model(task_mode=self.task_mode,act_mode=act_mode,step_y=self.step_y)   
+            self.last_ETG_act = np.zeros(12)
+            self.last_ETG_obs = np.zeros(self.ETG_H)
 
     def reset(self,**kwargs):
         kwargs["info"] = True
         obs,info = self.env.reset(**kwargs)
-        if self.CPG:
-            if "CPG_w" in kwargs.keys() and kwargs["CPG_w"] is not None:
-                self.CPG_w = kwargs["CPG_w"]
-            if "CPG_b" in kwargs.keys() and kwargs["CPG_b"] is not None:
-                self.CPG_b = kwargs["CPG_b"]
-            self.CPG_agent.reset()
-            state = self.CPG_agent.update2(t=self.env.get_time_since_reset())
-            act_ref = self.CPG_model.forward(self.CPG_w,self.CPG_b,state)
-            act_ref = self.CPG_model.act_clip(act_ref,self.robot)
-            self.last_CPG_act = act_ref*self.CPG_weight
-            info["CPG_obs"] = state[0]
-            info["CPG_act"] = self.last_CPG_act
+        if self.ETG:
+            if "ETG_w" in kwargs.keys() and kwargs["ETG_w"] is not None:
+                self.ETG_w = kwargs["ETG_w"]
+            if "ETG_b" in kwargs.keys() and kwargs["ETG_b"] is not None:
+                self.ETG_b = kwargs["ETG_b"]
+            self.ETG_agent.reset()
+            state = self.ETG_agent.update2(t=self.env.get_time_since_reset())
+            act_ref = self.ETG_model.forward(self.ETG_w,self.ETG_b,state)
+            act_ref = self.ETG_model.act_clip(act_ref,self.robot)
+            self.last_ETG_act = act_ref*self.ETG_weight
+            info["ETG_obs"] = state[0]
+            info["ETG_act"] = self.last_ETG_act
         return obs,info
     
     def step(self,action,**kwargs):
-        if self.CPG:
-            action = np.asarray(action).reshape(-1)+self.last_CPG_act
-            state = self.CPG_agent.update2(t=self.env.get_time_since_reset())
-            act_ref = self.CPG_model.forward(self.CPG_w,self.CPG_b,state)
+        if self.ETG:
+            action = np.asarray(action).reshape(-1)+self.last_ETG_act
+            state = self.ETG_agent.update2(t=self.env.get_time_since_reset())
+            act_ref = self.ETG_model.forward(self.ETG_w,self.ETG_b,state)
             action_before = act_ref
-            act_ref = self.CPG_model.act_clip(act_ref,self.robot)
-            self.last_CPG_act = act_ref*self.CPG_weight
+            act_ref = self.ETG_model.act_clip(act_ref,self.robot)
+            self.last_ETG_act = act_ref*self.ETG_weight
             obs, rew, done, info = self.env.step(action)
-            info["CPG_obs"] = state[0]
-            info["CPG_act"] = self.last_CPG_act
+            info["ETG_obs"] = state[0]
+            info["ETG_act"] = self.last_ETG_act
         else:
             obs, rew, done, info = self.env.step(action)
         return obs,rew,done,info

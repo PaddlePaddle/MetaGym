@@ -5,7 +5,7 @@ ACTION_DIM = 12
 base_foot = np.array([ 0.18,-0.15,-0.23,0.18,0.148,-0.23,\
                         -0.18,-0.14,-0.23,-0.18,0.135,-0.23])
 
-class CPG_layer():
+class ETG_layer():
     def __init__(self,T,dt,H,sigma_sq,phase,amp,T2_radio):
         #T2_ratio mean the ratio forward t
         self.dt = dt
@@ -76,7 +76,7 @@ class CPG_layer():
         self.t = 0
         self.TD = 0
 
-class CPG_model():
+class ETG_model():
     def __init__(self,task_mode="normal",act_mode="traj",step_y=0.5):
         self.act_mode = act_mode
         self.pose_ori = np.array([0,0.9,-1.8]*4)

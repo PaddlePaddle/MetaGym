@@ -21,7 +21,7 @@ from rlschool.quadrupedal.robots import robot_config
 from rlschool.quadrupedal.envs.env_wrappers.gait_generator_env import GaitGeneratorWrapperEnv
 
 
-SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"CPG":0}
+SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"ETG":0}
 
 def build_regular_env(robot_class,
                       motor_control_mode,

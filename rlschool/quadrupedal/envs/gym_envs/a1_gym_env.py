@@ -10,7 +10,7 @@ from rlschool.quadrupedal.robots import robot_config
 from rlschool.quadrupedal.envs.env_wrappers.MonitorEnv import EnvWrapper,Param_Dict,Random_Param_Dict
 from copy import copy
 
-SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"CPG":0}
+SENSOR_MODE = {"dis":1,"motor":1,"imu":1,"contact":1,"footpose":0,"ETG":0}
 
 class A1GymEnv(gym.Env):
   """A1 environment that supports the gym interface."""
@@ -37,7 +37,7 @@ class A1GymEnv(gym.Env):
                task = "plane",
                reward_p = 1.0,
                motor_control_mode = robot_config.MotorControlMode.POSITION,
-               dynamic_param={'control_latency':0,'footfriction':1,'basemass':1},
+               dynamic_param={},
                **kwargs):
     self._env = env_builder.build_regular_env(
         a1.A1,
@@ -59,9 +59,9 @@ class A1GymEnv(gym.Env):
         param = reward_param,
         sensor_mode = sensor_mode,
         normal = normal,
-        CPG_T = ETG_T,
-        CPG_path = ETG_path,
-        CPG = ETG,
+        ETG_T = ETG_T,
+        ETG_path = ETG_path,
+        ETG = ETG,
         random_param = random_param,
         vel_d = vel_d,
         step_y = step_y,
@@ -72,8 +72,8 @@ class A1GymEnv(gym.Env):
     self.action_space = self._env.action_space
     self.sensor_mode =sensor_mode
 
-  def step(self, action):
-    return self._env.step(action)
+  def step(self, action,**kwargs):
+    return self._env.step(action,**kwargs)
 
   def reset(self,**kwargs):
     return self._env.reset(**kwargs)
