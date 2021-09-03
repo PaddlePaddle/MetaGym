@@ -324,10 +324,6 @@ class LocomotionGymEnv(gym.Env):
       elif self.task_mode == "highstair":
         self.add_height,self.env_info = upstair_terrain(stepwidth=0.4,stepheight=0.13,mode="stair-fix")
 
-
-
-
-    # print("t2:",time.clock()-t0)
     if "yaw" in kwargs.keys():
       yaw = kwargs["yaw"]
     else:
