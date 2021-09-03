@@ -42,27 +42,23 @@ for i in range(100):
 | ETG_T               | float     | The period of ETG.          |
 
 ## Specify a Task
-There are nine predefined tasks in this environment.
+There are ten predefined tasks in this environment.
 
-"stairstair": Climb up and down the stair
+| Task                        | Description                                |
+| :----------------------:|  :----------------------------------------: |
+| "stairstair"                    | Climb up and down the stair|
+| "stairslope"                 | Climb up the stair and down the slope        |
+| "slopestair"                  | Climb up the slope and down the stair         |
+| "slopeslope"               | Climb up and down the slope    |
+| "stair13"                   | Climb up the stair with height of 13 cm         |
+| "terrain"                   |  Walk over terrain        |
+| "balancebeam"                   |  Walk over the balance beam with width of 10 cm       |
+| "gallop"                  |  Gallop over big gaps with width of 50 cm     |
+| "Cave"                  |  Crawl into caves with height of 18 cm    |
+| "ground"                  |  Walk on a flat ground.    |
 
-"stairslope": Climb up the stair and down the slope
+For above tasks except "stair13", the stair height is 8 cm and width is 25 cm, the slope is around 20 degree.
 
-"slopestair": Climb up the slope and down the stair
-
-"slopeslope": Climb up and down the slope
-
-(Above stair height is 8 cm and width is 25 cm, slope is around 20 degree)
-
-"stair13": Climb up the stair with height of 13 cm
-
-"terrain": Walk over terrain
-
-"balancebeam": Walk over the balance beam with width of 10 cm
-
-"gallop": Gallop over big gaps with width of 50 cm
-
-"Cave": Crawl into caves with height of 18 cm
 
 <img src="nine_block.gif" width="1000"/>
 
