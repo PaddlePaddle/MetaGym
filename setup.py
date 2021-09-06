@@ -53,7 +53,9 @@ setup(
         'networkx>=2.2',
         'colour>=0.1.5',
         'scipy>=0.12.0',
-        'gym==0.18.0',
+        'gym>=0.18.0',
+        'pybullet>=3.0.7',
+        'attrs>=20.3.0',
     ],
     zip_safe=False,
 )

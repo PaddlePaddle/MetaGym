@@ -11,3 +11,7 @@ RLSchool是一个强化学习模拟环境合集。
 - [Quadrotor][quadrotor]: 3D四轴飞行器
 
 [quadrotor]: https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor
+
+- [Quadrupedal][quadrupedal]: 四足机器人
+
+[quadrupedal]: https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrupedal
