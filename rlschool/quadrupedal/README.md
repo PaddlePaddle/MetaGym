@@ -60,7 +60,7 @@ There are ten predefined tasks in this environment.
 For above tasks except "stair13", the stair height is 8 cm and width is 25 cm, the slope is around 20 degree.
 
 
-<img src="nine_block.gif" width="1000"/>
+<img src="nine_block_new.gif" width="1000"/>
 
 To specify a task, we can change the value of task in make_env function, for example to select "balancebeam"
 
