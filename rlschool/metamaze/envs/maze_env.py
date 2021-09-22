@@ -7,7 +7,7 @@ import pygame
 
 from gym import error, spaces, utils
 from gym.utils import seeding
-from maze_core import Textures, sample_task_config, MazeCore3D
+from rlschool.metamaze.envs.maze_core import Textures, sample_task_config, MazeCore3D
 
 
 class MetaMaze3D(gym.Env):

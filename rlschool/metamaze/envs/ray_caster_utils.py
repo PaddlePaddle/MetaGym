@@ -2,7 +2,7 @@ import numpy
 import pygame
 import time
 from numba import njit
-from dynamics import PI, PI_4
+from rlschool.metamaze.envs.dynamics import PI, PI_4
 
 FAR_RGB = numpy.array([0, 0, 0], dtype="float32")
 TRANSPARENT_RGB = numpy.array([0, 255, 0], dtype="float32")
