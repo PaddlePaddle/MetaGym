@@ -6,7 +6,7 @@ Please consider to cite this environment if it can help your research.
 
 ```txt
 @misc{MetaMaze,
-    author = {Fan Wang, Bo Zhou},
+    author = {Fan Wang},
     title = {{MetaMaze: Efficient 3D Navigation Simulator Benchmarking Meta-learning}},
     year = {2021},
     publisher = {GitHub},
@@ -15,8 +15,8 @@ Please consider to cite this environment if it can help your research.
 }
 ```
 
-<img src="envs/img/demo_maze_small.gif" width="400"/>
-<img src="envs/img/demo_maze_hug.gif" width="400"/>
+<img src="envs/img/demo_maze_small.gif" width="600"/>
+<img src="envs/img/demo_maze_huge.gif" width="600"/>
 
 
 ## Install
