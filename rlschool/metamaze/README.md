@@ -1,5 +1,3 @@
-English
-
 # MetaMaze
 
 MetaMaze is a powerful and efficient simulation for 3D maze, benchmarking meta learning algorithms
@@ -17,8 +15,8 @@ Please consider to cite this environment if it can help your research.
 }
 ```
 
-<img src="demo_maze_small.gif" width="400"/>
-<img src="demo_maze_hug.gif" width="400"/>
+<img src="envs/img/demo_maze_small.gif" width="400"/>
+<img src="envs/img/demo_maze_hug.gif" width="400"/>
 
 
 ## Install
