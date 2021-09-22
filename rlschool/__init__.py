@@ -15,6 +15,7 @@
 from rlschool.liftsim import *
 from rlschool.quadrotor import *
 from rlschool.quadrupedal import *
+from rlschool.metamaze import *
 
 def make_env(env_id, **kwargs):
     if env_id == 'LiftSim':
@@ -23,5 +24,7 @@ def make_env(env_id, **kwargs):
         return Quadrotor(**kwargs)
     elif env_id == 'Quadrupedal':
         return A1GymEnv(**kwargs)
+    elif env_id == 'MetaMaze':
+        return MetaMaze3D(**kwargs)
     else:
         raise ValueError('Unknown environment ID.')
