@@ -9,10 +9,18 @@ MetaMaze is a powerful and efficient simulator for 3D navigation in a randomly g
 #### Wall Textures
 #### Agent Height
 
+# Demonstrations
+
 A demonstration of maze cell_scale=15, cell_size=2, wall_height=3.2
 <img src="envs/img/demo_maze_small.gif" width="600"/>
+
 A demonstration of maze cell_scale=9, cell_size=5, wall_height=6.4
 <img src="envs/img/demo_maze_huge.gif" width="600"/>
+
+Run the following command to get a quick view and play of the game
+```bash
+python keyboard_play_demo.py
+```
 
 ## Install
 
@@ -56,11 +64,6 @@ while not done:
     action = # Specify your policy, deciding the turn(LEFT/RIGHT) and the walk speed (FORWARD/BACKWARD)
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
-```
-
-Run the following command to get a quick view and play of the game
-```bash
-python keyboard_play_demo.py
 ```
 
 ## Citation
