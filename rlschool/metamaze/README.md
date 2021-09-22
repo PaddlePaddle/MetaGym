@@ -2,12 +2,14 @@
 
 MetaMaze is a powerful and efficient simulator for 3D navigation in a randomly generated maze, benchmarking meta learning algorithms. In MetaMaze you can specify different
 
-#### Maze Architecture
-#### Maze Scale
-#### Cell Size
-#### Wall Height
+#### Maze Architectures
+#### Maze Scales
+#### Cell Sizes
+#### Wall Heights
 #### Wall Textures
-#### Agent Height
+#### Agent Heights
+
+to test the capability of your learning algorithm adapting to different challenging tasks.
 
 # Demonstrations
 
