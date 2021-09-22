@@ -1,8 +1,60 @@
 # MetaMaze
 
-MetaMaze is a powerful and efficient simulation for 3D maze, benchmarking meta learning algorithms
+MetaMaze is a powerful and efficient simulator for 3D navigation in a randomly generated maze, benchmarking meta learning algorithms.
 
-Please consider to cite this environment if it can help your research.
+<img src="envs/img/demo_maze_small.gif" width="600"/>
+<img src="envs/img/demo_maze_huge.gif" width="600"/>
+
+## Install
+
+```bash
+pip install rlschool
+```
+
+#### For local installation, execute following commands:
+
+```bash
+git clone https://github.com/PaddlePaddle/RLSchool
+cd RLSchool
+pip install .
+```
+
+## Quick Start
+
+A Quick Demonstration
+```python
+from rlschool import make_env
+#Start a new meta environment with
+maze_env = make_env("MetaMaze",
+    enable_render=True # False if you do not need a render
+    )
+
+#Sample a task by specifying the configurations
+task = maze_env.sample_task(
+    cell_scale=15,  # Number of cells = cell_scale * cell_scale
+    allow_loops=True,  # Whether loops are allowed
+    cell_size=2.0, # specifying the size of each cell
+    wall_height=3.2, # specifying the height of the wall
+    agent_height=1.6 # specifying the height of the agent
+    )
+    
+#Set the task configuration to the meta environment
+maze_env.set_task(task)
+
+#Start the task
+done = False
+while not done:
+    action = # Specify your policy, deciding the turn(LEFT/RIGHT) and the walk speed (FORWARD/BACKWARD)
+    observation, reward, done, info = maze_env.do_action(action)
+    maze_env.render()
+```
+
+Run the following command to get a quick view and play of the game
+```bash
+python keyboard_play_demo.py
+```
+
+## Citation
 
 ```txt
 @misc{MetaMaze,
@@ -14,23 +66,3 @@ Please consider to cite this environment if it can help your research.
     howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/metamaze}},
 }
 ```
-
-<img src="envs/img/demo_maze_small.gif" width="600"/>
-<img src="envs/img/demo_maze_huge.gif" width="600"/>
-
-
-## Install
-
-```python
-pip install rlschool
-```
-
-#### For local installation, execute following commands:
-
-```python
-git clone https://github.com/PaddlePaddle/RLSchool
-cd RLSchool
-pip install .
-```
-
-## Quick Start
