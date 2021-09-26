@@ -13,12 +13,13 @@
 # limitations under the License.
 
 import unittest
-from rlschool import make_env
+import gym
+import rlschool.quadrotor
 
 
 class TestQuadrotorEnv(unittest.TestCase):
     def test_no_collision_task(self):
-        env = make_env('Quadrotor', task='no_collision')
+        env = gym.make('quadrotor-v0', task='no_collision')
         state = env.reset()
         act = env.action_space.sample()
         reset = False
@@ -27,7 +28,7 @@ class TestQuadrotorEnv(unittest.TestCase):
             act = env.action_space.sample()
 
     def test_velocity_control_task(self):
-        env = make_env('Quadrotor', task='velocity_control')
+        env = gym.make('quadrotor-v0', task='velocity_control')
         state = env.reset()
         reset = False
         step = 0
@@ -39,7 +40,7 @@ class TestQuadrotorEnv(unittest.TestCase):
         self.assertEqual(step, env.nt)
 
     def test_hovering_control_task(self):
-        env = make_env('Quadrotor', task='hovering_control')
+        env = gym.make('quadrotor-v0', task='hovering_control')
         state = env.reset()
         act = env.action_space.sample()
         reset = False

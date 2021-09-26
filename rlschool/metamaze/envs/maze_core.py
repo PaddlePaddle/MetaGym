@@ -42,7 +42,7 @@ def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0,
     assert max_cells > 6, "Minimum required cells are 7"
     assert max_cells % 2 != 0, "Cell Numbers can only be odd"
     max_cells = max_cells
-    print("Initializing A Maze...")
+    print("Generating an random maze of size %dx%d, with allow loops=%s"%(max_cells, max_cells, allow_loops))
     cell_walls = numpy.ones(shape=(max_cells, max_cells), dtype="int32")
     cell_texts = numpy.random.randint(1, texture_n, size=(max_cells, max_cells))
     # Dig the initial positions

@@ -12,7 +12,7 @@ from rlschool.metamaze.envs.maze_core import Textures, sample_task_config, MazeC
 
 class MetaMaze3D(gym.Env):
     def __init__(self, 
-            with_guidpost=True,
+            with_guidepost=True,
             enable_render=True,
             render_scale=480,
             render_godview=True,
@@ -24,7 +24,7 @@ class MetaMaze3D(gym.Env):
         self.render_viewsize = render_scale
         self.render_godview = render_godview
         self.maze_core = MazeCore3D(
-                with_guidepost=True,
+                with_guidepost = with_guidepost,
                 resolution_horizon = resolution[0],
                 resolution_vertical = resolution[1],
                 )
