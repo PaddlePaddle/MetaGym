@@ -4,18 +4,6 @@ English | [简体中文](./README_zh.md)
 
 LiftSim is a light-weight elevator simulator
 
-Please consider to cite this environment if it can help your research.
-
-```txt
-@misc{LiftSim,
-    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
-    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
-    year = {2020},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
-}
-```
 
 <img src="demo_image.gif" width="400"/>
 
@@ -46,9 +34,10 @@ Liftsim environment follows the standard gym APIs to create, run, render and clo
 
 ```python
 # We show a simple example to start LiftSim here
-from rlschool import make_env
+import gym
+import rlschool.liftsim
 
-env = make_env('LiftSim')
+env = gym.make('liftsim-v0')
 observation = env.reset()
 action = [2, 0, 4, 0, 7, 0, 10, 0]
 for i in range(100):
@@ -154,3 +143,15 @@ You may change mansion_flow.npy to your own customer flow data
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
 [config]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/liftsim/config.ini
+
+# Citation
+```txt
+@misc{LiftSim,
+    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
+    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
+}
+```
