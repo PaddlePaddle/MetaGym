@@ -56,6 +56,7 @@ setup(
         'gym>=0.18.0',
         'pybullet>=3.0.7',
         'attrs>=20.3.0',
+        'pygame>=2.0.2dev2',
     ],
     zip_safe=False,
 )
