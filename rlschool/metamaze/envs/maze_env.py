@@ -68,8 +68,8 @@ class MetaMaze3D(gym.Env):
         state = self.maze_core.reset()
         if(self.enable_render):
             self.maze_core.render_init(self.render_viewsize, self.render_godview)
+            self.keyboard_press = pygame.key.get_pressed()
         self.need_reset = False
-        self.keyboard_press = pygame.key.get_pressed()
         self.key_done = False
         return state
 
