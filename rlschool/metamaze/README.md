@@ -1,15 +1,15 @@
-# MetaMaze
+# Introduction
 
 MetaMaze is a powerful and efficient simulator for 3D navigation in a randomly generated maze, benchmarking meta learning algorithms. In MetaMaze you can specify different
 
-#### Maze Architectures
-#### Maze Scales
-#### Cell Sizes
-#### Wall Heights
-#### Wall Textures
-#### Agent Heights
+* Maze Architectures
+* Maze Scales
+* Cell Sizes
+* Wall Heights
+* Wall Textures
+* Agent Heights
 
-to test the capability of your learning algorithm adapting to different challenging tasks.
+to acquire different maze tasks, and test the capability of your learning algorithm adapting to different challenging tasks.
 
 # Demonstrations
 
@@ -42,11 +42,11 @@ pip install .
 
 A Quick Demonstration
 ```python
-from rlschool import make_env
+import gym
+import rlschool.metamaze
+
 #Start a new meta environment with
-maze_env = make_env("MetaMaze",
-    enable_render=True # False if you do not need a render
-    )
+maze_env = gym.make("meta-maze-3D-v0", enable_render=True) # False if you do not need a render
 
 #Sample a task by specifying the configurations
 task = maze_env.sample_task(

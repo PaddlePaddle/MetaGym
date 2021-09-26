@@ -1,18 +1,5 @@
 # 四轴飞行器环境
 
-如果该环境对您的研究有帮助，请考虑引用:
-
-```txt
-@misc{Quadrotor,
-    author = {Yang Xue, Fan Wang and Bo Zhou},
-    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
-    year = {2020},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
-}
-```
-
 ## 安装
 
 ```
@@ -53,8 +40,9 @@ python -m rlschool.quadrotor.env hovering_control
 创建避障任务的示例代码如下：
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="no_collision", map_file=None, simulator_conf=None)
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="no_collision", map_file=None, simulator_conf=None)
 env.reset()
 ```
 
@@ -65,8 +53,9 @@ env.reset()
 创建速度控制任务的示例代码如下：
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="velocity_control", seed=0)
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="velocity_control", seed=0)
 env.reset()
 ```
 
@@ -75,8 +64,9 @@ env.reset()
 创建悬浮控制任务的示例代码如下：
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="hovering_control")
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="hovering_control")
 env.reset()
 ```
 
@@ -87,9 +77,10 @@ env.reset()
 用户可以通过一些特殊的动作理解控制电压如何操作四轴飞行器，例如，动作`[1.0, 1.0, 1.0, 1.0]`将使无初速度的飞行器垂直向上或向下运动。
 
 ```python
-from rlschool import make_env
+import gym
+import rlschool.quadrotor
 
-env = make_env("Quadrotor", task="no_collision")
+env = gym.make("quadrotor-v0", task="no_collision")
 env.reset()
 env.render()
 
@@ -135,3 +126,17 @@ while not reset:
 [gym]: https://gym.openai.com/
 [map_example]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/quadrotor/default_map.txt
 [default_sim_conf]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/quadrotor/config.json
+
+## 引用
+
+```txt
+@misc{Quadrotor,
+    author = {Yang Xue, Fan Wang and Bo Zhou},
+    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
+}
+```
+
