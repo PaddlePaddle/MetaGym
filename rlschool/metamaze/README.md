@@ -68,7 +68,7 @@ while not done:
     action = maze_env.action_space.sample() 
     #  The observation being RGB picture of W * H * 3
     #  Reward is set to be 200 when arriving at the goal, -0.1 for each step taken
-    #  Done when goal is arrived or maximum step reaches 1000
+    #  Done = True when reaching the goal or maximum steps of 1000
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
 ```
