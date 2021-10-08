@@ -24,13 +24,13 @@ class Textures(object):
         grounds = [None]
         for file_name in texture_files:
             if(file_name.find("wall") >= 0):
-                grounds.append(pygame.surfarray.array3d(pygame.image.load('/'.join([texture_dir, file_name]))))
+                grounds.append(pygame.surfarray.array3d(pygame.image.load(os.sep.join([texture_dir, file_name]))))
             if(file_name.find("ground") >= 0):
-                grounds[0] = pygame.surfarray.array3d(pygame.image.load('/'.join([texture_dir, file_name])))
+                grounds[0] = pygame.surfarray.array3d(pygame.image.load(os.sep.join([texture_dir, file_name])))
             if(file_name.find("ceil") >= 0):
-                self.ceil = pygame.surfarray.array3d(pygame.image.load('/'.join([texture_dir, file_name])))
+                self.ceil = pygame.surfarray.array3d(pygame.image.load(os.sep.join([texture_dir, file_name])))
             if(file_name.find("arrow") >= 0):
-                self.arrow = pygame.surfarray.array3d(pygame.image.load('/'.join([texture_dir, file_name])))
+                self.arrow = pygame.surfarray.array3d(pygame.image.load(os.sep.join([texture_dir, file_name])))
         self.grounds = numpy.asarray(grounds, dtype="float32")
 
     @property
