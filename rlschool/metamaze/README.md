@@ -27,7 +27,7 @@ python keyboard_play_demo.py
 ## Install
 
 ```bash
-pip install rlschool
+pip install rlschool[metamaze]
 ```
 
 #### For local installation, execute following commands:
@@ -35,7 +35,7 @@ pip install rlschool
 ```bash
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[metamaze]
 ```
 
 ## Quick Start
