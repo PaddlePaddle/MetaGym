@@ -1,6 +1,6 @@
 # RLSchool
 
-RLSchool provide abundant environments for benchmarking Reinforcement Learning and Meta-Reinforcement Learning
+RLSchool provides abundant environments for benchmarking Reinforcement Learning and Meta Reinforcement Learning
 
 # Environments Updating
 
