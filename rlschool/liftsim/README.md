@@ -11,7 +11,7 @@ LiftSim is a light-weight elevator simulator
 ## Install
 
 ```python
-pip install rlschool
+pip install rlschool[liftsim]
 ```
 
 #### For local installation, execute following commands:
@@ -19,7 +19,7 @@ pip install rlschool
 ```python
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[liftsim]
 ```
 
 ## Quick Start
