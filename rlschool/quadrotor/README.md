@@ -5,7 +5,7 @@ English | [简体中文](./README_zh.md)
 ## Install
 
 ```sh
-pip install rlschool
+pip install rlschool[quadrotor]
 ```
 
 For local installation, execute following commands:
@@ -13,7 +13,7 @@ For local installation, execute following commands:
 ```sh
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[quadrotor]
 ```
 
 ## Test Visualization
