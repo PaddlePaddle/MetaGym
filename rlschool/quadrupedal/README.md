@@ -9,7 +9,7 @@ Please consider to cite this environment if it can help your research.
 ```python
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[quadrupedal]
 ```
 ## Quick Start
 Quadrupedal environment follows the standard gym APIs to create, run and close an environment.
