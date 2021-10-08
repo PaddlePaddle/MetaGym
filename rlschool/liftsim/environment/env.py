@@ -40,7 +40,6 @@ class LiftSim(gym.Env):
     """
     def __init__(self, config_file=os.path.join(os.path.dirname(__file__)+'/../config.ini'), **kwargs):
         file_name = config_file
-        print(file_name)
 
         config = configparser.ConfigParser()
         config.read(file_name)
