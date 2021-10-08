@@ -14,10 +14,10 @@ to acquire different maze tasks, and test the capability of your learning algori
 # Demonstrations
 
 A demonstration of maze cell_scale=15, cell_size=2, wall_height=3.2
-<img src="envs/img/demo_maze_small.gif" width="600"/>
+<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_small.gif" width="600"/>
 
 A demonstration of maze cell_scale=9, cell_size=5, wall_height=6.4
-<img src="envs/img/demo_maze_huge.gif" width="600"/>
+<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_huge.gif" width="600"/>
 
 Run the following command to get a quick view and play of the game
 ```bash
@@ -68,6 +68,7 @@ while not done:
     action = maze_env.action_space.sample() 
     #  The observation being RGB picture of W * H * 3
     #  Reward is set to be 200 when arriving at the goal, -0.1 for each step taken
+    #  Done when goal is arrived or maximum step reaches 1000
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
 ```
