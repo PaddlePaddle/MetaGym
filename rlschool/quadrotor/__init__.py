@@ -12,6 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from gym.envs.registration import register
 from rlschool.quadrotor.env import Quadrotor
 
 __all__ = ['Quadrotor']
+
+register(
+    id='quadrotor-v0',
+    entry_point='rlschool.quadrotor:Quadrotor',
+    kwargs={
+        "dt":0.01,
+        "nt":1000,
+        "seed":0,
+        "task":'no_collision',
+        "map_file":None,
+        "simulator_conf":None,
+        "healthy_reward":1.0,
+    }
+)

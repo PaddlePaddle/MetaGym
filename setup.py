@@ -43,19 +43,16 @@ setup(
     tests_require=['pytest', 'mock'],
     include_package_data=True,
     install_requires=[
-        'pyglet==1.5.0; python_version>="3"',
-        'pyglet==1.4.0; python_version<"3"',
+        'gym>=0.18.0',
+        'numpy>=1.16.4',
         'Pillow>=6.2.2',
         'six>=1.12.0',
-        'numpy>=1.16.4',
-        'configparser>=3.7.4',
-        'trimesh>=3.2.39',
-        'networkx>=2.2',
-        'colour>=0.1.5',
-        'scipy>=0.12.0',
-        'gym>=0.18.0',
-        'pybullet>=3.0.7',
-        'attrs>=20.3.0',
     ],
+    extras_require={
+        'metamaze': ['pygame>=2.0.2dev2', 'numba>=0.54.0'],
+        'quadrupedal': ['scipy>=0.12.0', 'pybullet>=3.0.7', 'attrs>=20.3.0'],
+        'quadrotor': ['scipy>=0.12.0', 'networkx>=2.2', 'trimesh>=3.2.39', 'networkx>=2.2', 'colour>=0.1.5'],
+        'liftsim': ['configparser>=3.7.4', 'pyglet==1.5.0; python_version>="3"', 'pyglet==1.4.0; python_version<"3"']
+    },
     zip_safe=False,
 )

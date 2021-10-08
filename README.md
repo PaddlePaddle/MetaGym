@@ -1,17 +1,13 @@
 # RLSchool
 
-RLSchool是一个强化学习模拟环境合集。
+RLSchool provides abundant environments for benchmarking Reinforcement Learning and Meta Reinforcement Learning
 
-# 环境
+# Environments Updating
 
-- [LiftSim][liftsim]：电梯调度模拟
+- [LiftSim](rlschool/liftsim)：Simulator for Evelvator Dispatching (Sep, 2019)
 
-[liftsim]: https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim
+- [Quadrotor](rlschool/quadrotor): 3D Quadrotor simulator for different tasks (Mar, 2020)
 
-- [Quadrotor][quadrotor]: 3D四轴飞行器
+- [Quadrupedal](rlschool/quadrupedal): Quadrupedal robot adapting to different terrains (Seq, 2021)
 
-[quadrotor]: https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor
-
-- [Quadrupedal][quadrupedal]: 四足机器人
-
-[quadrupedal]: https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrupedal
+- [MetaMaze](rlschool/metamaze): Meta maze environment for 3D visual navigation (Oct, 2021)

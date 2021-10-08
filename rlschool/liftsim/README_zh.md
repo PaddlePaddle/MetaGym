@@ -1,21 +1,7 @@
 # LiftSim
 
 LiftSim是一个电梯调度模拟环境。
-如在您研究工作中使用了该环境，请引用下面的标记
-
-```txt
-@misc{LiftSim,
-    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
-    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
-    year = {2020},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
-}
-```
-
 <img src="demo_image.gif" width="400"/>
-
 
 ## 安装
 
@@ -36,7 +22,7 @@ pip install .
 
 ## 基本接口
 
-类似[gym][gym]，liftsim提供了三个基本接口：
+基于[gym][gym]，liftsim提供了三个基本接口：
 
 - reset(self)：重置环境，返回observation。
 - step(self, action)：根据action调整环境，返回[observation](#Observation)，[reward](#Reward)，done，info。每运行一次step()，电梯模拟器内部运行0.5秒，即一个timestep。
@@ -46,9 +32,10 @@ pip install .
 
 ```python
 # 以下是一个简单可运行的电梯模拟器的例子
-from rlschool import make_env
+import gym
+import rlschool.liftsim
 
-env = make_env('LiftSim')
+env = gym.make('liftsim-v0')
 observation = env.reset()
 action = [2, 0, 4, 0, 7, 0, 10, 0]
 for i in range(100):
@@ -178,3 +165,17 @@ PersonGeneratorType为CUSTOM时即使用自定义人流模式，人流产生与�
 [submit]: https://aistudio.baidu.com/aistudio/competition/detail/11
 [submit_folder]: https://github.com/Banmahhhh/RLSchool/blob/master/rlschool/liftsim/submit_folder.zip
 [config]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/liftsim/config.ini
+
+## 引用
+如在您研究工作中使用了该环境，请引用下面的标记
+
+```txt
+@misc{LiftSim,
+    author = {Fan Wang, Bo Zhou, Yunxiang Li, Kejiao Li},
+    title = {{LiftSim: a configurable lightweight simulator of elevator systems}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/liftsim}},
+}
+```

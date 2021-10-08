@@ -9,16 +9,15 @@ Please consider to cite this environment if it can help your research.
 ```python
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[quadrupedal]
 ```
 ## Quick Start
 Quadrupedal environment follows the standard gym APIs to create, run and close an environment.
 
 ```python
 # We show a simple example to start Quadrupedal here
-import rlschool
-import numpy as np
-env = rlschool.make_env('Quadrupedal',render=1,task="stairstair")
+import rlschool.quadrupedal
+env = gym.make('quadrupedal-v0',render=1,task="stairstair")
 observation = env.reset()
 for i in range(100):
     action = np.random.uniform(-0.3,0.3,size=12)
@@ -65,9 +64,9 @@ For above tasks except "stair13", the stair height is 8 cm and width is 25 cm, t
 To specify a task, we can change the value of task in make_env function, for example to select "balancebeam"
 
 ```python
-import rlschool
-import numpy as np
-env = rlschool.make_env('Quadrupedal',render=1,task="balancebeam")
+import gym
+import rlschool.quadrupedal
+env = gym.make('quadrupedal-v0',render=1,task="balancebeam")
 ```
 
 ## ETG mode
@@ -75,9 +74,9 @@ env = rlschool.make_env('Quadrupedal',render=1,task="balancebeam")
 If we use ETG mode, we should modify the arguments ETG and ETG_path, for example
 
 ```python
-import rlschool
-import numpy as np
-env = rlschool.make_env('Quadrupedal',render=1,task="stairstair",ETG=True,ETG_path="ESStair_origin.npz")
+import gym
+import rlschool.quadrupedal
+env = gym.make('quadrupedal-v0',render=1,task="stairstair",ETG=True,ETG_path="ESStair_origin.npz")
 ```
 
 
@@ -117,8 +116,4 @@ By default we use [Speed, Motor Angle, Motor Angle ACC, IMU , Contact] as our ob
 | tau               | Punish the energy cost.     |
 | footcontact                   | Reward the time of foot contact with the ground.          |
 | badfoot                   | Punish other joints except foot to contact with the ground.         |
-
-
-
-
 

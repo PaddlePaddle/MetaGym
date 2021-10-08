@@ -2,23 +2,10 @@ English | [简体中文](./README_zh.md)
 
 # Quadrotor
 
-Please consider to cite this environment if it can help your research.
-
-```txt
-@misc{Quadrotor,
-    author = {Yang Xue, Fan Wang and Bo Zhou},
-    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
-    year = {2020},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
-}
-```
-
 ## Install
 
 ```sh
-pip install rlschool
+pip install rlschool[quadrotor]
 ```
 
 For local installation, execute following commands:
@@ -26,7 +13,7 @@ For local installation, execute following commands:
 ```sh
 git clone https://github.com/PaddlePaddle/RLSchool
 cd RLSchool
-pip install .
+pip install .[quadrotor]
 ```
 
 ## Test Visualization
@@ -66,8 +53,9 @@ Quadrotor environment follows the standard [gym][gym] APIs to create, run, rende
 To create a quadrotor environment for "no_collision" task:
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="no_collision", map_file=None, simulator_conf=None)
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="no_collision", map_file=None, simulator_conf=None)
 env.reset()
 ```
 
@@ -78,8 +66,9 @@ When the argument `simulator_conf` is `None`, the environment would use the defa
 To create a quadrotor environment for "velocity_control" task:
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="velocity_control", seed=0)
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="velocity_control", seed=0)
 env.reset()
 ```
 
@@ -88,8 +77,9 @@ The argument `seed` is used for sampling a trajectory of expected velocity vecto
 To create a quadrotor environment for "hovering_control" task:
 
 ```python
-from rlschool import make_env
-env = make_env("Quadrotor", task="hovering_control")
+import gym
+import rlschool.quadrotor
+env = gym.make("quadrotor-v0", task="hovering_control")
 env.reset()
 ```
 
@@ -100,9 +90,7 @@ The action for Quadrotor environment is the respective voltage value of four pro
 As you expected, action `[1.0, 1.0, 1.0, 1.0]` would lead straight top-down movement. Please check the visualization using following code:
 
 ```python
-from rlschool import make_env
-
-env = make_env("Quadrotor", task="no_collision")
+env = gym.make("quadrotor-v0", task="no_collision")
 env.reset()
 env.render()
 
@@ -148,3 +136,16 @@ For "velocity_control" task, it has:
 [gym]: https://gym.openai.com/
 [map_example]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/quadrotor/default_map.txt
 [default_sim_conf]: https://github.com/PaddlePaddle/RLSchool/blob/master/rlschool/quadrotor/config.json
+
+##Citation
+```txt
+@misc{Quadrotor,
+    author = {Yang Xue, Fan Wang and Bo Zhou},
+    title = {{A configurable lightweight simulator of quad-rotor helicopter}},
+    year = {2020},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/PaddlePaddle/RLSchool/tree/master/rlschool/quadrotor}},
+}
+```
+

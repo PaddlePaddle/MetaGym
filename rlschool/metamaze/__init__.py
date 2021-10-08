@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-from rlschool.liftsim.environment import *
 from gym.envs.registration import register
+from rlschool.metamaze.envs import MetaMaze3D
 
 register(
-    id='liftsim-v0',
-    entry_point='rlschool.liftsim:LiftSim',
-    kwargs={
-        "config_file": os.path.join(os.path.dirname(__file__)+'/config.ini'),
+    id='meta-maze-3D-v0',
+    entry_point='rlschool.metamaze:MetaMaze3D',
+    kwargs={"with_guidepost": True,
+        "enable_render": True,
+        "render_scale": 480,
+        "render_godview": True,
+        "resolution": (256, 256),
+        "max_steps": 1000,
     }
 )

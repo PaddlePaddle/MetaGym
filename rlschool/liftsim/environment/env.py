@@ -26,6 +26,7 @@ try:
 except Exception as e:
     NoDisplay = True
 
+import gym
 import argparse
 import configparser
 import random
@@ -33,7 +34,7 @@ import sys
 import os
 
 
-class LiftSim():
+class LiftSim(gym.Env):
     """
     environmentation Environment
     """
@@ -74,6 +75,8 @@ class LiftSim():
         )
 
         self.viewer = None
+        self.action_space = None
+        self.observation_space = None
 
     def seed(self, seed=None):
         set_seed(seed)
