@@ -18,7 +18,7 @@ TaskConfig = namedtuple("TaskConfig", ["start", "goal", "cell_walls", "cell_text
 class Textures(object):
     def __init__(self, texture_dir):
         pathes = os.path.split(os.path.abspath(__file__))
-        texture_dir = '/'.join([pathes[0], texture_dir])
+        texture_dir = os.sep.join([pathes[0], texture_dir])
         texture_files = os.listdir(texture_dir)
         texture_files.sort()
         grounds = [None]
