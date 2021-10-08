@@ -59,11 +59,15 @@ task = maze_env.sample_task(
     
 #Set the task configuration to the meta environment
 maze_env.set_task(task)
+maze_env.reset()
 
 #Start the task
 done = False
 while not done:
-    action = # Specify your policy, deciding the turn(LEFT/RIGHT) and the walk speed (FORWARD/BACKWARD)
+    #  The action space is continuous Boxes in (-1, 1) deciding the turning (LEFT/RIGHT) and the walking speed (FORWARD/BACKWARD)
+    action = maze_env.action_space.sample() 
+    #  The observation being RGB picture of W * H * 3
+    #  Reward is set to be 200 when arriving at the goal, -0.1 for each step taken
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
 ```
