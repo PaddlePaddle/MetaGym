@@ -43,7 +43,7 @@ class Navigator2D(gym.Env):
             self.screen_trajectory.fill(pygame.Color("white"))
             self.length_pixels = resolution / 10.0
             pygame.draw.circle(self.screen_trajectory, pygame.Color("green"), 
-                    self.pos_2_pixel(self.goal[0], self.goal[1]), 0.10 * self.length_pixels)
+                    self.pos_2_pixel(self.goal[0], self.goal[1]), 0.20 * self.length_pixels)
             self.robot.render(self.screen_trajectory, self.length_pixels, 10.0)
             self.screen.blit(self.screen_trajectory, (0, 0))
             pygame.display.update()
@@ -79,31 +79,17 @@ class Navigator2D(gym.Env):
         eff_action = numpy.clip(action, -1, 1)
         self.robot.step(eff_action)
         dist = numpy.linalg.norm(self.robot.state[:2] - self.goal)
-        done = (self.steps >= self.max_steps or dist < 0.10)
-        reward = - dist
+        done = (self.steps >= self.max_steps or dist < 0.20)
+        reward = - 0.1 * dist
 
         # Notice that the reward can not be used as instant observations
         return self.observation, reward, done, {"steps": self.steps, "robot_state": self.robot.state}
 
     def render(self):
-        self.robot.render(self.screen_trajectory, self.length_pixels, 10.0)
-        self.screen.blit(self.screen_trajectory, (0, 0))
-        pygame.display.update()
-        pygame.time.delay(50)
-        for event in pygame.event.get():
-            pass
+        if(self.enable_render):
+            self.robot.render(self.screen_trajectory, self.length_pixels, 10.0)
+            self.screen.blit(self.screen_trajectory, (0, 0))
+            pygame.display.update()
+            for event in pygame.event.get():
+                pass
 
-if __name__=="__main__":
-    # running random policies
-    from wheeled_robot import WheeledRobot
-    game = Navigator2D(WheeledRobot, 200, 0.20, True)
-    game.set_task(game.sample_task())
-    game.reset()
-    done = False
-    while not done:
-        action = game.action_space.sample()
-        action[0] += 0.5
-        action[1] += 0.5
-        obs, r, done, info = game.step(action)
-        game.render()
-        print(obs, info)
