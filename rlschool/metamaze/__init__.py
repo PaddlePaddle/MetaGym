@@ -14,15 +14,26 @@
 
 from gym.envs.registration import register
 from rlschool.metamaze.envs import MetaMaze3D
+from rlschool.metamaze.envs import MetaMaze2D
 
 register(
     id='meta-maze-3D-v0',
     entry_point='rlschool.metamaze:MetaMaze3D',
-    kwargs={"with_guidepost": True,
+    kwargs={"with_guidepost": False,
         "enable_render": True,
         "render_scale": 480,
         "render_godview": True,
         "resolution": (256, 256),
         "max_steps": 1000,
+    }
+)
+
+register(
+    id='meta-maze-2D-v0',
+    entry_point='rlschool.metamaze:MetaMaze2D',
+    kwargs={
+        "enable_render": True,
+        "render_godview": True,
+        "max_steps": 200,
     }
 )
