@@ -3,7 +3,7 @@ import sys
 import rlschool.metamaze
 
 if __name__=='__main__':
-    maze_env = gym.make("meta-maze-2D-v0")
+    maze_env = gym.make("meta-maze-2D-v0", max_steps=5000)
     cell_scale = 9
     task = maze_env.sample_task(cell_scale=cell_scale)
     maze_env.set_task(task)

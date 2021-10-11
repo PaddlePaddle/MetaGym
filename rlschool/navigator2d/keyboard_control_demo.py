@@ -16,7 +16,7 @@ def movement_control(keys):
 
 if __name__=="__main__":
     # running random policies
-    game = gym.make("navigator-wr-2D-v0")
+    game = gym.make("navigator-wr-2D-v0", max_steps=5000)
     game.set_task(game.sample_task())
     game.reset()
     done = False

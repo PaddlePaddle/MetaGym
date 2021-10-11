@@ -157,7 +157,7 @@ class MetaMaze2D(gym.Env):
         reward = - 0.1
         self.steps += 1
         if(action is None): # Only when there is no action input can we use keyboard control
-            pygame.time.delay(500) # 2 FPS
+            pygame.time.delay(100) # 10 FPS
             action = self.maze_core.movement_control(self.keyboard_press)
         else:
             action = DISCRETE_ACTIONS[action]
