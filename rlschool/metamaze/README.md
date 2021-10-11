@@ -81,11 +81,15 @@ while not done:
 
 # Keyboard Demonstrations
 
+## 2D Mazes Demonstration
+
 For a demonstration of keyboard controlled 2D mazes, run
 ```bash
 python rlschool/metamaze/keyboard_play_demo_2d.py
 ```
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_2d.gif" width="600"/>
+
+## 3D Mazes Demonstration
 
 For a demonstration of keyboard controlled 3D mazes, run
 ```bash
@@ -94,7 +98,9 @@ python rlschool/metamaze/keyboard_play_demo_3d.py
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_small.gif" width="600"/>
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_huge.gif" width="600"/>
 
-For tests of 2D/3D mazes without rendering, run
+## Writing your own policy
+
+Specifying action with your own (RL) policy without relying on keyboards and rendering, check
 ```bash
 python rlschool/metamaze/test.py
 ```
