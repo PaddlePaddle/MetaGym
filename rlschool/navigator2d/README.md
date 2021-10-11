@@ -1,6 +1,6 @@
 # Introduction
 
-Navigator2D is a simple benchmarking environment for meta reinforcement learning. The tasks are to navigate a two-wheeled robot to a randomly generated goal in 2-D space. We assume that there is a signal transmitter on the goal and a receiver on the robot. The robot observes the signal intensity decided by $A_t=A_0 - k \cdot log(d_t/d_0) + \epsilon$ (Friis et al., 1946, A note on a simple transmission formula), where $d_t$ is the current distance between the robot and the goal, $\epsilon \sim \mathcal{N}(0, \sigma)$ is the white noise in the observation. Each task has random goal and transmission patterns dependent on $A_0, k$. The action is the rotation speed of its two wheels that controls the orientation and velocity of the robot. The observation is one dimensional ($A_t$). The reward at each step is $r_t=- k * d_t$ (k=0.1), an episode terminates when the robot approaches the goal or steps reaches the maximum steps. 
+Navigator2D is a simple benchmarking environment for meta reinforcement learning. The tasks are to navigate a two-wheeled robot to a randomly generated goal in 2-D space. We assume that there is a signal transmitter on the goal and a receiver on the robot. The robot observes the signal intensity decided by A<sub>t</sub>=A<sub>0</sub> - k * log(d<sub>t</sub>/d<sub>0</sub>) + &epsilon$ (Friis et al., 1946, A note on a simple transmission formula), where d<sub>t</sub> is the current distance between the robot and the goal, $\epsilon \sim \mathcal{N}(0, \sigma)$ is the white noise in the observation. Each task has random goal and transmission patterns dependent on A<sub>0</sub>, k. The action is the rotation speed of its two wheels that controls the orientation and velocity of the robot. The observation is one dimensional (A<sub>t</sub>). The reward at each step is $r<sub>t</sub>=- k * d<sub>t</sub>$ (k=0.1), an episode terminates when the robot approaches the goal or steps reaches the maximum steps. 
 
 # Install
 
@@ -53,6 +53,6 @@ while not done:
 
 For a demonstration of keyboard controlled 2D mazes, run
 ```bash
-python rlschool/metamaze/keyboard_play_demo_2d.py
+python rlschool/navigator2d/keyboard_control_demo.py
 ```
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_navigator_2d.gif" width="600"/>
