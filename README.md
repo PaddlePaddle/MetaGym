@@ -11,3 +11,5 @@ RLSchool provides abundant environments for benchmarking Reinforcement Learning 
 - [Quadrupedal](rlschool/quadrupedal): Quadrupedal robot adapting to different terrains (Seq, 2021)
 
 - [MetaMaze](rlschool/metamaze): Meta maze environment for 3D visual navigation (Oct, 2021)
+
+- [Navigator2D](rlschool/navigator2d): Simple 2D navigator meta environment (Oct, 2021)
