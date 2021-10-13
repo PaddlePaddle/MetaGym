@@ -165,7 +165,7 @@ class MetaMaze2D(gym.Env):
         done = self.maze_core.do_action(action)
 
         if(done):
-            reward += 200
+            reward += 20
         elif(self.steps >= self.max_steps or self.key_done):
             done = True
         if(done):
