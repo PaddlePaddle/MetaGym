@@ -57,7 +57,7 @@ while not done:
     #  The observation being 3 * 3 numpy array, the observation of its current neighbours
     #  Reward is set to be 20 when arriving at the goal, -0.1 for each step taken
     #  Done = True when reaching the goal or maximum steps (200 as default)
-    observation, reward, done, info = maze_env.do_action(action)
+    observation, reward, done, info = maze_env.step(action)
     maze_env.render()
 ```
 
