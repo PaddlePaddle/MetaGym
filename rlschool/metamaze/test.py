@@ -1,6 +1,5 @@
 import gym
 import sys
-sys.path = ["/Users/wangfan04/Codes/RLSchool/"] + sys.path
 import rlschool.metamaze
 
 def test_2d_maze(max_iteration):
