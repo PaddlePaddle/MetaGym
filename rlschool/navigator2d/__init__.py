@@ -13,27 +13,16 @@
 # limitations under the License.
 
 from gym.envs.registration import register
-from rlschool.metamaze.envs import MetaMaze3D
-from rlschool.metamaze.envs import MetaMaze2D
+from rlschool.navigator2d.navigator import Navigator2D
+from rlschool.navigator2d.wheeled_robot import WheeledRobot
 
 register(
-    id='meta-maze-3D-v0',
-    entry_point='rlschool.metamaze:MetaMaze3D',
-    kwargs={"with_guidepost": False,
-        "enable_render": True,
-        "render_scale": 480,
-        "render_godview": True,
-        "resolution": (256, 256),
-        "max_steps": 1000,
-    }
-)
-
-register(
-    id='meta-maze-2D-v0',
-    entry_point='rlschool.metamaze:MetaMaze2D',
+    id='navigator-wr-2D-v0',
+    entry_point='rlschool.navigator2d.navigator:Navigator2D',
     kwargs={
-        "enable_render": True,
-        "render_godview": True,
-        "max_steps": 200,
+        "max_steps": 100,
+        "robot_class": WheeledRobot,
+        "signal_noise": 0.20,
+        "enable_render": True
     }
 )

@@ -1,30 +1,8 @@
 # Introduction
 
-MetaMaze is a powerful and efficient simulator for 3D navigation in a randomly generated maze, benchmarking meta learning algorithms. In MetaMaze you can specify different
+MetaMaze is a powerful and efficient simulator for navigation in a randomly generated maze. We support 2D-Navigation and 3D-Navigation. You may use mazes of different architectures and textures as tasks for benchmarking Meta-Learning algorithms.
 
-* Maze Architectures
-* Maze Scales
-* Cell Sizes
-* Wall Heights
-* Wall Textures
-* Agent Heights
-
-to acquire different maze tasks, and test the capability of your learning algorithm adapting to different challenging tasks.
-
-# Demonstrations
-
-A demonstration of maze cell_scale=15, cell_size=2, wall_height=3.2
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_small.gif" width="600"/>
-
-A demonstration of maze cell_scale=9, cell_size=5, wall_height=6.4
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_huge.gif" width="600"/>
-
-Run the following command to get a quick view and play of the game
-```bash
-python keyboard_play_demo.py
-```
-
-## Install
+# Install
 
 ```bash
 pip install rlschool[metamaze]
@@ -38,25 +16,53 @@ cd RLSchool
 pip install .[metamaze]
 ```
 
-## Quick Start
+# Quick Start
 
-A Quick Demonstration
+## Import
+
+Import and create the meta maze environment with 
 ```python
 import gym
 import rlschool.metamaze
 
-#Start a new meta environment with
-maze_env = gym.make("meta-maze-3D-v0", enable_render=True) # False if you do not need a render
+maze_env = gym.make("meta-maze-3D-v0", enable_render=True) # Running a 3D Maze
+#maze_env = gym.make("meta-maze-2D-v0", enable_render=True) # Running a 2D Maze
+```
 
+## Maze Generation
+
+Use the following code to generate a random maze
+```python
 #Sample a task by specifying the configurations
 task = maze_env.sample_task(
     cell_scale=15,  # Number of cells = cell_scale * cell_scale
-    allow_loops=True,  # Whether loops are allowed
-    cell_size=2.0, # specifying the size of each cell
-    wall_height=3.2, # specifying the height of the wall
-    agent_height=1.6 # specifying the height of the agent
+    allow_loops=False,  # Whether loops are allowed
+    cell_size=2.0, # specifying the size of each cell, only valid for 3D mazes
+    wall_height=3.2, # specifying the height of the wall, only valid for 3D mazes
+    agent_height=1.6 # specifying the height of the agent, only valid for 3D mazes
     )
-    
+```
+
+## Running 2D Mazes
+```python
+#Set the task configuration to the meta environment
+maze_env.set_task(task)
+maze_env.reset()
+
+#Start the task
+done = False
+while not done:
+    #  The action space is discrete actions specifying UP/DOWN/LEFT/RIGHT
+    action = maze_env.action_space.sample() 
+    #  The observation being 3 * 3 numpy array, the observation of its current neighbours
+    #  Reward is set to be 20 when arriving at the goal, -0.1 for each step taken
+    #  Done = True when reaching the goal or maximum steps (200 as default)
+    observation, reward, done, info = maze_env.step(action)
+    maze_env.render()
+```
+
+## Running 3D Mazes
+```python
 #Set the task configuration to the meta environment
 maze_env.set_task(task)
 maze_env.reset()
@@ -71,6 +77,32 @@ while not done:
     #  Done = True when reaching the goal or maximum steps of 1000
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
+```
+
+# Keyboard Demonstrations
+
+## 2D Mazes Demonstration
+
+For a demonstration of keyboard controlled 2D mazes, run
+```bash
+python rlschool/metamaze/keyboard_play_demo_2d.py
+```
+<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_2d.gif" width="600"/>
+
+## 3D Mazes Demonstration
+
+For a demonstration of keyboard controlled 3D mazes, run
+```bash
+python rlschool/metamaze/keyboard_play_demo_3d.py
+```
+<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_small.gif" width="600"/>
+<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/RLSchool/demo_maze_huge.gif" width="600"/>
+
+## Writing your own policy
+
+Specifying action with your own (RL) policy without relying on keyboards and rendering, check
+```bash
+python rlschool/metamaze/test.py
 ```
 
 ## Citation
