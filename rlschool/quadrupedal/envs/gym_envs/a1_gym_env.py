@@ -81,7 +81,9 @@ class A1GymEnv(gym.Env):
   def close(self):
     self._env.close()
 
-  def render(self, mode):
+  def render(self, mode="human"):
+    if(mode != "human"):
+        raise NotImplementedError("Only human mode is supported")
     return self._env.render(mode) 
 
   def __getattr__(self, attr):

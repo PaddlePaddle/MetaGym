@@ -85,7 +85,9 @@ class Navigator2D(gym.Env):
         # Notice that the reward can not be used as instant observations
         return self.observation, reward, done, {"steps": self.steps, "robot_state": self.robot.state}
 
-    def render(self):
+    def render(self, mode="human"):
+        if(mode != "human"):
+            raise NotImplementedError("Only human mode is supported")
         if(self.enable_render):
             self.robot.render(self.screen_trajectory, self.length_pixels, 10.0)
             self.screen.blit(self.screen_trajectory, (0, 0))
