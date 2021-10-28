@@ -13,7 +13,7 @@ if __name__=='__main__':
         sum_reward = 0
         while not done:
             maze_env.render()
-            state, reward, done, _ = maze_env.step()
+            state, reward, done, _ = maze_env.step(None)
             sum_reward += reward
         if(not maze_env.key_done):
             print("Episode is over! You got %.1f score."%sum_reward)

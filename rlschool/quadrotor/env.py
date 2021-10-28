@@ -164,7 +164,9 @@ class Quadrotor(gym.Env):
         info['z'] += self.z_offset
         return self._convert_state_to_ndarray(), reward, reset, info
 
-    def render(self):
+    def render(self, mode="human"):
+        if(mode != "human"):
+            raise NotImplementedError("Only human mode is supported")
         if self.viewer is None:
             if NO_DISPLAY:
                 raise RuntimeError('[Error] Cannot connect to display screen.')

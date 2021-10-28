@@ -97,7 +97,9 @@ class MetaMaze3D(gym.Env):
 
         return self.maze_core.get_observation(), reward, done, info
 
-    def render(self):
+    def render(self, mode="human"):
+        if(mode != "human"):
+            raise NotImplementedError("Only human mode is supported")
         self.key_done, self.keyboard_press = self.maze_core.render_update(self.render_godview)
 
 DISCRETE_ACTIONS=[(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -174,5 +176,7 @@ class MetaMaze2D(gym.Env):
 
         return self.maze_core.get_observation(), reward, done, info
 
-    def render(self):
+    def render(self, mode="human"):
+        if(mode != "human"):
+            raise NotImplementedError("Only human mode is supported")
         self.key_done, self.keyboard_press = self.maze_core.render_update(self.render_godview)

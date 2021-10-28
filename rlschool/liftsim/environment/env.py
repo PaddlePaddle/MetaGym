@@ -98,7 +98,9 @@ class LiftSim(gym.Env):
         self._mansion.reset_env()
         return self._mansion.state
 
-    def render(self):
+    def render(self, mode="human"):
+        if(mode != "human"):
+            raise NotImplementedError("Only support human mode currently")
         if self.viewer is None:
             if NoDisplay:
                 raise Exception('[Error] Cannot connect to display screen. \

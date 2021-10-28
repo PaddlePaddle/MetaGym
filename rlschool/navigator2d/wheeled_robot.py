@@ -60,8 +60,8 @@ class WheeledRobot(object):
 
     def step(self, action):
         #valid actions lie in between -1 and 1
-        eff_action = numpy.clip(action, -1, 1)
-        assert self.action_space.contains(eff_action), "action not valid: %f"%(eff_action)
+        eff_action = numpy.clip(action, -1, 1).astype("float32")
+        assert self.action_space.contains(eff_action), "action not valid: %s"%(eff_action)
         l_dist = eff_action[0] * self._dt * self._wheel_dia * self._max_wheel_rotation
         r_dist = eff_action[1] * self._dt * self._wheel_dia * self._max_wheel_rotation
         deta_r = r_dist - l_dist
