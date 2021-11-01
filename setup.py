@@ -15,24 +15,24 @@
 import io
 from setuptools import setup, find_packages
 
-__version__ = '1.0.3'
+__version__ = '0.0.2'
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
 
 setup(
-    name='rlschool',
+    name='metagym',
     version=__version__,
     author='parl_dev',
     author_email='',
-    description=('RLSchool: Excellent environments for reinforcement Learning benchmarking'),
+    description=('MetaGym: environments for benchmarking Reinforcement Learning and Meta Reinforcement Learning')
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/PaddlePaddle/RLSchool',
+    url='https://github.com/PaddlePaddle/MetaGym',
     license="GPLv3",
     packages=[package for package in find_packages()
-              if package.startswith('rlschool')],
-    package_data={'rlschool': [
+              if package.startswith('metagym')],
+    package_data={'metagym': [
         './liftsim/config.ini',
         './liftsim/environment/animation/resources/*.png',
         './liftsim/environment/mansion/person_generators/mansion_flow.npy',
