@@ -15,7 +15,7 @@
 import io
 from setuptools import setup, find_packages
 
-__version__ = '0.0.2'
+__version__ = '0.1.dev0'
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -25,7 +25,7 @@ setup(
     version=__version__,
     author='parl_dev',
     author_email='',
-    description=('MetaGym: environments for benchmarking Reinforcement Learning and Meta Reinforcement Learning')
+    description=('MetaGym: environments for benchmarking Reinforcement Learning and Meta Reinforcement Learning'),
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/PaddlePaddle/MetaGym',
