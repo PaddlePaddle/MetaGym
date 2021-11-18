@@ -68,7 +68,7 @@ class Navigator2D(gym.Env):
     @property
     def observation(self):
         dist = numpy.linalg.norm(self.robot.state[:2] - self.goal)
-        return signal_transmission(dist, self.sig_A, 0.10, self.sig_k, self.signal_noise)
+        return signal_transmission(dist, self.sig_A, 0.50, self.sig_k, self.signal_noise)
 
     def step(self, action):
         if(self.need_reset):
