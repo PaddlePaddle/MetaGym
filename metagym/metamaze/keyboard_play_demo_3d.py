@@ -16,6 +16,7 @@ if __name__=='__main__':
             sum_reward += reward
         if(not maze_env.key_done):
             print("Episode is over! You got %.1f score."%sum_reward)
+            maze_env.save_trajectory("trajectory_%dx%d.png"%(cell_scale, cell_scale))
             if(sum_reward > 0.0):
                 cell_scale += 2 # gradually increase the difficulty
                 print("Increase the difficulty, cell_scale = %d"%cell_scale)

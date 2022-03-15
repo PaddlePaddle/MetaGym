@@ -39,7 +39,8 @@ task = maze_env.sample_task(
     allow_loops=False,  # Whether loops are allowed
     cell_size=2.0, # specifying the size of each cell, only valid for 3D mazes
     wall_height=3.2, # specifying the height of the wall, only valid for 3D mazes
-    agent_height=1.6 # specifying the height of the agent, only valid for 3D mazes
+    agent_height=1.6, # specifying the height of the agent, only valid for 3D mazes
+    view_grids=1 # specifiying the observation region for the agent, only valid for 2D mazes
     )
 ```
 
