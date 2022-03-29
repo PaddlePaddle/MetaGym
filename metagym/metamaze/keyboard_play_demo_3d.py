@@ -4,7 +4,7 @@ import metagym.metamaze
 if __name__=='__main__':
     maze_env = gym.make("meta-maze-3D-v0", with_guidepost=False, max_steps=5000)
     cell_scale = 9
-    task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2)
+    task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2, allow_loops=True, crowd_ratio=0.35)
     maze_env.set_task(task)
     while True:
         maze_env.reset()
@@ -20,7 +20,7 @@ if __name__=='__main__':
             if(sum_reward > 0.0):
                 cell_scale += 2 # gradually increase the difficulty
                 print("Increase the difficulty, cell_scale = %d"%cell_scale)
-            task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2)
+            task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2, allow_loops=True, crowd_ratio=0.35)
             maze_env.set_task(task)
         else:
             break
