@@ -58,6 +58,7 @@ class MazeCore3D(object):
     def reset(self):
         self._goal_position = self.get_cell_center(self._goal)
         self._agent_pos = self.get_cell_center(self._start)
+        self._agent_trajectory = []
         self._agent_ori = 2.0 * random.random() * PI
         self._max_wh = self._max_cells * self._cell_size
         self._cell_transparents = numpy.zeros_like(self._cell_walls, dtype="int32")
@@ -130,6 +131,15 @@ class MazeCore3D(object):
         keys = pygame.key.get_pressed()
         return done, keys
 
+    def render_trajectory(self, file_name):
+        traj_screen = pygame.display.set_mode((self._view_size, self._view_size))
+        traj_screen.blit(self._surf_god, (0, 0))
+        for i in range(len(self._agent_trajectory)-1):
+            p = self._agent_trajectory[i] * self._pos_conversion
+            n = self._agent_trajectory[i+1] * self._pos_conversion
+            pygame.draw.line(traj_screen, pygame.Color("red"), p, n, width=3)
+        pygame.image.save(traj_screen, file_name)
+
     def movement_control(self, keys):
         #Keyboard control cases
         turn_rate = 0.0
@@ -153,6 +163,7 @@ class MazeCore3D(object):
                 self._textures.ceil, self._wall_height, 1.0, self._max_vision_range, 0.20, 
                 self._fol_angle, self._resolution_horizon, self._resolution_vertical)
         self._obs_surf = pygame.surfarray.make_surface(self.get_observation())
+        self._agent_trajectory.append(numpy.copy(self._agent_pos))
         if(self._with_guidepost):
             goal_ori = (self._goal_position - self._agent_pos)
             goal_ori_norm = norm(goal_ori)

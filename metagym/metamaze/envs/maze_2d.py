@@ -10,7 +10,8 @@ from numpy import random as npyrnd
 from numpy.linalg import norm
 
 class MazeCore2D(object):
-    def __init__(self):
+    def __init__(self, view_grid=2):
+        self.view_grid = view_grid
         pygame.init()
 
     def set_task(self, task_config, textures):
@@ -22,6 +23,7 @@ class MazeCore2D(object):
         assert self._cell_walls.shape[0] == self._cell_walls.shape[1], "only support square shape"
 
     def reset(self):
+        self._agent_trajectory = []
         self._agent_pos = numpy.copy(self._start)
         self.update_observation()
         return self.get_observation()
@@ -70,10 +72,13 @@ class MazeCore2D(object):
 
     def render_update(self, god_view):
         #Paint Observation
-        obs_array = numpy.full((3,3,3), 255, dtype="int32")
+        w,h = self._observation.shape
+        c_w = w // 2
+        c_h = h // 2
+        obs_array = numpy.full((w,h,3), 255, dtype="int32")
         obs_array[numpy.where(self._observation == 1)] = numpy.asarray([0, 0, 0], dtype="int32")
         obs_array[numpy.where(self._observation == -1)] = numpy.asarray([0, 255, 0], dtype="int32")
-        obs_array[1,1] = numpy.asarray([255, 0, 0], dtype="int32")
+        obs_array[c_w, c_h] = numpy.asarray([255, 0, 0], dtype="int32")
         obs_array = obs_array[:,::-1]
         
         empty_range = 40
@@ -100,6 +105,17 @@ class MazeCore2D(object):
         keys = pygame.key.get_pressed()
         return done, keys
 
+    def render_trajectory(self, file_name):
+        traj_screen = pygame.display.set_mode((self._view_size, self._view_size))
+        traj_screen.blit(self._surf_god, (0, 0))
+        for i in range(len(self._agent_trajectory)-1):
+            p = self._agent_trajectory[i]
+            n = self._agent_trajectory[i+1]
+            p = [(p[0] + 0.5) * self._render_cell_size, self._view_size - (p[1] + 0.5) *  self._render_cell_size]
+            n = [(n[0] + 0.5) * self._render_cell_size, self._view_size - (n[1] + 0.5) *  self._render_cell_size]
+            pygame.draw.line(traj_screen, pygame.Color("red"), p, n, width=3)
+        pygame.image.save(traj_screen, file_name)
+
     def movement_control(self, keys):
         #Keyboard control cases
         if keys[pygame.K_LEFT]:
@@ -115,7 +131,29 @@ class MazeCore2D(object):
     def update_observation(self):
         #Add the ground first
         #Find Relative Cells
-        self._observation = self._cell_walls[self._agent_pos[0] - 1 : self._agent_pos[0] + 2, self._agent_pos[1] - 1 : self._agent_pos[1] + 2]
+        self._observation = numpy.ones(shape=(2 * self.view_grid + 1, 2 * self.view_grid + 1), dtype="float32")
+        x_s = self._agent_pos[0] - self.view_grid
+        x_e = self._agent_pos[0] + self.view_grid + 1
+        y_s = self._agent_pos[1] - self.view_grid
+        y_e = self._agent_pos[1] + self.view_grid + 1
+        i_s = 0
+        i_e = 2 * self.view_grid + 1
+        j_s = 0
+        j_e = 2 * self.view_grid + 1
+        if(x_s < 0):
+            i_s = -x_s
+            x_s = 0
+        if(x_e > self._max_cells):
+            i_e -= x_e - self._max_cells
+            x_e = self._max_cells
+        if(y_s < 0):
+            j_s = -y_s
+            y_s = 0
+        if(y_e > self._max_cells):
+            j_e -= y_e - self._max_cells
+            y_e = self._max_cells
+        self._observation[i_s:i_e, j_s:j_e] = self._cell_walls[x_s:x_e, y_s:y_e]
+        self._agent_trajectory.append(numpy.copy(self._agent_pos))
 
     def get_observation(self):
         return numpy.copy(self._observation)

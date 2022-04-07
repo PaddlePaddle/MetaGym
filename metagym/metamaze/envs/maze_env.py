@@ -102,15 +102,19 @@ class MetaMaze3D(gym.Env):
             raise NotImplementedError("Only human mode is supported")
         self.key_done, self.keyboard_press = self.maze_core.render_update(self.render_godview)
 
+    def save_trajectory(self, file_name):
+        self.maze_core.render_trajectory(file_name)
+
 DISCRETE_ACTIONS=[(-1, 0), (1, 0), (0, -1), (0, 1)]
 class MetaMaze2D(gym.Env):
     def __init__(self,
             enable_render=True,
             render_scale=480,
             render_godview=True,
-            max_steps = 1000):
+            max_steps = 1000,
+            view_grid = 2):
         self.enable_render = enable_render
-        self.maze_core = MazeCore2D()
+        self.maze_core = MazeCore2D(view_grid=view_grid)
         self.max_steps = max_steps
         self.render_viewsize = render_scale
         self.render_godview = render_godview
@@ -180,3 +184,6 @@ class MetaMaze2D(gym.Env):
         if(mode != "human"):
             raise NotImplementedError("Only human mode is supported")
         self.key_done, self.keyboard_press = self.maze_core.render_update(self.render_godview)
+
+    def save_trajectory(self, file_name):
+        self.maze_core.render_trajectory(file_name)

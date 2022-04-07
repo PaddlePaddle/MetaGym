@@ -37,9 +37,11 @@ Use the following code to generate a random maze
 task = maze_env.sample_task(
     cell_scale=15,  # Number of cells = cell_scale * cell_scale
     allow_loops=False,  # Whether loops are allowed
+    crowd_ratio=0.40,   # Specifying how crowded is the wall in the region, only valid when loops are allowed. E.g. crowd_ratio=0 means no wall in the maze (except the boundary)
     cell_size=2.0, # specifying the size of each cell, only valid for 3D mazes
     wall_height=3.2, # specifying the height of the wall, only valid for 3D mazes
-    agent_height=1.6 # specifying the height of the agent, only valid for 3D mazes
+    agent_height=1.6, # specifying the height of the agent, only valid for 3D mazes
+    view_grid=1 # specifiying the observation region for the agent, only valid for 2D mazes
     )
 ```
 
