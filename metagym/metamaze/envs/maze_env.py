@@ -49,13 +49,19 @@ class MetaMaze3D(gym.Env):
             allow_loops = False,
             cell_size = 2.0,
             wall_height = 3.2,
-            agent_height = 1.6
+            agent_height = 1.6,
+            step_reward = -0.01,
+            goal_reward = None,
+            crowd_ratio = 0.0
             ):
         return sample_task_config(self.textures.n_texts, 
                 max_cells=cell_scale, 
                 allow_loops=allow_loops,
                 cell_size=cell_size,
                 wall_height=wall_height,
+                crowd_ratio=crowd_ratio,
+                step_reward = step_reward,
+                goal_reward = goal_reward,
                 agent_height=agent_height)
 
     def set_task(self, task_config):
@@ -77,7 +83,7 @@ class MetaMaze3D(gym.Env):
     def step(self, action=None):
         if(self.need_reset):
             raise Exception("Must \"reset\" before doing any actions")
-        reward = - 0.1
+        reward = self.maze_core._step_reward
         self.steps += 1
         if(action is None): # Only when there is no action input can we use keyboard control
             pygame.time.delay(20) # 50 FPS
@@ -88,7 +94,7 @@ class MetaMaze3D(gym.Env):
         done = self.maze_core.do_action(tr, ws)
 
         if(done):
-            reward += 200
+            reward += self.maze_core._goal_reward
         elif(self.steps >= self.max_steps or self.key_done):
             done = True
         if(done):
@@ -132,13 +138,19 @@ class MetaMaze2D(gym.Env):
             allow_loops = False,
             cell_size = 2.0,
             wall_height = 3.2,
-            agent_height = 1.6
+            agent_height = 1.6,
+            step_reward = -0.01,
+            goal_reward = None,
+            crowd_ratio = 0.0
             ):
         return sample_task_config(2,
                 max_cells=cell_scale, 
                 allow_loops=allow_loops,
                 cell_size=cell_size,
                 wall_height=wall_height,
+                crowd_ratio=crowd_ratio,
+                step_reward = step_reward,
+                goal_reward = goal_reward,
                 agent_height=agent_height)
 
     def set_task(self, task_config):
@@ -160,7 +172,7 @@ class MetaMaze2D(gym.Env):
     def step(self, action=None):
         if(self.need_reset):
             raise Exception("Must \"reset\" before doing any actions")
-        reward = - 0.1
+        reward = self.maze_core._step_reward
         self.steps += 1
         if(action is None): # Only when there is no action input can we use keyboard control
             pygame.time.delay(100) # 10 FPS
@@ -171,7 +183,7 @@ class MetaMaze2D(gym.Env):
         done = self.maze_core.do_action(action)
 
         if(done):
-            reward += 20
+            reward += self.maze_core._goal_reward
         elif(self.steps >= self.max_steps or self.key_done):
             done = True
         if(done):

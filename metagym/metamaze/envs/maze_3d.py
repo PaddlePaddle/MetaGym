@@ -51,6 +51,8 @@ class MazeCore3D(object):
         self._wall_height = task_config.wall_height
         self._agent_height = task_config.agent_height
         self._max_cells = numpy.shape(self._cell_walls)[0]
+        self._step_reward = task_config.step_reward
+        self._goal_reward = task_config.goal_reward
         assert self._agent_height < self._wall_height and self._agent_height > 0, "the agent height must be > 0 and < wall height"
         assert self._cell_walls.shape == self._cell_texts.shape, "the dimension of walls must be equal to textures"
         assert self._cell_walls.shape[0] == self._cell_walls.shape[1], "only support square shape"
