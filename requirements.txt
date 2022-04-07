@@ -1,5 +1,5 @@
 six==1.12.0
 pyglet==1.2.0
 setuptools==41.0.1
-numpy==1.16.4
+numpy==1.21.0
 mock==3.0.5
