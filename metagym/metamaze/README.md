@@ -41,7 +41,9 @@ task = maze_env.sample_task(
     cell_size=2.0, # specifying the size of each cell, only valid for 3D mazes
     wall_height=3.2, # specifying the height of the wall, only valid for 3D mazes
     agent_height=1.6, # specifying the height of the agent, only valid for 3D mazes
-    view_grid=1 # specifiying the observation region for the agent, only valid for 2D mazes
+    view_grid=1, # specifiying the observation region for the agent, only valid for 2D mazes
+    step_reward=-0.01, # specifying punishment of each step
+    goal_reward=1.0 # specifying reward of reaching the goal
     )
 ```
 
@@ -61,8 +63,8 @@ while not done:
     #  Done = True when reaching the goal or maximum steps (200 as default)
     observation, reward, done, info = maze_env.step(action)
     maze_env.render()
-```
 
+```
 ## Running 3D Mazes
 ```python
 #Set the task configuration to the meta environment
