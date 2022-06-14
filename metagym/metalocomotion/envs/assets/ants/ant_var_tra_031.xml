@@ -13,46 +13,46 @@
       <geom name="torso_geom" pos="0 0 0" size="0.25" type="sphere" />
       
       <body name="front_left_leg" pos="0 0 0">
-        <geom fromto="0.0 0.0 0.0 0.2536957243288346 0.2536957243288346 0.0" name="aux_1_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
-        <body name="aux_1" pos="0.2536957243288346 0.2536957243288346 0.0">
+        <geom fromto="0.0 0.0 0.0 0.22863382080624728 0.22863382080624728 0.0" name="aux_1_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+        <body name="aux_1" pos="0.22863382080624728 0.22863382080624728 0.0">
           <joint axis="0 0 1" name="hip_1" pos="0.0 0.0 0.0" range="-40 40" type="hinge" />
-          <geom fromto="0.0 0.0 0.0 0.24752704210763438 0.24752704210763438 0.0" name="left_leg_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
-          <body pos="0.24752704210763438 0.24752704210763438 0.0" name="front_left_foot">
+          <geom fromto="0.0 0.0 0.0 0.2773317252277794 0.2773317252277794 0.0" name="left_leg_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+          <body pos="0.2773317252277794 0.2773317252277794 0.0" name="front_left_foot">
             <joint axis="-1 1 0" name="ankle_1" pos="0.0 0.0 0.0" range="30 100" type="hinge" />
-            <geom fromto="0.0 0.0 0.0 0.4796731386252656 0.4796731386252656 0.0" name="left_ankle_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+            <geom fromto="0.0 0.0 0.0 0.4724968277919187 0.4724968277919187 0.0" name="left_ankle_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
           </body>
         </body>
       </body>
       <body name="front_right_leg" pos="0 0 0">
-        <geom fromto="0.0 0.0 0.0 -0.24280971137403712 0.24280971137403712 0.0" name="aux_2_geom" size="0.08" type="capsule" />
-        <body name="aux_2" pos="-0.24280971137403712 0.24280971137403712 0.0">
+        <geom fromto="0.0 0.0 0.0 -0.29668246493071265 0.29668246493071265 0.0" name="aux_2_geom" size="0.08" type="capsule" />
+        <body name="aux_2" pos="-0.29668246493071265 0.29668246493071265 0.0">
           <joint axis="0 0 1" name="hip_2" pos="0.0 0.0 0.0" range="-40 40" type="hinge" />
-          <geom fromto="0.0 0.0 0.0 -0.15260680411549507 0.15260680411549507 0.0" name="right_leg_geom" size="0.08" type="capsule" />
-          <body pos="-0.15260680411549507 0.15260680411549507 0.0" name="front_right_foot">
+          <geom fromto="0.0 0.0 0.0 -0.14710902438707713 0.14710902438707713 0.0" name="right_leg_geom" size="0.08" type="capsule" />
+          <body pos="-0.14710902438707713 0.14710902438707713 0.0" name="front_right_foot">
             <joint axis="1 1 0" name="ankle_2" pos="0.0 0.0 0.0" range="-100 -30" type="hinge" />
-            <geom fromto="0.0 0.0 0.0 -0.34556912065660267 0.34556912065660267 0.0" name="right_ankle_geom" size="0.08" type="capsule" />
+            <geom fromto="0.0 0.0 0.0 -0.31066137771246694 0.31066137771246694 0.0" name="right_ankle_geom" size="0.08" type="capsule" />
           </body>
         </body>
       </body>
       <body name="left_back_leg" pos="0 0 0">
-        <geom fromto="0.0 0.0 0.0 -0.23726006914911904 -0.23726006914911904 0.0" name="aux_3_geom" size="0.08" type="capsule" />
-        <body name="aux_3" pos="-0.23726006914911904 -0.23726006914911904 0.0">
+        <geom fromto="0.0 0.0 0.0 -0.29841701173953283 -0.29841701173953283 0.0" name="aux_3_geom" size="0.08" type="capsule" />
+        <body name="aux_3" pos="-0.29841701173953283 -0.29841701173953283 0.0">
           <joint axis="0 0 1" name="hip_3" pos="0.0 0.0 0.0" range="-40 40" type="hinge" />
-          <geom fromto="0.0 0.0 0.0 -0.145520590683647 -0.145520590683647 0.0" name="back_leg_geom" size="0.08" type="capsule" />
-          <body pos="-0.145520590683647 -0.145520590683647 0.0" name="left_back_foot">
+          <geom fromto="0.0 0.0 0.0 -0.23364998584130783 -0.23364998584130783 0.0" name="back_leg_geom" size="0.08" type="capsule" />
+          <body pos="-0.23364998584130783 -0.23364998584130783 0.0" name="left_back_foot">
             <joint axis="-1 1 0" name="ankle_3" pos="0.0 0.0 0.0" range="-100 -30" type="hinge" />
-            <geom fromto="0.0 0.0 0.0 -0.5719292088906326 -0.5719292088906326 0.0" name="third_ankle_geom" size="0.08" type="capsule" />
+            <geom fromto="0.0 0.0 0.0 -0.2706133833551238 -0.2706133833551238 0.0" name="third_ankle_geom" size="0.08" type="capsule" />
           </body>
         </body>
       </body>
       <body name="right_back_leg" pos="0 0 0">
-        <geom fromto="0.0 0.0 0.0 0.2 -0.2 0.0" name="aux_4_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
-        <body name="aux_4" pos="0.2 -0.2 0.0">
+        <geom fromto="0.0 0.0 0.0 0.2455286778324629 -0.2455286778324629 0.0" name="aux_4_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+        <body name="aux_4" pos="0.2455286778324629 -0.2455286778324629 0.0">
           <joint axis="0 0 1" name="hip_4" pos="0.0 0.0 0.0" range="-40 40" type="hinge" />
-          <geom fromto="0.0 0.0 0.0 0.29155077142607766 -0.29155077142607766 0.0" name="rightback_leg_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
-          <body pos="0.29155077142607766 -0.29155077142607766 0.0" name="right_back_foot">
+          <geom fromto="0.0 0.0 0.0 0.24164633674649647 -0.24164633674649647 0.0" name="rightback_leg_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+          <body pos="0.24164633674649647 -0.24164633674649647 0.0" name="right_back_foot">
             <joint axis="1 1 0" name="ankle_4" pos="0.0 0.0 0.0" range="30 100" type="hinge" />
-            <geom fromto="0.0 0.0 0.0 0.32815256216552613 -0.32815256216552613 0.0" name="fourth_ankle_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
+            <geom fromto="0.0 0.0 0.0 0.34372068203871153 -0.34372068203871153 0.0" name="fourth_ankle_geom" size="0.08" type="capsule" rgba=".8 .5 .3 1" />
           </body>
         </body>
       </body>

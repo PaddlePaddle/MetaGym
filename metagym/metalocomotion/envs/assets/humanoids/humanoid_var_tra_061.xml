@@ -13,7 +13,7 @@
         <map fogend="5" fogstart="3" />
     </visual>
     <worldbody>
-        <body name="torso" pos="0.0 0.0 1.0386638370169878">
+        <body name="torso" pos="0.0 0.0 1.3613497348874493">
             
             <geom fromto="0 -.07 0 0 .07 0" name="torso1" size="0.07" type="capsule" />
             <geom name="head" pos="0 0 .19" size=".09" type="sphere" user="258" />
@@ -24,29 +24,29 @@
                 <joint armature="0.02" axis="0 1 0" damping="5" name="abdomen_y" pos="0 0 0.065" range="-75 30" stiffness="10" type="hinge" />
                 <body name="pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
                     <joint armature="0.02" axis="1 0 0" damping="5" name="abdomen_x" pos="0 0 0.1" range="-35 35" stiffness="10" type="hinge" />
-                    <geom fromto="-0.02 -0.08255354461520782 0.0 -0.02 0.08255354461520782 0.0" name="butt" size="0.09" type="capsule" />
-                    <body name="right_thigh" pos="0.0 -0.1179336351645826 -0.04">
+                    <geom fromto="-0.02 -0.0793752154829448 0.0 -0.02 0.0793752154829448 0.0" name="butt" size="0.09" type="capsule" />
+                    <body name="right_thigh" pos="0.0 -0.11339316497563541 -0.04">
                         <joint armature="0.01" axis="1 0 0" damping="5" name="right_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge" />
                         <joint armature="0.01" axis="0 0 1" damping="5" name="right_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge" />
                         <joint armature="0.01" axis="0 1 0" damping="5" name="right_hip_y" pos="0 0 0" range="-120 20" stiffness="20" type="hinge" />
-                        <geom fromto="0.0 0.0 0.0 0.0 0.006317876925372726 -0.21480781546267272" name="right_thigh1" size="0.06" type="capsule" />
-                        <body name="right_shin" pos="0.0 0.006317876925372726 -0.2546104400925209">
+                        <geom fromto="0.0 0.0 0.0 0.0 0.013832501990008888 -0.4703050676603022" name="right_thigh1" size="0.06" type="capsule" />
+                        <body name="right_shin" pos="0.0 0.013832501990008888 -0.5574498301973582">
                             <joint armature="0.0060" axis="0 -1 0" name="right_knee" pos="0 0 .02" range="-160 -2" stiffness="1" type="hinge" />
-                            <geom fromto="0.0 0.0 0.0 0.0 0.0 -0.29136893128297814" name="right_shin1" size="0.049" type="capsule" />
-                            <body name="right_foot" pos="0.0 0.0 -0.4370533969244672">
+                            <geom fromto="0.0 0.0 0.0 0.0 0.0 -0.30459993646006084" name="right_shin1" size="0.049" type="capsule" />
+                            <body name="right_foot" pos="0.0 0.0 -0.4568999046900913">
                                 <geom name="right_foot" pos="0 0 0.1" size="0.075" type="sphere" user="0" />
                             </body>
                         </body>
                     </body>
-                    <body name="left_thigh" pos="0.0 0.1179336351645826 -0.04">
+                    <body name="left_thigh" pos="0.0 0.11339316497563541 -0.04">
                         <joint armature="0.01" axis="-1 0 0" damping="5" name="left_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge" />
                         <joint armature="0.01" axis="0 0 -1" damping="5" name="left_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge" />
                         <joint armature="0.01" axis="0 1 0" damping="5" name="left_hip_y" pos="0 0 0" range="-120 20" stiffness="20" type="hinge" />
-                        <geom fromto="0.0 0.0 0.0 0.0 -0.006317876925372726 -0.21480781546267272" name="left_thigh1" size="0.06" type="capsule" />
-                        <body name="left_shin" pos="0.0 -0.006317876925372726 -0.2546104400925209">
+                        <geom fromto="0.0 0.0 0.0 0.0 -0.013832501990008888 -0.4703050676603022" name="left_thigh1" size="0.06" type="capsule" />
+                        <body name="left_shin" pos="0.0 -0.013832501990008888 -0.5574498301973582">
                             <joint armature="0.0060" axis="0 -1 0" name="left_knee" pos="0 0 .02" range="-160 -2" stiffness="1" type="hinge" />
-                            <geom fromto="0.0 0.0 0.0 0.0 0.0 -0.29136893128297814" name="left_shin1" size="0.049" type="capsule" />
-                            <body name="left_foot" pos="0.0 0.0 -0.4370533969244672">
+                            <geom fromto="0.0 0.0 0.0 0.0 0.0 -0.30459993646006084" name="left_shin1" size="0.049" type="capsule" />
+                            <body name="left_foot" pos="0.0 0.0 -0.4568999046900913">
                                 <geom name="left_foot" type="sphere" size="0.075" pos="0 0 0.1" user="0" />
                             </body>
                         </body>
