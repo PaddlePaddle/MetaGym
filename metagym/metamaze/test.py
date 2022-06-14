@@ -4,7 +4,7 @@ import metagym.metamaze
 
 def test_2d_maze(max_iteration):
     print("Testing 2D Maze...")
-    maze_env = gym.make("meta-maze-2D-v0", enable_render=False)
+    maze_env = gym.make("meta-maze-2D-v0", enable_render=False, view_grid=1)
     cell_scale = 9
     task = maze_env.sample_task(cell_scale=cell_scale)
     maze_env.set_task(task)

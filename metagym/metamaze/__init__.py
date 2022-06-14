@@ -35,5 +35,6 @@ register(
         "enable_render": True,
         "render_godview": True,
         "max_steps": 200,
+        "view_grid": 1
     }
 )

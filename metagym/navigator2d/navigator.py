@@ -56,8 +56,8 @@ class Navigator2D(gym.Env):
 
     def sample_task(self):
         return {"Goal_Position": random.uniform(-5, 5, size=(2,)),
-                "Signal_Strength_A": random.uniform(20.0, 50.0),
-                "Signal_Decay_k": random.uniform(5.0, 10.0)}
+                "Signal_Strength_A": random.uniform(2.0, 5.0),
+                "Signal_Decay_k": random.uniform(0.5, 1.0)}
 
     def set_task(self, task):
         self.goal = task["Goal_Position"]
@@ -68,7 +68,7 @@ class Navigator2D(gym.Env):
     @property
     def observation(self):
         dist = numpy.linalg.norm(self.robot.state[:2] - self.goal)
-        return signal_transmission(dist, self.sig_A, 0.10, self.sig_k, self.signal_noise)
+        return signal_transmission(dist, self.sig_A, 0.20, self.sig_k, self.signal_noise)
 
     def step(self, action):
         if(self.need_reset):

@@ -10,7 +10,7 @@ from numpy import random as npyrnd
 from numpy.linalg import norm
 
 # Configurations that decides a specific task
-TaskConfig = namedtuple("TaskConfig", ["start", "goal", "cell_walls", "cell_texts", "cell_size", "wall_height", "agent_height"])
+TaskConfig = namedtuple("TaskConfig", ["start", "goal", "cell_walls", "cell_texts", "cell_size", "wall_height", "agent_height", "step_reward", "goal_reward"])
 
 class Textures(object):
     def __init__(self, texture_dir):
@@ -34,7 +34,15 @@ class Textures(object):
     def n_texts(self):
         return self.grounds.shape[0]
 
-def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0, wall_height=3.2, agent_height=1.6):
+def sample_task_config(texture_n, 
+        max_cells=11, 
+        allow_loops=True, 
+        cell_size=2.0, 
+        wall_height=3.2, 
+        agent_height=1.6,
+        step_reward=-0.01,
+        goal_reward=None,
+        crowd_ratio=0.0):
     # Initialize the maze ...
     assert max_cells > 6, "Minimum required cells are 7"
     assert max_cells % 2 != 0, "Cell Numbers can only be odd"
@@ -47,17 +55,13 @@ def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0,
         for j in range(1, max_cells, 2):
             cell_walls[i,j] = 0
     #Randomize a start, around the bottom-left
-    start_range = max_cells / 5
-    while True:
-        s_x = random.randint(0, (max_cells - 1) // 2 - 1) * 2 + 1
-        s_y = random.randint(0, (max_cells - 1) // 2 - 1) * 2 + 1
-        if(s_x <= start_range or s_y <= start_range):
-            break
+    s_x = random.randint(0, (max_cells - 1) // 2 - 1) * 2 + 1
+    s_y = random.randint(0, (max_cells - 1) // 2 - 1) * 2 + 1
     start = (s_x, s_y)
 
     #Randomize a goal (not quite efficiently)
     goal = (max_cells - 2, max_cells - 2)
-    minimum_goal_dist = 0.80 * max_cells #(at least that far)
+    minimum_goal_dist = 0.45 * max_cells #(at least that far)
     for e_x in range(1, max_cells, 2):
         for e_y in range(1, max_cells, 2):
             e_x = random.randint(0, (max_cells - 1) // 2 - 1) * 2 + 1
@@ -84,7 +88,8 @@ def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0,
     #Prim the wall until start and goal are connected
     #while path_dict[start] != path_dict[goal]:
     #Prim the wall until all points are connected
-    while len(rev_path_dict) > 1:
+    max_cell_walls = numpy.product(cell_walls[1:-1, 1:-1].shape)
+    while len(rev_path_dict) > 1 or (allow_loops and numpy.sum(cell_walls[1:-1, 1:-1]) > max_cell_walls * crowd_ratio):
         wall_list = list(wall_dict.keys())
         random.shuffle(wall_list)
         for i, j in wall_list:
@@ -117,7 +122,7 @@ def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0,
                 break
             if(len(abandon_path_id) >= 1 and max_duplicate > 1 and allow_loops):
                 break
-            if(allow_loops and random.random() < 0.1):
+            if(allow_loops and len(rev_path_dict) < 2 and random.random() < 0.2):
                 break
 
         if(new_path_id < 0):
@@ -141,12 +146,23 @@ def sample_task_config(texture_n, max_cells=11, allow_loops=True, cell_size=2.0,
         for j in range(1, max_cells - 1):
             if(cell_walls[i,j] < 1):
                 cell_texts[i,j] = 0
+
+    #Calculate goal reward, default is - n sqrt(n) * step_reward
+    assert step_reward < 0, "step_reward must be < 0"
+    if(goal_reward is None):
+        def_goal_reward = - numpy.sqrt(max_cells) * max_cells * step_reward
+    else:
+        def_goal_reward = goal_reward
+    assert def_goal_reward > 0, "goal reward must be > 0"
+
     return TaskConfig(
             start=start,
             goal=goal,
             cell_walls=cell_walls,
             cell_texts=cell_texts,
             cell_size=cell_size,
+            step_reward=step_reward,
+            goal_reward=def_goal_reward,
             wall_height=wall_height,
             agent_height=agent_height
             )
