@@ -1,9 +1,9 @@
 import os
 import random
-from metagym.metarobots.envs.utils.walker_base_env import WalkerBaseEnv
-from metagym.metarobots.envs.meta_ants.ant import Ant
+from metagym.metalocomotion.envs.utils.walker_base_env import WalkerBaseEnv
+from metagym.metalocomotion.envs.meta_ants.ant import Ant
 
-class MetaAntMuJoCoEnv(WalkerBaseEnv):
+class MetaAntEnv(WalkerBaseEnv):
     def __init__(self):
         self.tasks_been_set = False
         all_config = os.listdir(os.path.join(os.path.dirname(__file__), "..", "assets", "ants"))
@@ -24,7 +24,7 @@ class MetaAntMuJoCoEnv(WalkerBaseEnv):
         self.tasks_been_set = True
 
     def sample_task(self, task_type=None):
-        if(task_type is None or task_type == "OOD"):
+        if(task_type is None or task_type == "TRAIN"):
             return random.choice(self.tra_tasks)
         elif(task_type == "TEST"):
             return random.choice(self.tst_tasks)
@@ -32,12 +32,3 @@ class MetaAntMuJoCoEnv(WalkerBaseEnv):
             return random.choice(self.ood_tasks)
         else:
             raise Exception("Unexpected task_type: %s"%task_type)
-
-if __name__=="__main__":
-    env = MetaAntMuJoCoEnv()
-    env.set_task(env.sample_task(task_type="TEST"))
-    #env.render(mode="human")
-    env.reset()
-    done = False
-    while not done:
-        (env.step(env.action_space.sample()))

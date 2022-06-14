@@ -13,7 +13,7 @@ class WalkerBaseEnv(BaseBulletEnv):
         self.stateId=-1
 
     def create_single_player_scene(self, bullet_client):
-        self.stadium_scene = StadiumScene(bullet_client, gravity=9.8, timestep=0.0165/4, frame_skip=4)
+        self.stadium_scene = StadiumScene(bullet_client, gravity=9.8, timestep=0.005, frame_skip=4)
         return self.stadium_scene
 
     def reset(self):
@@ -25,9 +25,10 @@ class WalkerBaseEnv(BaseBulletEnv):
         self._p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,0)
 
         self.parts, self.jdict, self.ordered_joints, self.robot_body = self.robot.addToScene(self._p,
-            self.stadium_scene.ground_plane_mjcf)
+                self.stadium_scene.ground_plane_mjcf)
         self.ground_ids = set([(self.parts[f].bodies[self.parts[f].bodyIndex], self.parts[f].bodyPartIndex) for f in
-                               self.foot_ground_object_names])
+                self.foot_ground_object_names])
+
         self._p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
         if self.stateId < 0:
             self.stateId=self._p.saveState()

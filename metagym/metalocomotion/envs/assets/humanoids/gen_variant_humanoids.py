@@ -7,20 +7,28 @@ import numpy
 from numpy import random
 import xml.etree.ElementTree as ET
 
-Pattern_Clip_Min = numpy.asarray([0.80, 0.60, 0.60])
-Pattern_Clip_Max = numpy.asarray([1.20, 1.40, 1.40])
+Pattern_Clip_Min = numpy.asarray([1.0, 0.60, 0.60])
+Pattern_Clip_Max = numpy.asarray([1.50, 1.40, 1.40])
 
-def gen_pattern_tra():
+def gen_pattern_base():
     x = random.random(size=(3,))
     return Pattern_Clip_Min + x * (Pattern_Clip_Max - Pattern_Clip_Min)
 
-def gen_pattern_tst():
-    x = random.random(size=(3,))
-    return Pattern_Clip_Min + x * (Pattern_Clip_Max - Pattern_Clip_Min)
+def pattern_ood_clustering(pattern_list, top_k):
+    patterns = numpy.array(pattern_list)
+    center = numpy.mean(patterns, axis=0)
+    deta = patterns - center
+    dists = numpy.sqrt(numpy.sum(deta * deta, axis=-1))
+    dist_idx = numpy.argsort(-dists)
+    top_k_list = []
+    residue = []
+    for i, rank in enumerate(dist_idx):
+        if(i < top_k):
+            top_k_list.append(pattern_list[rank])
+        else:
+            residue.append(pattern_list[rank])
 
-def gen_pattern_ood():
-    x = random.random(size=(3,))
-    return Pattern_Clip_Min + x * (Pattern_Clip_Max - Pattern_Clip_Min)
+    return top_k_list, residue
 
 def reconfig_xml(file_name, pattern, output_file):
     tree = ET.parse(file_name)
@@ -68,9 +76,12 @@ def reconfig_xml(file_name, pattern, output_file):
     f_out.close()
 
 if __name__=="__main__":
-    for i in range(64):
-        reconfig_xml("humanoid.xml", gen_pattern_tra(), "humanoid_var_tra_%03d.xml"%i)
-    for i in range(32):
-        reconfig_xml("humanoid.xml", gen_pattern_tst(), "humanoid_var_tst_%03d.xml"%i)
-    for i in range(32):
-        reconfig_xml("humanoid.xml", gen_pattern_ood(), "humanoid_var_ood_%03d.xml"%i)
+    pattern_list = [gen_pattern_base() for _ in range(384)]
+    ood_pattern, others = pattern_ood_clustering(pattern_list, 64) 
+    
+    for i, pattern in enumerate(ood_pattern):
+        reconfig_xml("humanoid.xml", pattern, "humanoid_var_ood_%03d.xml"%i)
+    for i, pattern in enumerate(others[:256]):
+        reconfig_xml("humanoid.xml", pattern, "humanoid_var_tra_%03d.xml"%i)
+    for i, pattern in enumerate(others[256:]):
+        reconfig_xml("humanoid.xml", pattern, "humanoid_var_tst_%03d.xml"%i)

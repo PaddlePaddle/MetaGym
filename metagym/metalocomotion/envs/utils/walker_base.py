@@ -1,4 +1,4 @@
-from metagym.metarobots.envs.utils.robot_bases import XmlBasedRobot
+from metagym.metalocomotion.envs.utils.robot_bases import XmlBasedRobot
 import numpy as np
 
 class WalkerBase(XmlBasedRobot):

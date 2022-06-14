@@ -112,7 +112,7 @@ class MJCFBasedRobot(XmlBasedRobot):
 
     def reset(self, bullet_client):
 
-        full_path = os.path.join(os.path.dirname(__file__), "..", "assets", "ants", self.model_xml)
+        full_path = os.path.join(os.path.dirname(__file__), "..", "assets", self.model_xml)
 
         self._p = bullet_client
         #print("Created bullet_client with id=", self._p._client)
@@ -152,7 +152,7 @@ class URDFBasedRobot(XmlBasedRobot):
         self._p = bullet_client
         self.ordered_joints = []
 
-        full_path = os.path.join(os.path.dirname(__file__), "assets", "robots", self.model_urdf)
+        full_path = os.path.join(os.path.dirname(__file__), "assets", self.model_urdf)
 
         if self.self_collision:
             self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(self._p,

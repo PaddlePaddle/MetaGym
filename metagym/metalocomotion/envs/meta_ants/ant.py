@@ -1,5 +1,6 @@
-from metagym.metarobots.envs.utils.walker_base import WalkerBase
-from metagym.metarobots.envs.utils.robot_bases import MJCFBasedRobot
+import os
+from metagym.metalocomotion.envs.utils.walker_base import WalkerBase
+from metagym.metalocomotion.envs.utils.robot_bases import MJCFBasedRobot
 import numpy as np
 
 class Ant(WalkerBase, MJCFBasedRobot):
@@ -7,7 +8,7 @@ class Ant(WalkerBase, MJCFBasedRobot):
 
     def __init__(self, task_file):
         WalkerBase.__init__(self, power=2.5)
-        MJCFBasedRobot.__init__(self, task_file, "torso", action_dim=8, obs_dim=28)
+        MJCFBasedRobot.__init__(self, os.path.join("ants", task_file), "torso", action_dim=8, obs_dim=28)
 
     #def calc_state(self):
     #    WalkerBase.calc_state(self)

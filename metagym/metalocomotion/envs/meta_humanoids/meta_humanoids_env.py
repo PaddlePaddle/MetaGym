@@ -27,7 +27,7 @@ class MetaHumanoidEnv(WalkerBaseEnv):
         self.tasks_been_set = True
 
     def sample_task(self, task_type=None):
-        if(task_type is None or task_type == "OOD"):
+        if(task_type is None or task_type == "TRAIN"):
             return random.choice(self.tra_tasks)
         elif(task_type == "TEST"):
             return random.choice(self.tst_tasks)
@@ -35,17 +35,3 @@ class MetaHumanoidEnv(WalkerBaseEnv):
             return random.choice(self.ood_tasks)
         else:
             raise Exception("Unexpected task_type: %s"%task_type)
-
-if __name__=="__main__":
-    env = MetaHumanoidEnv()
-    env.set_task(env.sample_task(task_type="TEST"))
-    #env.set_task("humanoid_var_tst_000.xml")
-    env.render(mode="human")
-    env.reset()
-    done = False
-    step = 0
-    while not done:
-        state, reward, done, info = (env.step(env.action_space.sample()))
-        step += 1
-        print(step)
-        time.sleep(1)
