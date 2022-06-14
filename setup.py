@@ -49,6 +49,7 @@ setup(
         'six>=1.12.0',
     ],
     extras_require={
+        'metalocomotion': ['numpy>=1.20.3', 'pybullet>=3.0.7'],
         'metamaze': ['pygame>=2.0.2dev2', 'numba>=0.54.0'],
         'quadrupedal': ['scipy>=0.12.0', 'pybullet>=3.0.7', 'attrs>=20.3.0'],
         'quadrotor': ['scipy>=0.12.0', 'networkx>=2.2', 'trimesh>=3.2.39', 'networkx>=2.2', 'colour>=0.1.5'],
