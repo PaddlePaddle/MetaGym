@@ -18,9 +18,9 @@ class MetaAntEnv(WalkerBaseEnv):
             if(file.find("ant_var_ood") == 0):
                 self.ood_tasks.append(file)
 
-    def set_task(self, task_file):
+    def set_task(self, task_file, render=False, max_steps=2000):
         self.robot = Ant(task_file)
-        WalkerBaseEnv.__init__(self, self.robot)
+        WalkerBaseEnv.__init__(self, self.robot, render=render, max_steps=max_steps)
         self.tasks_been_set = True
 
     def sample_task(self, task_type=None):

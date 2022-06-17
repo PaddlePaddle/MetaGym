@@ -10,11 +10,9 @@ def test():
         task = env.sample_task(task_type="TRAIN")
         env.set_task(task)
         env.reset()
-        step = 0
         done = False
-        while step < 1000 and not done:
+        while not done:
             obs, r, done, info = env.step(env.action_space.sample())
-            step += 1
     print("...Testing Humanoids Finishes")
 
     print("Testing Ants ...")
@@ -23,11 +21,9 @@ def test():
         task = env.sample_task(task_type="TRAIN")
         env.set_task(task)
         env.reset()
-        step = 0
         done = False
-        while step < 1000 and not done:
+        while not done:
             obs, r, done, info = env.step(env.action_space.sample())
-            step += 1
     print("...Testing Ants Finishes")
 
 if __name__=="__main__":
