@@ -21,9 +21,9 @@ class MetaHumanoidEnv(WalkerBaseEnv):
         self.electricity_cost = 4.25 * WalkerBaseEnv.electricity_cost
         self.stall_torque_cost = 4.25 * WalkerBaseEnv.stall_torque_cost
 
-    def set_task(self, task_file):
+    def set_task(self, task_file, render=False, max_steps=2000):
         self.robot = Humanoid(task_file)
-        WalkerBaseEnv.__init__(self, self.robot)
+        WalkerBaseEnv.__init__(self, self.robot, render=render, max_steps=max_steps)
         self.tasks_been_set = True
 
     def sample_task(self, task_type=None):

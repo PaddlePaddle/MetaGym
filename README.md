@@ -14,4 +14,4 @@ MetaGym provides abundant environments for benchmarking Reinforcement Learning a
 
 - [Navigator2D](metagym/navigator2d): Simple 2D navigator meta environment (Oct, 2021)
 
-- [MetaLocomotion](metagym/metalocomotion): Locomotion simulator with diverse geometries (June, 2021)
+- [MetaLocomotion](metagym/metalocomotion): Locomotion simulator with diverse geometries (June, 2022)

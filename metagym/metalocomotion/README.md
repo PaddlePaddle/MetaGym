@@ -1,6 +1,6 @@
 # Introduction
 
-MetaLocomotion implement canonical gym bullet locomotion environments, but with diversed geometries. For instance, in meta ants, different tasks differs in the ant's thigh and thin lengths in its four legs.
+MetaLocomotion implement canonical gym bullet locomotion environments, but with diversed geometries. The repo is inspired by [PyBulletGym](https://github.com/benelot/pybullet-gym). We provide a total of 368 ants and 368 humanoids, which have diverse limb lengths, sampled by multiplying the original limb length by random numbers. Among those configurations, 256 of them are training set, 64 are testing set, the left 64 are extreme examples or out-of-distribution (OOD) testing set, which is exceptionally harder to control.
 
 Currently we support
 #### Meta Ants
@@ -29,8 +29,8 @@ Import and create the meta maze environment with
 import gym
 import metagym.metalocomotion
 
-loco_env = gym.make("meta-humanoids-v0", enable_render=True) # Running meta humanoids
-#loco_env = gym.make("meta-ants-v0", enable_render=True) # Running meta ants
+loco_env = gym.make("meta-humanoids-v0") # Running meta humanoids
+#loco_env = gym.make("meta-ants-v0") # Running meta ants
 ```
 
 ## Sampling Geometries
@@ -41,14 +41,15 @@ Use the following code to sample an unique geometry
 task = loco_env.sample_task(
         task_type = "TRAIN" # we provide 256 geometries for training
         #task_type = "TEST" # we provide 64 geometries for testing
-        #task_type = "OOD" # we provide 64 Out-of-distribution geometries, which is exceptionally harder
+        #task_type = "OOD" # we provide 64 extreme testing cases
         )
 ```
 
 ## Running Locomotion
 ```python
 #Set the task configuration to the meta environment
-loco_env.set_task(task)
+loco_env.set_task(task, max_steps=1000)
+loco_env.render()
 loco_env.reset()
 
 #Start the task
@@ -56,13 +57,8 @@ done = False
 while not done:
     action = loco_env.action_space.sample() 
     observation, reward, done, info = loco_env.step(action)
-    loco_env.render()
 ```
 
 # Examples of Different Geometries
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/ant_exp.png" width="600"/>
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/ants_1.gif" width="600"/>
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/ants_2.gif" width="600"/>
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/humanoid_exp.png" width="600"/>
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/humanoids_1.gif" width="600"/>
-<img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/humanoids_2.gif" width="600"/>
+<img src="envs/assets/Ants_demo.png" width="2400"/>
+<img src="envs/assets/Humanoids_demo.png" width="1200"/>

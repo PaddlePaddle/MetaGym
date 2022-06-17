@@ -4,19 +4,21 @@ import pybullet as p
 import numpy as np
 
 class WalkerBaseEnv(BaseBulletEnv):
-    def __init__(self, robot, render=False):
+    def __init__(self, robot, render=False, max_steps=2000):
         print("WalkerBase::__init__")
         BaseBulletEnv.__init__(self, robot, render)
         self.camera_x = 0
         self.walk_target_x = 1e3  # kilometer away
         self.walk_target_y = 0
         self.stateId=-1
+        self.max_steps = 200
 
     def create_single_player_scene(self, bullet_client):
         self.stadium_scene = StadiumScene(bullet_client, gravity=9.8, timestep=0.005, frame_skip=4)
         return self.stadium_scene
 
     def reset(self):
+        self.steps = 0
         if self.stateId >= 0:
             # print("restoreState self.stateId:",self.stateId)
             self._p.restoreState(self.stateId)
@@ -108,8 +110,10 @@ class WalkerBaseEnv(BaseBulletEnv):
             print(sum(self.rewards))
         self.HUD(state, a, done)
         self.reward += sum(self.rewards)
+        self.steps += 1
+        done = bool(done) or self.steps >= self.max_steps
 
-        return state, sum(self.rewards), bool(done), {}
+        return state, sum(self.rewards), done, {}
 
     def camera_adjust(self):
         x, y, z = self.robot.body_xyz
