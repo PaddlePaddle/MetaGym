@@ -49,6 +49,7 @@ task = loco_env.sample_task(
 ```python
 #Set the task configuration to the meta environment
 loco_env.set_task(task, max_steps=1000)
+loco_env.render()
 loco_env.reset()
 
 #Start the task
@@ -56,7 +57,6 @@ done = False
 while not done:
     action = loco_env.action_space.sample() 
     observation, reward, done, info = loco_env.step(action)
-    loco_env.render()
 ```
 
 # Examples of Different Geometries
