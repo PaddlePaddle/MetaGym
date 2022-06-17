@@ -14,6 +14,7 @@ def test_humanoid():
     done = False
     while not done:
         obs, r, done, info = env.step(env.action_space.sample())
+        time.sleep(0.05)
     env.close()
 
 def test_ant():
@@ -26,9 +27,9 @@ def test_ant():
     done = False
     while not done:
         obs, r, done, info = env.step(env.action_space.sample())
-        time.sleep(0.2)
+        time.sleep(0.05)
     env.close()
 
 if __name__=="__main__":
-    test_ant()
-    #test_humanoid()
+    #test_ant()
+    test_humanoid()
