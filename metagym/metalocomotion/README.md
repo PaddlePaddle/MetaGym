@@ -1,8 +1,6 @@
 # Introduction
 
-MetaLocomotion implement canonical gym bullet locomotion environments, but with diversed geometries. The repo is inspired by [PyBulletGym](https://github.com/benelot/pybullet-gym)
-We provide a total of 368 ants and 368 humanoids, which have diverse limb lengths, sampled by multiplying the original limb length by random numbers.
-Among those configurations, 256 of them are training set, 64 are testing set. The left 64 are extreme examples which we classified to out-of-distribution testing set.
+MetaLocomotion implement canonical gym bullet locomotion environments, but with diversed geometries. The repo is inspired by [PyBulletGym](https://github.com/benelot/pybullet-gym). We provide a total of 368 ants and 368 humanoids, which have diverse limb lengths, sampled by multiplying the original limb length by random numbers. Among those configurations, 256 of them are training set, 64 are testing set, the left 64 are extreme examples or out-of-distribution (OOD) testing set, which is exceptionally harder to control.
 
 Currently we support
 #### Meta Ants
@@ -50,7 +48,7 @@ task = loco_env.sample_task(
 ## Running Locomotion
 ```python
 #Set the task configuration to the meta environment
-loco_env.set_task(task)
+loco_env.set_task(task, max_steps=1000)
 loco_env.reset()
 
 #Start the task
@@ -62,7 +60,5 @@ while not done:
 ```
 
 # Examples of Different Geometries
-
 <img src="envs/assets/Ants_demo.png" width="2400"/>
-
 <img src="envs/assets/Humanoids_demo.png" width="1200"/>
