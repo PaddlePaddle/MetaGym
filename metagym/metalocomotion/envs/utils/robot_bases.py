@@ -108,23 +108,19 @@ class MJCFBasedRobot(XmlBasedRobot):
     def __init__(self, model_xml, robot_name, action_dim, obs_dim, self_collision=True, add_ignored_joints=False):
         XmlBasedRobot.__init__(self, robot_name, action_dim, obs_dim, self_collision, add_ignored_joints)
         self.model_xml = model_xml
-        self.doneLoading=0
 
     def reset(self, bullet_client):
 
         full_path = os.path.join(os.path.dirname(__file__), "..", "assets", self.model_xml)
 
         self._p = bullet_client
-        #print("Created bullet_client with id=", self._p._client)
-        if self.doneLoading == 0:
-            self.ordered_joints = []
-            self.doneLoading=1
-            if self.self_collision:
-                self.objects = self._p.loadMJCF(full_path, flags=pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS)
-                self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(self._p, self.objects)
-            else:
-                self.objects = self._p.loadMJCF(full_path)
-                self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(self._p, self.objects)
+        self.ordered_joints = []
+        if self.self_collision:
+            self.objects = self._p.loadMJCF(full_path, flags=pybullet.URDF_USE_SELF_COLLISION|pybullet.URDF_USE_SELF_COLLISION_EXCLUDE_ALL_PARENTS)
+            self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(self._p, self.objects)
+        else:
+            self.objects = self._p.loadMJCF(full_path)
+            self.parts, self.jdict, self.ordered_joints, self.robot_body = self.addToScene(self._p, self.objects)
         self.robot_specific_reset(self._p)
 
         s = self.calc_state()  # optimization: calc_state() can calculate something in self.* for calc_potential() to use

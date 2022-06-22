@@ -29,7 +29,7 @@ Import and create the meta maze environment with
 import gym
 import metagym.metalocomotion
 
-loco_env = gym.make("meta-humanoids-v0") # Running meta humanoids
+loco_env = gym.make("meta-humanoids-v0", enable_render=False, max_steps=1000) # Running meta humanoids
 #loco_env = gym.make("meta-ants-v0") # Running meta ants
 ```
 
@@ -48,7 +48,7 @@ task = loco_env.sample_task(
 ## Running Locomotion
 ```python
 #Set the task configuration to the meta environment
-loco_env.set_task(task, max_steps=1000)
+loco_env.set_task(task)
 loco_env.render()
 loco_env.reset()
 

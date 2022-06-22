@@ -80,4 +80,3 @@ class WalkerBase(XmlBasedRobot):
             return - self.walk_target_dist / self.scene.dt
         except AttributeError:
             return - self.walk_target_dist
-
