@@ -19,11 +19,19 @@ from metagym.metalocomotion.envs.meta_humanoids.meta_humanoids_env import MetaHu
 register(
     id='meta-ant-v0',
     entry_point='metagym.metalocomotion.envs.meta_ants.meta_ant_env:MetaAntEnv',
-    kwargs={}
+    kwargs={"frame_skip": 4,
+        "time_step": 0.005,
+        "enable_render": False,
+        "max_steps": 2000,
+    }
 )
 
 register(
     id='meta-humanoid-v0',
     entry_point='metagym.metalocomotion.envs.meta_humanoids.meta_humanoids_env:MetaHumanoidEnv',
-    kwargs={}
+    kwargs={"frame_skip": 4,
+        "time_step": 0.005,
+        "enable_render": False,
+        "max_steps": 2000,
+    }
 )

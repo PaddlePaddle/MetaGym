@@ -1,11 +1,19 @@
 import os
 import random
 from metagym.metalocomotion.envs.utils.walker_base_env import WalkerBaseEnv
+from metagym.metalocomotion.envs.utils.stadium import StadiumScene
 from metagym.metalocomotion.envs.meta_ants.ant import Ant
 
 class MetaAntEnv(WalkerBaseEnv):
-    def __init__(self):
-        self.tasks_been_set = False
+    def __init__(self, frame_skip=4, time_step=0.005, enable_render=False, max_steps=2000):
+        super(MetaAntEnv, self).__init__(
+                frame_skip=frame_skip,
+                time_step=time_step,
+                render=enable_render,
+                max_steps=max_steps
+                )
+        self.set_scene(StadiumScene)
+
         all_config = os.listdir(os.path.join(os.path.dirname(__file__), "..", "assets", "ants"))
         self.tra_tasks = list()
         self.tst_tasks = list()
@@ -18,10 +26,8 @@ class MetaAntEnv(WalkerBaseEnv):
             if(file.find("ant_var_ood") == 0):
                 self.ood_tasks.append(file)
 
-    def set_task(self, task_file, render=False, max_steps=2000):
-        self.robot = Ant(task_file)
-        WalkerBaseEnv.__init__(self, self.robot, render=render, max_steps=max_steps)
-        self.tasks_been_set = True
+    def set_task(self, task_file):
+        self.set_robot(Ant(task_file))
 
     def sample_task(self, task_type=None):
         if(task_type is None or task_type == "TRAIN"):

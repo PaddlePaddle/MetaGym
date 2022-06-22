@@ -7,126 +7,117 @@ from pkg_resources import parse_version
 
 
 class BaseBulletEnv(gym.Env):
-	"""
-	Base class for Bullet physics simulation environments in a Scene.
-	These environments create single-player scenes and behave like normal Gym environments, if
-	you don't use multiplayer.
-	"""
+    """
+    Base class for Bullet physics simulation environments in a Scene.
+    These environments create single-player scenes and behave like normal Gym environments, if
+    you don't use multiplayer.
+    """
 
-	metadata = {
-		'render.modes': ['human', 'rgb_array'],
-		'video.frames_per_second': 60
-		}
+    metadata = {
+        'render.modes': ['human', 'rgb_array'],
+        'video.frames_per_second': 60
+        }
 
-	def __init__(self, robot, render=False):
-		self.scene = None
-		self.physicsClientId = -1
-		self.ownsPhysicsClient = 0
-		self.camera = Camera()
-		self.isRender = render
-		self.robot = robot
-		self._seed()
-		self._cam_dist = 3
-		self._cam_yaw = 0
-		self._cam_pitch = -30
-		self._render_width = 320
-		self._render_height = 240
+    def __init__(self, frame_skip=4, time_step=0.005, render=False):
+        self.scene = None
+        self.isRender = render
+        self._cam_dist = 3
+        self._cam_yaw = 0
+        self._cam_pitch = -30
+        self._render_width = 320
+        self._render_height = 240
 
-		self.action_space = robot.action_space
-		self.observation_space = robot.observation_space
+        self.frame_skip = frame_skip
+        self.time_step = time_step
 
-	def configure(self, args):
-		self.robot.args = args
+        self._robot_set = False
+        self._scene_set = False
 
-	def _seed(self, seed=None):
-		self.np_random, seed = gym.utils.seeding.np_random(seed)
-		self.robot.np_random = self.np_random # use the same np_randomizer for robot as for env
-		return [seed]
+        if self.isRender:
+            self._p = bullet_client.BulletClient(connection_mode=pybullet.GUI)
+        else:
+            self._p = bullet_client.BulletClient()
 
-	def _reset(self):
-		if self.physicsClientId < 0:
-			self.ownsPhysicsClient = True
+    def set_robot(self, robot):
+        self.robot = robot
+        self.action_space = robot.action_space
+        self.observation_space = robot.observation_space
+        self._robot_set = True
 
-			if self.isRender:
-				self._p = bullet_client.BulletClient(connection_mode=pybullet.GUI)
-			else:
-				self._p = bullet_client.BulletClient()
+    def set_scene(self, scene_type):
+        self.scene = scene_type(self._p, 9.8, self.time_step, self.frame_skip)
+        self._scene_set = True
 
-			self.physicsClientId = self._p._client
-			self._p.configureDebugVisualizer(pybullet.COV_ENABLE_GUI,0)
+    def configure(self, args):
+        if(self._robot_set):
+            self.robot.args = args
+        else:
+            raise Exception("BaseBulletEnv::configure: must call set_robot first")
 
-		if self.scene is None:
-			self.scene = self.create_single_player_scene(self._p)
-		if not self.scene.multiplayer and self.ownsPhysicsClient:
-			self.scene.episode_restart(self._p)
+    def _seed(self, seed=None):
+        if(self._robot_set):
+            self.np_random, seed = gym.utils.seeding.np_random(seed)
+            self.robot.np_random = self.np_random # use the same np_randomizer for robot as for env
+        else:
+            raise Exception("BaseBulletEnv::_seed: must call set_robot first")
+        return [seed]
 
-		self.robot.scene = self.scene
+    def reset(self):
+        self._seed()
+        if(not self._robot_set or not self._scene_set):
+            raise Exception("BaseBulletEnv::_reset: must call set_robot and set_scene first")
 
-		self.frame = 0
-		self.done = 0
-		self.reward = 0
-		dump = 0
-		s = self.robot.reset(self._p)
-		self.potential = self.robot.calc_potential()
-		return s
+        self.scene.reset()
+        self.robot.scene = self.scene
 
-	def _render(self, mode, close=False):
-		if mode == "human":
-			self.isRender = True
-		if mode != "rgb_array":
-			return np.array([])
+        self._p.configureDebugVisualizer(pybullet.COV_ENABLE_GUI,0)
+        obs = self.robot.reset(self._p)
 
-		base_pos = [0, 0, 0]
-		if hasattr(self,'robot'):
-			if hasattr(self.robot,'body_xyz'):
-				base_pos = self.robot.body_xyz
+        self.frame = 0
+        self.done = 0
+        self.reward = 0
+        self.potential = self.robot.calc_potential()
 
-		view_matrix = self._p.computeViewMatrixFromYawPitchRoll(
-			cameraTargetPosition=base_pos,
-			distance=self._cam_dist,
-			yaw=self._cam_yaw,
-			pitch=self._cam_pitch,
-			roll=0,
-			upAxisIndex=2)
-		proj_matrix = self._p.computeProjectionMatrixFOV(
-			fov=60, aspect=float(self._render_width)/self._render_height,
-			nearVal=0.1, farVal=100.0)
-		(_, _, px, _, _) = self._p.getCameraImage(
-		width = self._render_width, height=self._render_height, viewMatrix=view_matrix,
-			projectionMatrix=proj_matrix,
-			renderer=pybullet.ER_BULLET_HARDWARE_OPENGL
-			)
-		rgb_array = np.array(px)
-		rgb_array = rgb_array[:, :, :3]
-		return rgb_array
+        return obs
 
-	def _close(self):
-		if self.ownsPhysicsClient:
-			if self.physicsClientId >= 0:
-				self._p.disconnect()
-		self.physicsClientId = -1
+    def render(self, mode, close=False):
+        if mode == "human":
+            self.isRender = True
+        if mode != "rgb_array":
+            return np.array([])
 
-	def HUD(self, state, a, done):
-		pass
+        base_pos = [0, 0, 0]
+        if hasattr(self,'robot'):
+            if hasattr(self.robot,'body_xyz'):
+                base_pos = self.robot.body_xyz
 
-	# backwards compatibility for gym >= v0.9.x
-	# for extension of this class.
-	def step(self, *args, **kwargs):
-		return self._step(*args, **kwargs)
+        view_matrix = self._p.computeViewMatrixFromYawPitchRoll(
+            cameraTargetPosition=base_pos,
+            distance=self._cam_dist,
+            yaw=self._cam_yaw,
+            pitch=self._cam_pitch,
+            roll=0,
+            upAxisIndex=2)
+        proj_matrix = self._p.computeProjectionMatrixFOV(
+            fov=60, aspect=float(self._render_width)/self._render_height,
+            nearVal=0.1, farVal=100.0)
 
-	if parse_version(gym.__version__)>=parse_version('0.9.6'):
-		close = _close
-		render = _render
-		reset = _reset
-		seed = _seed
+        (_, _, px, _, _) = self._p.getCameraImage(
+            width = self._render_width, 
+            height=self._render_height, 
+            viewMatrix=view_matrix,
+            projectionMatrix=proj_matrix,
+            renderer=pybullet.ER_BULLET_HARDWARE_OPENGL
+            )
+        rgb_array = np.array(px)
+        rgb_array = rgb_array[:, :, :3]
 
+        return rgb_array
 
-class Camera:
-	def __init__(self):
-		pass
+    def close(self):
+        self._p.resetSimulation()
+        self._p.disconnect()
 
-	def move_and_look_at(self,i,j,k,x,y,z):
-		lookat = [x,y,z]
-		distance = 10
-		yaw = 10
-		self._p.resetDebugVisualizerCamera(distance, yaw, -20, lookat)
+    def step(self, action):
+        self.robot.apply_action(action)
+        self.scene.global_step()
