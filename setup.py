@@ -15,7 +15,7 @@
 import io
 from setuptools import setup, find_packages
 
-__version__ = '0.1.0'
+__version__ = '0.1.1.dev1'
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -38,7 +38,12 @@ setup(
         './liftsim/environment/mansion/person_generators/mansion_flow.npy',
         './quadrotor/quadcopter.stl',
         './quadrotor/texture.png',
-        './quadrotor/config.json']
+        './quadrotor/config.json',
+        './metalocomotion/envs/assets/ants/*.xml',
+        './metalocomotion/envs/assets/humanoids/*.xml',
+        './metalocomotion/envs/assets/scenes/*',
+        './metalocomotion/envs/assets/*.png',
+        ]
     },
     tests_require=['pytest', 'mock'],
     include_package_data=True,
@@ -49,6 +54,7 @@ setup(
         'six>=1.12.0',
     ],
     extras_require={
+        'metalocomotion': ['numpy>=1.20.3', 'pybullet>=3.0.7'],
         'metamaze': ['pygame>=2.0.2dev2', 'numba>=0.54.0'],
         'quadrupedal': ['scipy>=0.12.0', 'pybullet>=3.0.7', 'attrs>=20.3.0'],
         'quadrotor': ['scipy>=0.12.0', 'networkx>=2.2', 'trimesh>=3.2.39', 'networkx>=2.2', 'colour>=0.1.5'],
