@@ -11,7 +11,7 @@ from numpy.linalg import norm
 
 class MazeCore2D(object):
     def __init__(self, view_grid=2):
-        self.vie_wgrid = view_grid
+        self.view_grid = view_grid
         pygame.init()
 
     def set_task(self, task_config, textures):
