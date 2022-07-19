@@ -43,6 +43,7 @@ setup(
         './metalocomotion/envs/assets/humanoids/*.xml',
         './metalocomotion/envs/assets/scenes/*',
         './metalocomotion/envs/assets/*.png',
+        './metamaze/envs/img/*.png'
         ]
     },
     tests_require=['pytest', 'mock'],
