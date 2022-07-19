@@ -51,6 +51,7 @@ class MetaMaze3D(gym.Env):
             wall_height = 3.2,
             agent_height = 1.6,
             step_reward = -0.01,
+            view_grid=1,
             goal_reward = None,
             crowd_ratio = 0.0
             ):
@@ -61,6 +62,7 @@ class MetaMaze3D(gym.Env):
                 wall_height=wall_height,
                 crowd_ratio=crowd_ratio,
                 step_reward = step_reward,
+                view_grid=1,
                 goal_reward = goal_reward,
                 agent_height=agent_height)
 
@@ -140,6 +142,7 @@ class MetaMaze2D(gym.Env):
             wall_height = 3.2,
             agent_height = 1.6,
             step_reward = -0.01,
+            view_grid = 2,
             goal_reward = None,
             crowd_ratio = 0.0
             ):
@@ -150,6 +153,7 @@ class MetaMaze2D(gym.Env):
                 wall_height=wall_height,
                 crowd_ratio=crowd_ratio,
                 step_reward = step_reward,
+                view_grid=view_grid,
                 goal_reward = goal_reward,
                 agent_height=agent_height)
 

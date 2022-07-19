@@ -10,7 +10,7 @@ from numpy import random as npyrnd
 from numpy.linalg import norm
 
 # Configurations that decides a specific task
-TaskConfig = namedtuple("TaskConfig", ["start", "goal", "cell_walls", "cell_texts", "cell_size", "wall_height", "agent_height", "step_reward", "goal_reward"])
+TaskConfig = namedtuple("TaskConfig", ["start", "goal", "cell_walls", "cell_texts", "cell_size", "wall_height", "agent_height", "view_grid", "step_reward", "goal_reward"])
 
 class Textures(object):
     def __init__(self, texture_dir):
@@ -41,6 +41,7 @@ def sample_task_config(texture_n,
         wall_height=3.2, 
         agent_height=1.6,
         step_reward=-0.01,
+        view_grid=2,
         goal_reward=None,
         crowd_ratio=0.0):
     # Initialize the maze ...
@@ -163,6 +164,7 @@ def sample_task_config(texture_n,
             cell_size=cell_size,
             step_reward=step_reward,
             goal_reward=def_goal_reward,
+            view_grid=view_grid,
             wall_height=wall_height,
             agent_height=agent_height
             )

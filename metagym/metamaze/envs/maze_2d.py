@@ -11,7 +11,7 @@ from numpy.linalg import norm
 
 class MazeCore2D(object):
     def __init__(self, view_grid=2):
-        self.view_grid = view_grid
+        self.viewgrid = view_grid
         pygame.init()
 
     def set_task(self, task_config, textures):
@@ -20,6 +20,7 @@ class MazeCore2D(object):
         self._start = task_config.start
         self._max_cells = numpy.shape(self._cell_walls)[0]
         self._cell_walls[task_config.goal[0], task_config.goal[1]] = -1
+        self.view_grid = task_config.view_grid
         self._step_reward = task_config.step_reward
         self._goal_reward = task_config.goal_reward
         assert self._cell_walls.shape[0] == self._cell_walls.shape[1], "only support square shape"
