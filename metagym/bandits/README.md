@@ -1,6 +1,7 @@
 # Introduction
 
-The classical multi-armed bandits problem, solving them in meta-reinforcement learning manner
+The classical multi-armed bandits problem, allowing generating arbitrary configurations. 
+Solving different problems by one model by using meta-reinforcement-learning.
 
 # Install
 
@@ -41,5 +42,5 @@ env.reset()
 
 ## Running a demo of thompson sampling with
 ```script
-python thompson_sampling.py
+python demo_thompson_sampling.py
 ```
