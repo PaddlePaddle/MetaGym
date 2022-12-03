@@ -8,7 +8,7 @@ MetaMaze is a powerful and efficient simulator for navigation in a randomly gene
 pip install metagym[metamaze]
 ```
 
-#### For local installation, execute following commands:
+#### For local installation, execute the following commands:
 
 ```bash
 git clone https://github.com/PaddlePaddle/MetaGym
@@ -25,7 +25,8 @@ Import and create the meta maze environment with
 import gym
 import metagym.metamaze
 
-maze_env = gym.make("meta-maze-3D-v0", enable_render=True) # Running a 3D Maze
+maze_env = gym.make("meta-maze-continuous-3D-v0", enable_render=True) # Running a continuous 3D Maze, where direction and moving speed are continuous
+#maze_env = gym.make("meta-maze-discrete-3D-v0", enable_render=True) # Running a discrete 3D Maze, where direction and moving speed are discrete
 #maze_env = gym.make("meta-maze-2D-v0", enable_render=True) # Running a 2D Maze
 ```
 
@@ -59,13 +60,12 @@ while not done:
     #  The action space is discrete actions specifying UP/DOWN/LEFT/RIGHT
     action = maze_env.action_space.sample() 
     #  The observation being 3 * 3 numpy array, the observation of its current neighbours
-    #  Reward is set to be 20 when arriving at the goal, -0.1 for each step taken
     #  Done = True when reaching the goal or maximum steps (200 as default)
     observation, reward, done, info = maze_env.step(action)
     maze_env.render()
 
 ```
-## Running 3D Mazes
+## Running Continuous 3D Mazes
 ```python
 #Set the task configuration to the meta environment
 maze_env.set_task(task)
@@ -77,8 +77,22 @@ while not done:
     #  The action space is continuous Boxes in (-1, 1) deciding the turning (LEFT/RIGHT) and the walking speed (FORWARD/BACKWARD)
     action = maze_env.action_space.sample() 
     #  The observation being RGB picture of W * H * 3
-    #  Reward is set to be 200 when arriving at the goal, -0.1 for each step taken
-    #  Done = True when reaching the goal or maximum steps of 1000
+    observation, reward, done, info = maze_env.do_action(action)
+    maze_env.render()
+```
+
+## Running Discrete 3D Mazes
+```python
+#Set the task configuration to the meta environment
+maze_env.set_task(task)
+maze_env.reset()
+
+#Start the task
+done = False
+while not done:
+    # The action is discrete (Turn Left/Right, Move Forward/Backward)
+    action = maze_env.action_space.sample() 
+    # The observation being RGB picture of W * H * 3
     observation, reward, done, info = maze_env.do_action(action)
     maze_env.render()
 ```
@@ -93,11 +107,18 @@ python metagym/metamaze/keyboard_play_demo_2d.py
 ```
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/demo_maze_2d.gif" width="600"/>
 
-## 3D Mazes Demonstration
+## 3D Discrete Mazes Demonstration
+
+For a demonstration of keyboard controlled discrete 3D mazes, run
+```bash
+python metagym/metamaze/keyboard_play_demo_discrete_3d.py
+```
+
+## 3D Continuous Mazes Demonstration
 
 For a demonstration of keyboard controlled 3D mazes, run
 ```bash
-python metagym/metamaze/keyboard_play_demo_3d.py
+python metagym/metamaze/keyboard_play_demo_continuous_3d.py
 ```
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/demo_maze_small.gif" width="600"/>
 <img src="https://github.com/benchmarking-rl/PARL-experiments/blob/master/MetaGym/demo_maze_huge.gif" width="600"/>
