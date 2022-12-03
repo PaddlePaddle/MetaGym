@@ -5,29 +5,29 @@ import os
 import numpy
 import pygame
 import random
+from copy import deepcopy
 from pygame import font
 from numpy import random as npyrnd
 from numpy.linalg import norm
 from metagym.metamaze.envs.dynamics import PI, PI_2, PI_4, PI2d, vector_move_with_collision
 from metagym.metamaze.envs.ray_caster_utils import maze_view
 
-class MazeCore3D(object):
+class MazeCoreDiscrete3D(object):
     #Read Configurations
     def __init__(
             self,
-            collision_dist=0.20, #collision distance
             max_vision_range=12.0, #agent vision range
             fol_angle = 0.6 * PI, #Field of View
             resolution_horizon = 320, #resolution in horizontal
             resolution_vertical = 320, #resolution in vertical
             with_guidepost = True, # include guide post in observations
         ):
-        self._collision_dist = collision_dist
         self._max_vision_range = max_vision_range
         self._fol_angle = fol_angle
         self._resolution_horizon = resolution_horizon
         self._resolution_vertical = resolution_vertical
         self._with_guidepost = with_guidepost
+        self._agent_ori_choice = numpy.asarray([0.0, 0.5, 1.0, 1.5], dtype="float32") * PI
         pygame.init()
 
     def get_cell_center(self, cell):
@@ -60,24 +60,52 @@ class MazeCore3D(object):
     def reset(self):
         self._goal_position = self.get_cell_center(self._goal)
         self._agent_pos = self.get_cell_center(self._start)
+        self._agent_pos_index = list(self._start)
         self._agent_trajectory = []
-        self._agent_ori = 2.0 * random.random() * PI
+        self._agent_ori_index = random.randint(0,3)
+        self._agent_ori = self._agent_ori_choice[self._agent_ori_index]
         self._max_wh = self._max_cells * self._cell_size
         self._cell_transparents = numpy.zeros_like(self._cell_walls, dtype="int32")
         self._cell_transparents[self._goal] = 1
         self.update_observation()
         return self.get_observation()
 
-    def do_action(self, turn_rate, walk_speed, dt=0.10):
-        turn_rate = numpy.clip(turn_rate, -1, 1) * PI
-        walk_speed = numpy.clip(walk_speed, -1, 1)
-        self._agent_ori, self._agent_pos = vector_move_with_collision(
-                self._agent_ori, self._agent_pos, turn_rate, walk_speed, dt, 
-                self._cell_walls, self._cell_size, self._collision_dist)
-        goal_dist = norm(self._agent_pos - self._goal_position)
+    def move(self, step):
+        tmp_pos = deepcopy(self._agent_pos_index)
+        if(self._agent_ori_index == 0):
+            tmp_pos[0] += step
+        elif(self._agent_ori_index == 1):
+            tmp_pos[1] += step
+        elif(self._agent_ori_index == 2):
+            tmp_pos[0] -= step
+        elif(self._agent_ori_index == 3):
+            tmp_pos[1] -= step
+        else:
+            raise ValueError("Unexpected agent ori index: %d"%self._agent_ori_index)
+        if(tmp_pos[0] >=0 and tmp_pos[0] < self._max_cells and
+                tmp_pos[1] >= 0  and tmp_pos[1] < self._max_cells and
+                self._cell_walls[tmp_pos[0], tmp_pos[1]] == 0):
+            self._agent_pos_index = tmp_pos
+            self._agent_pos = self.get_cell_center(self._agent_pos_index)
+
+    def turn(self, direction):
+        self._agent_ori_index += direction
+        self._agent_ori_index = self._agent_ori_index % len(self._agent_ori_choice)
+        self._agent_ori = self._agent_ori_choice[self._agent_ori_index]
+
+    def do_action(self, action):
+        """
+        [turn, move]: Turn first and then move
+        """
+        assert numpy.shape(action) == (2,)
+        assert abs(action[0]) < 2 and abs(action[1]) < 2
+        self.turn(action[0])
+        self.move(action[1])
+
+        goal_dist = norm(numpy.array(self._agent_pos_index, dtype="float32") - numpy.array(self._goal, dtype="float32"))
         done = False
         self.update_observation()
-        if(goal_dist < 0.80): #reaching the goal
+        if(goal_dist < 0.50): #reaching the goal
             done = True
         return done
 
@@ -144,17 +172,15 @@ class MazeCore3D(object):
 
     def movement_control(self, keys):
         #Keyboard control cases
-        turn_rate = 0.0
-        walk_speed = 0.0
         if keys[pygame.K_LEFT]:
-            turn_rate = -0.2
+            return (-1, 0)
         if keys[pygame.K_RIGHT]:
-            turn_rate = 0.2
+            return (1, 0)
         if keys[pygame.K_UP]:
-            walk_speed = 0.5
+            return (0, 1)
         if keys[pygame.K_DOWN]:
-            walk_speed = -0.5
-        return turn_rate, walk_speed
+            return (0, -1)
+        return (0, 0)
 
     def update_observation(self):
         #Add the ground first

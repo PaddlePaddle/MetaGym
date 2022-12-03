@@ -29,7 +29,7 @@ import metagym.bandits
 env = gym.make("bandits-v0", arms=10, max_steps=4096)
 ```
 
-## Sampling a arbitrary Bandits task
+## Sampling an arbitrary Bandits task
 ```python
 task = env.sample_task(
         distribution_settings="Classical",  # allowing Classical / Uniform / Gaussian

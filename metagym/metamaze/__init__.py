@@ -13,12 +13,25 @@
 # limitations under the License.
 
 from gym.envs.registration import register
-from metagym.metamaze.envs import MetaMaze3D
+from metagym.metamaze.envs import MetaMazeContinuous3D
+from metagym.metamaze.envs import MetaMazeDiscrete3D
 from metagym.metamaze.envs import MetaMaze2D
 
 register(
-    id='meta-maze-3D-v0',
-    entry_point='metagym.metamaze:MetaMaze3D',
+    id='meta-maze-continuous-3D-v0',
+    entry_point='metagym.metamaze:MetaMazeContinuous3D',
+    kwargs={"with_guidepost": False,
+        "enable_render": True,
+        "render_scale": 480,
+        "render_godview": True,
+        "resolution": (256, 256),
+        "max_steps": 1000,
+    }
+)
+
+register(
+    id='meta-maze-discrete-3D-v0',
+    entry_point='metagym.metamaze:MetaMazeDiscrete3D',
     kwargs={"with_guidepost": False,
         "enable_render": True,
         "render_scale": 480,

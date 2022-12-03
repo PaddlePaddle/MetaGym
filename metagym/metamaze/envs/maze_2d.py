@@ -53,7 +53,7 @@ class MazeCore2D(object):
 
         self._obs_logo = self._font.render("Observation", 0, pygame.Color("red"))
         if(self._god_view):
-            self._screen = pygame.display.set_mode((2 * view_size, view_size))
+            self._screen = pygame.Surface((2 * view_size, view_size))
             pygame.display.set_caption("RandomMazeRender - GodView")
             self._surf_god = pygame.Surface((view_size, view_size))
             self._surf_god.fill(pygame.Color("white"))
@@ -69,7 +69,7 @@ class MazeCore2D(object):
                             self._render_cell_size, self._render_cell_size), width=0)
             self._surf_god.blit(logo_god,(view_size - 90, 5))
         else:
-            self._screen = pygame.display.set_mode((view_size, view_size))
+            self._screen = pygame.Surface((view_size, view_size))
             pygame.display.set_caption("MetaMazeRender")
 
     def render_update(self, god_view):
@@ -107,16 +107,50 @@ class MazeCore2D(object):
         keys = pygame.key.get_pressed()
         return done, keys
 
-    def render_trajectory(self, file_name):
-        traj_screen = pygame.display.set_mode((self._view_size, self._view_size))
+    def render_trajectory(self, file_name, additional=None):
+        if(additional is not None):
+            aw, ah = additional["surfaces"][0].get_width(),additional["surfaces"][0].get_height()
+        traj_screen = pygame.Surface((self._view_size + aw, max(2 * self._view_size, ah)))
+        traj_screen.fill(pygame.Color("white"))
         traj_screen.blit(self._surf_god, (0, 0))
+
+        pygame.draw.rect(traj_screen, pygame.Color("red"), 
+                (self._agent_pos[0] * self._render_cell_size, self._view_size - (self._agent_pos[1] + 1) * self._render_cell_size,
+                self._render_cell_size, self._render_cell_size), width=0)
+
         for i in range(len(self._agent_trajectory)-1):
             p = self._agent_trajectory[i]
             n = self._agent_trajectory[i+1]
             p = [(p[0] + 0.5) * self._render_cell_size, self._view_size - (p[1] + 0.5) *  self._render_cell_size]
             n = [(n[0] + 0.5) * self._render_cell_size, self._view_size - (n[1] + 0.5) *  self._render_cell_size]
             pygame.draw.line(traj_screen, pygame.Color("red"), p, n, width=3)
-        pygame.image.save(traj_screen, file_name)
+
+        #Paint Observation
+        w,h = self._observation.shape
+        c_w = w // 2
+        c_h = h // 2
+        obs_array = numpy.full((w,h,3), 255, dtype="int32")
+        obs_array[numpy.where(self._observation == 1)] = numpy.asarray([0, 0, 0], dtype="int32")
+        obs_array[numpy.where(self._observation == -1)] = numpy.asarray([0, 255, 0], dtype="int32")
+        obs_array[c_w, c_h] = numpy.asarray([255, 0, 0], dtype="int32")
+        obs_array = obs_array[:,::-1]
+        
+        empty_range = 40
+        obs_surf = pygame.surfarray.make_surface(obs_array)
+        obs_surf = pygame.transform.scale(obs_surf, (self._view_size - 2 * empty_range, self._view_size - 2 * empty_range))
+        traj_screen.blit(obs_surf, (empty_range, empty_range + self._view_size))
+        if(additional != None):
+            index_i = self._font.render("input neurons", 0, pygame.Color("red"))
+            index_h = self._font.render("hidden neurons", 0, pygame.Color("red"))
+            index_m = self._font.render("modulator neurons", 0, pygame.Color("red"))
+            index_o = self._font.render("output neurons", 0, pygame.Color("red"))
+            for i in range(len(additional["surfaces"])):
+                traj_screen.blit(additional["surfaces"][i], (self._view_size, 0))
+                traj_screen.blit(index_i,(self._view_size + 360, 775))
+                traj_screen.blit(index_h,(self._view_size + 20, 640))
+                traj_screen.blit(index_m,(self._view_size + 80, 375))
+                traj_screen.blit(index_o,(self._view_size + 360, 175))
+                pygame.image.save(traj_screen, file_name + additional["file_names"][i] + ".png")
 
     def movement_control(self, keys):
         #Keyboard control cases
