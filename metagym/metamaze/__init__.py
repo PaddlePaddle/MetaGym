@@ -16,6 +16,7 @@ from gym.envs.registration import register
 from metagym.metamaze.envs import MetaMazeContinuous3D
 from metagym.metamaze.envs import MetaMazeDiscrete3D
 from metagym.metamaze.envs import MetaMaze2D
+from metagym.metamaze.envs import MazeTaskManager
 
 register(
     id='meta-maze-continuous-3D-v0',
@@ -23,7 +24,6 @@ register(
     kwargs={"with_guidepost": False,
         "enable_render": True,
         "render_scale": 480,
-        "render_godview": True,
         "resolution": (256, 256),
         "max_steps": 1000,
     }
@@ -35,7 +35,6 @@ register(
     kwargs={"with_guidepost": False,
         "enable_render": True,
         "render_scale": 480,
-        "render_godview": True,
         "resolution": (256, 256),
         "max_steps": 1000,
     }
@@ -46,8 +45,8 @@ register(
     entry_point='metagym.metamaze:MetaMaze2D',
     kwargs={
         "enable_render": True,
-        "render_godview": True,
         "max_steps": 200,
-        "view_grid": 1
+        "view_grid": 1,
+        "task_type": "SURVIVAL"
     }
 )
