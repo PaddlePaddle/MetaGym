@@ -59,20 +59,20 @@ class MazeCore2D(MazeBase):
         obs_array = obs_array[:,::-1]
         return obs_array
 
-    def render_update(self):
+    def render_observation(self):
         #Paint Observation
         empty_range = 40
         obs_surf = pygame.surfarray.make_surface(self.visualize_obs())
         obs_surf = pygame.transform.scale(obs_surf, (self._view_size - 2 * empty_range, self._view_size - 2 * empty_range))
-        self._screen.fill(pygame.Color("white"))
         self._screen.blit(self._obs_logo,(5, 5))
         self._screen.blit(obs_surf, (empty_range, empty_range))
+
         pygame.draw.rect(self._screen, pygame.Color("blue"), 
                 (empty_range, empty_range,
                 self._view_size - 2 * empty_range, self._view_size - 2 * empty_range), width=1)
-        done, keys = super(MazeCore2D, self).render_update()
-
-        return done, keys 
+        pygame.draw.rect(self._screen, pygame.Color("red"), 
+                (self._agent_grid[0] * self._render_cell_size + self._view_size, self._view_size - (self._agent_grid[1] + 1) * self._render_cell_size,
+                self._render_cell_size, self._render_cell_size), width=0)
 
     def movement_control(self, keys):
         #Keyboard control cases

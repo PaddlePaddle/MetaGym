@@ -16,9 +16,10 @@ class MazeBase(object):
             self.__dict__[k] = kw_args[k]
         pygame.init()
 
-    def set_task(self, task_config, textures):
+    def set_task(self, task_config):
         # initialize textures
         self._cell_walls = numpy.copy(task_config.cell_walls)
+        self._cell_texts = task_config.cell_texts
         self._start = task_config.start
         self._n = numpy.shape(self._cell_walls)[0]
         self._goal = task_config.goal
@@ -31,6 +32,9 @@ class MazeBase(object):
         self._food_interval = task_config.food_interval
         self._max_life = task_config.max_life
         self._initial_life = task_config.initial_life
+
+        assert self._agent_height < self._wall_height and self._agent_height > 0, "the agent height must be > 0 and < wall height"
+        assert self._cell_walls.shape == self._cell_texts.shape, "the dimension of walls must be equal to textures"
         assert self._cell_walls.shape[0] == self._cell_walls.shape[1], "only support square shape"
 
     def reset(self):
@@ -40,18 +44,20 @@ class MazeBase(object):
         self._agent_trajectory = [numpy.copy(self._agent_grid)]
 
         # Maximum w and h in the space
-        self._D = self._n * self._cell_size
+        self._size = self._n * self._cell_size
 
         # Valid in 3D
         self._agent_ori = 0.0
-        self._cell_transparents = numpy.zeros_like(self._cell_walls, dtype="int32")
-        self._cell_transparents[self._goal] = 1
 
         if(self.task_type == "SURVIVAL"):
             self._food_wait_refresh = numpy.zeros_like(self._food_rewards, dtype="int32")
             self._cur_food_rewards = numpy.copy(self._food_rewards)
             self._food_revival_count = numpy.copy(self._food_interval)
             self._life = self._initial_life
+            self._cell_transparents = self._cur_food_rewards
+        elif(self.task_type == "ESCAPE"):
+            self._cell_transparents = numpy.zeros_like(self._cell_walls, dtype="int32")
+            self._cell_transparents[self._goal] = 1.0
         self.update_observation()
         self.steps = 0
         return self.get_observation()
@@ -70,6 +76,7 @@ class MazeBase(object):
             else:
                 reward = 0.0
             self._life += reward + self._step_reward
+            self._life = min(self._life, self._max_life)
             done = self._life < 0.0 or self.episode_is_over()
 
             # Refresh the food where necessary
@@ -129,14 +136,17 @@ class MazeBase(object):
                 txt_life = self._font.render("Life: %f"%self._life, 0, pygame.Color("red"))
                 scr.blit(txt_life,(self._view_size + 90, 5))
 
+    def render_observation(self):
+        raise NotImplementedError()
+
     def render_update(self):
         #Paint God View
         self._screen.blit(self._surf_god, (self._view_size, 0))
-        pygame.draw.rect(self._screen, pygame.Color("red"), 
-                (self._agent_grid[0] * self._render_cell_size + self._view_size, self._view_size - (self._agent_grid[1] + 1) * self._render_cell_size,
-                self._render_cell_size, self._render_cell_size), width=0)
         if(self.task_type == "SURVIVAL"):
             self.draw_food(self._screen, (self._view_size, 0))
+
+        #Paint Agent and Observation
+        self.render_observation()
 
         pygame.display.update()
         done = False
@@ -184,6 +194,12 @@ class MazeBase(object):
     def get_cell_center(self, cell):
         p_x = cell[0] * self._cell_size + 0.5 * self._cell_size
         p_y = cell[1] * self._cell_size + 0.5 * self._cell_size
+        return [p_x, p_y]
+
+    def get_loc_grid(self, loc):
+        p_x = int(loc[0] / self._cell_size)
+        p_y = int(loc[1] / self._cell_size)
+        return [p_x, p_y]
 
     def movement_control(self, keys):
         raise NotImplementedError()

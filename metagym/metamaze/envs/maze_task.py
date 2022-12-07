@@ -16,7 +16,7 @@ class MazeTaskManager(object):
         "cell_size", "wall_height", "agent_height", "initial_life", "max_life",
         "step_reward", "goal_reward", "food_rewards", "food_interval"])
 
-    def __init__(self, texture_dir="img", verbose=False):
+    def __init__(self, texture_dir, verbose=False):
         pathes = os.path.split(os.path.abspath(__file__))
         texture_dir = os.sep.join([pathes[0], texture_dir])
         texture_files = os.listdir(texture_dir)
@@ -188,3 +188,6 @@ class MazeTaskManager(object):
                 food_rewards=food_rewards,
                 food_interval=food_interval
                 )
+
+MAZE_TASK_MANAGER=MazeTaskManager("img")
+MazeTaskSampler = MAZE_TASK_MANAGER.sample_task
