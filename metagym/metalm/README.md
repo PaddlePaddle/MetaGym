@@ -12,7 +12,7 @@ The meta language model should be doing better and better as the $l$ increases;
 
 ### Motivation
 
-Each $x$ can be regarded as an unknown language composed of $V$ tokens. Its complexity is described by $n$ and $l$. As the elements of $x$ is randomly generated, the model can not possibly predict $y_{l+1}$ by using only the short term context, but has to depend on long-term repeating to correctly memorize the usage of the language. <br>
+Each $x$ can be regarded as an unknown language composed of $V$ tokens. Its complexity is described by $n$ and $l$. Unlike the pre-trained language model that has effectively memorize the pattern in its parameters, in this dataset, as the elements of $x$ is randomly generated, the model can not possibly predict $y_{l+1}$ by using only the short term context, but has to depend on long-term repeating to correctly memorize the usage of the language. <br>
 
 Although we refer to this model as meta language model, we understand it is a relatively simplified version of language, since a real language (e.g., natural langauge, programming language) can not be totally random. Still, this dataset can be used as valuable benchmarks for long term memory and lifelong In-Context learning. <br>
 
