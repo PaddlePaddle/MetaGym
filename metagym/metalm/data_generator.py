@@ -20,19 +20,21 @@ from metalm import MetaLM
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Demo of argparse')
-    parser.add_argument('--vocab_size', type=int, default=20)
-    parser.add_argument('--repeat_length', type=int, default=20)
-    parser.add_argument('--error_rate', type=float, default=0.15)
+    parser.add_argument('--vocab_size', type=int, default=64)
+    parser.add_argument('--elements_length', type=int, default=64)
+    parser.add_argument('--elements_number', type=int, default=10)
+    parser.add_argument('--error_rate', type=float, default=0.10)
     parser.add_argument('--sequence_length', type=int, default=4096)
-    parser.add_argument('--samples', type=int, default=1000)
+    parser.add_argument('--samples', type=int, default=100)
     parser.add_argument('--output', type=str, default=None)
 
     args = parser.parse_args()
     dataset = MetaLM(
-            args.vocab_size,
-            args.repeat_length,
-            args.error_rate,
-            args.sequence_length)
+            V=args.vocab_size,
+            n=args.elements_number,
+            l=args.elements_length,
+            e=args.error_rate,
+            L=args.sequence_length)
     if(args.output is None):
         dataset.generate_to_file(args.samples, sys.stdout)
     else:

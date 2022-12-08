@@ -1,25 +1,17 @@
 # Introduction
 
 Meta language model generates sequences of repeating random integers with noises, aims at facilitating researches in Lifelong In-Context Learning.
-$MetaLM(V, l, e, L)$ data generator generates the sequence by the following steps:
+$MetaLM(V, n, l, e, L)$ data generator generates the sequence by the following steps:
 
-- 1.Generating $l_r \sim Poisson(l)$ 
-- 2.Randomly sampling a sequence $s$ of length $l_r$ composed of numbers between 1 and V
-- 3.Generating $S$ by repeating $s$ until reaching the length of L
-- 4.Disturbing the seuqeunce $S$ by randomly replacing the number in $S$ with wrong numbers or specific number 0
+- 1.Generating elements $s_i \in S$ of length $l_i~Poisson(l), i\in[1,n]$ by random pick integers from $[1, V]$.
+- 2.At iteration t, randomly sampling $s_t \in S$, disturb the seuqence $s_t$ acquring $\hat{s}_t$ by randomly replacing the number in $s$ with the other numbers or specific number 0. 
+- 3.Contatenating $\hat{s}_t$ to $x$, iterate step 2 until $x$ reaching length of L, concatenating $s_t$ to $y$
 
-A meta language model should predict the undisturbed next integer from the disturbed sequence (by observing only the integers before the current step). The model ought to predict better and better at the rear part of the sequence.
+A meta langauge model is required to predict $p(y_{l+1}|\hat_{s}_{t}, \hat_{s}_{t-1}, ..., \hat_{s}_{1}$
 
-#### Examples
-A example of $MetaLM(V=50, l=4, e=0.15, L=25)$
+### Motivation
 
-The observed disturbed sequence:
-
-44	39	44	27	44	39	48	27	44	39	48	27	44	39	17	27	44	39	48	27	44	39	48	0	44
-
-The original undisturbed sequence to be predicted:
-
-39	48	27	44	39	48	27	44	39	48	27	44	39	48	27	44	39	48	27	44	39	48	27	44	39
+Each $x$ can be regarded as an unknown language that has $V$ embedding space, 
 
 # Install
 

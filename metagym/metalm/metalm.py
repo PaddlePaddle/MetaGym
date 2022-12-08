@@ -21,7 +21,7 @@ from numpy import random
 class MetaLM(gym.Env):
     """
     Meta Language Model
-    MetaLM(V, l, e, L) generates Exponential(1/l)-length sequences, which appears repeatedly until reaching length L
+    MetaLM(V, n, l, e, L) generates n Exponential(1/l)-length sequences, which appears repeatedly until reaching length L
     Each time it repeats, we add a noise by replacing the number with e probablity 
     V: Vocabulary Size
     l: mean repeating length
@@ -31,16 +31,22 @@ class MetaLM(gym.Env):
     The task require the agent to recover the correct sequence.
     """
 
-    def __init__(self, V, l, e, L):
+    def __init__(self, 
+            V=64, 
+            n=10, 
+            l=64, 
+            e=0.10, 
+            L=2048):
         self.L = int(L)
         self.V = int(V)
         self.lamb = l
+        self.n = n
         self.e = float(e)
         self.mask_ratio = 0.30
 
     def add_noise(self, seq):
         """
-        Add noise to a sequence, return the new sequence and the disturbance label
+        Add noise to a sequence, return the new sequence
         """
         noise_value = random.randint(1, self.V, size=(numpy.shape(seq)), dtype="int32")
         noise_ratio = (random.random(size=(numpy.shape(seq))) < self.e).astype("int32")
@@ -51,16 +57,27 @@ class MetaLM(gym.Env):
         new_seq = new_seq * (1 -  mask_ratio * noise_ratio)
         return new_seq
 
+    def elements_generator(self):
+        elements = []
+        for _ in range(self.n):
+            l_r = max(3, numpy.random.poisson(self.lamb))
+            elements.append(random.randint(1, self.V, size=(l_r), dtype="int32"))
+        return elements
+
     def data_generator(self):
-        l = max(3, numpy.random.poisson(self.lamb)) # Minimum Pattern length is 3
-        repeat = self.L // l + 1
-        seq = random.randint(1, self.V, size=(l,), dtype="int32")
+        elements = self.elements_generator()
         features = []
         labels = []
-        for _ in range(repeat):
+        cur_l = 0
+        while cur_l < self.L + 1:
+            seq = random.choice(elements)
             fea = self.add_noise(seq)
+            sep = numpy.array([self.SepID], dtype="int32")
             features.append(fea)
             labels.append(seq)
+            features.append(sep)
+            labels.append(sep)
+            cur_l += len(seq) + 1
         features = numpy.concatenate(features, axis=0, dtype="int32")
         labels = numpy.concatenate(labels, axis=0, dtype="int32")
         return features[:self.L], labels[1:(self.L+1)]
@@ -94,9 +111,13 @@ class MetaLM(gym.Env):
         return self.V + 2
 
     @property
-    def PaddingID(self):
+    def SepID(self):
         return self.V + 1
 
     @property
     def MaskID(self):
+        return 0
+
+    @property
+    def PaddingID(self):
         return 0
