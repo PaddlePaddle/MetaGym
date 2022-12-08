@@ -1,17 +1,37 @@
 # Introduction
 
-MetaMaze is a powerful and efficient simulator for navigation in a randomly generated maze. We support 2D-Navigation and 3D-Navigation. You may use mazes of different architectures and textures as tasks for benchmarking Meta-Learning algorithms.
+MetaMaze is a powerful and efficient simulator for navigation in a randomly generated maze. You may use MetaMaze to generate nearly unlimited configuration of mazes, and nearly unlimited different tasks. We use MetaMaze to facilitate researches in Meta-Reinforcement-Learning.
 
-There are three types of mazes:
+There are 3 types of mazes:
 
-- **meta-maze-2D-v0** : 2D mazes, the observation space is its surrounding $(2n+1)\times(2n+1)$ grids, The action space is discrete N/S/W/E
-- **meta-maze-discrete-3D-v0** : mazes with 3D view. Wall is marked with different textures. The action space is discrete TurnLeft/TurnRight/GoForward/GoBackward. The observation space is RGB image.
-- **meta-maze-continuous-3D-v0** : mazes with 3D view and continuous control on its orientation and moving speed. The action is continuous (turn, forward_speed). The observation space is RGB image.
+- **meta-maze-2D-v0** <br>
+--- Observation space: its surrounding $(2n+1)\times(2n+1)$ (n specified by view_grid parameter) grids<br>
+--- Action space: 4-D discrete N/S/W/E <br><br>
+- **meta-maze-discrete-3D-v0** <br>
+--- Observation space: RGB image of 3D first-person view. <br>
+--- Action space: 4-D discrete TurnLeft/TurnRight/GoForward/GoBackward. <br><br>
+- **meta-maze-continuous-3D-v0** <br>
+--- Observation space: RGB image of 3D first-person view.<br>
+--- Action space: 2-D continuous [Turn, Forward/Backward]<br><br>
 
-Each of the mazes are supported with 2 type of tasks
+Each type of mazes support 2 modes:
 
-- **ESCAPE** mode: the agent tries to reach an unknown goal as soon as possible, an episode is over when reach the goal.
-- **SURVIVAL** mode: the agent consumes its life at each times step, it must find food spot in the maze to supply its life. The food spot scattered inside the maze and refreshes periodically. An episode is over when life goes down to zero. In SURVIVAL mode, the current life of the agent is shown by the red bar in the top of RGB image in 3D mazes, and denoted by the value in the center of $(2n+1)\times(2n+1)$ observation in 2D mazes.
+- **ESCAPE** mode <br>
+--- Reach an unknown goal as soon as possible <br>
+--- The goal is specified by task configuration <br>
+--- Each step the agent receives reward of step_reward <br>
+--- Acquire goal_reward when reaching the goal <br>
+--- Episode terminates when reaching the goal <br><br>
+- **SURVIVAL** mode <br>
+--- The agent begins with initial_life specified by the task <br>
+--- Food is generated at fixed grids specified by the task <br>
+--- When agent reaches the food spot, its life is extended depending on the food <br>
+--- When food is cosumed, it will be refreshed following a fixed periodicity <br>
+--- The life slowly decreases with time, depeding on step_reward <br>
+--- Episode terminates when life goes below 0 <br>
+--- The total reward is the food being consumed <br>
+--- The agent's current life is shown by a red bar at the top of its view in 3D mazes <br>
+--- The agent's current life is shown in the center of the $(2n+1)\times(2n+1)$ in 2D mazes <br><br>
 
 Demonstrations of 2D maze
 
