@@ -39,7 +39,7 @@ Import and create the meta language generator
 import gym
 import metagym.metalm
 
-env = gym.make("meta-lm-v0", V=50, l=50, e=0.15, L=4096)
+env = gym.make("meta-lm-v0", V=64, n=10, l=64, e=0.10, L=4096)
 ```
 
 ## Generating unlimited data
