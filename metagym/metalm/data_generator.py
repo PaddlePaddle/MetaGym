@@ -16,7 +16,7 @@
 
 import sys
 import argparse
-from metalm import MetaLM
+from metagym.metalm import MetaLM
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Demo of argparse')
