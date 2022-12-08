@@ -7,12 +7,14 @@ $MetaLM(V, n, l, e, L)$ data generator generates the sequence by the following s
 - 2.At iteration t, randomly sampling $s_t \in S$, disturb the seuqence $s_t$ acquring $\bar{s}_t$ by randomly replacing the number in $s$ with the other numbers or specific number 0. 
 - 3.Contatenating $\bar{s}_t$ to $x$, iterate step 2 until $x$ reaching length of L, concatenating $s_t$ to $y$
 
-A meta langauge model:  $p(y_{l+1} \| x_{l}, x_{l-1}, ..., x_{1}$);
+A meta langauge model:  $p(y_{l+1} \| x_{l}, x_{l-1}, ..., x_{1})$;
 The meta language model should be doing better and better as the $l$ increases;
 
 ### Motivation
 
-Each $x$ can be regarded as an unknown language that has $V$ embedding space, 
+Each $x$ can be regarded as an unknown language that has $V$ embedding space. As the elements of $x$ is randomly generated, the model can not effectively predict $y_{l+1}$ by using only the short term information, but has to depend on long-term information to correctly memorize the unique feature of the language. <br>
+
+Although we refer to this model as meta language model, notice that it is a relatively simplified version of language. A true language can not be randomly generated. Still, this dataset can be used as valuable benchmarks for long term memory. <br>
 
 # Install
 
