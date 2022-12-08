@@ -1,7 +1,11 @@
 # Introduction
 
-The classical multi-armed bandits problem, allowing generating arbitrary configurations. 
-Solving different problems by one model by using meta-reinforcement-learning.
+This Environment can be used to generate unlimited different MAB tasks.<br>
+The arbitrary multi-armed bandits (MAB) tasks can be solved using Meta-Reinforcement-Learning, see:
+
+```
+Mishra, Nikhil, et al. "A Simple Neural Attentive Meta-Learner." International Conference on Learning Representations. 2018.
+```
 
 # Install
 
