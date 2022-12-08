@@ -10,8 +10,10 @@ MetaGym provides abundant environments for benchmarking Reinforcement Learning a
 
 - [Quadrupedal](metagym/quadrupedal): Quadrupedal robot adapting to different terrains (Seq, 2021)
 
-- [MetaMaze](metagym/metamaze): Meta maze environment for 3D visual navigation (Oct, 2021)
-
-- [Navigator2D](metagym/navigator2d): Simple 2D navigator meta environment (Oct, 2021)
+- [MetaMaze](metagym/metamaze): 2D/3D maze generators for task generalization (Oct, 2021)
 
 - [MetaLocomotion](metagym/metalocomotion): Locomotion simulator with diverse geometries (June, 2022)
+
+- [MetaLM](metagym/metalm): Meta language model dataset (Dec, 2022)
+
+- [Bandits](metagym/bandits): Bandits task generalization (Dec, 2022)
