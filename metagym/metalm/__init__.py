@@ -18,9 +18,10 @@ from metagym.metalm.metalm import MetaLM
 register(
     id='meta-lm-v0',
     entry_point='metagym.metalm:MetaLM',
-    kwargs={"V": 20,
-        "l": 20,
-        "e": 0.15,
-        "L": 1024
+    kwargs={"V": 64,
+        "n": 10,
+        "l": 64,
+        "e": 0.10,
+        "L": 2048
     }
 )
