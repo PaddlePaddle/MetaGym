@@ -48,3 +48,8 @@ env = gym.make("meta-lm-v0", V=64, n=10, l=64, e=0.10, L=4096)
 obs, demo_label = env.data_generator() # generate observation & label for one sample
 batch_obs, batch_label = env.batch_generator(batch_size) # generate observations & labels for batch of sample (shape of [batch_size, L])
 ```
+
+## To generate data to file
+```bash
+python -m metagym.metalm.data_generator --vocab_size 64 --elements_length 64 --elements_number 10 --error_rate 0.10 --sequence_length 4096 --samples 2 --output file
+```
