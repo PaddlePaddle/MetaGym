@@ -7,7 +7,7 @@ $MetaLM(V, n, l, e, L)$ data generator generates the sequence by the following s
 - 2.At iteration t, randomly sampling $s_t \in S$, disturb the seuqence $s_t$ acquring $\bar{s}_t$ by randomly replacing the number in $s$ with the other numbers or specific number 0. 
 - 3.Contatenating $\bar{s}_t$ to $x$, iterate step 2 until $x$ reaching length of L, concatenating $s_t$ to $y$
 
-A meta langauge model:  $p(y_{l+1} \| x_{l}, x_{l-1}, ..., x_{1}$;
+A meta langauge model:  $p(y_{l+1} \| x_{l}, x_{l-1}, ..., x_{1}$);
 The meta language model should be doing better and better as the $l$ increases;
 
 ### Motivation
