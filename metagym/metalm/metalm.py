@@ -78,8 +78,8 @@ class MetaLM(gym.Env):
             features.append(sep)
             labels.append(sep)
             cur_l += len(seq) + 1
-        features = numpy.concatenate(features, axis=0, dtype="int32")
-        labels = numpy.concatenate(labels, axis=0, dtype="int32")
+        features = numpy.concatenate(features, axis=0).astype("int32")
+        labels = numpy.concatenate(labels, axis=0).astype("int32")
         return features[:self.L], labels[1:(self.L+1)]
 
     def batch_generator(self, batch_size):
