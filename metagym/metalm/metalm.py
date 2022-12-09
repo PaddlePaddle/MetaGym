@@ -43,6 +43,7 @@ class MetaLM(gym.Env):
         self.n = n
         self.e = float(e)
         self.mask_ratio = 0.30
+        assert n > 1 and V > 1 and l > 1 and e > 0 and e < 1 and L > 1
 
     def add_noise(self, seq):
         """
@@ -70,7 +71,7 @@ class MetaLM(gym.Env):
         labels = []
         cur_l = 0
         while cur_l < self.L + 1:
-            seq = random.choice(elements)
+            seq = elements[random.randint(0, self.n-1)]
             fea = self.add_noise(seq)
             sep = numpy.array([self.SepID], dtype="int32")
             features.append(fea)
