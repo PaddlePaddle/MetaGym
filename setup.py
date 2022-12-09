@@ -15,7 +15,7 @@
 import io
 from setuptools import setup, find_packages
 
-__version__ = '0.1.1'
+__version__ = '0.2.0.dev1'
 
 with io.open('README.md', 'r', encoding='utf-8') as fh:
     long_description = fh.read()
@@ -39,6 +39,7 @@ setup(
         './quadrotor/quadcopter.stl',
         './quadrotor/texture.png',
         './quadrotor/config.json',
+        './metamaze/envs/img/*',
         './metalocomotion/envs/assets/ants/*.xml',
         './metalocomotion/envs/assets/humanoids/*.xml',
         './metalocomotion/envs/assets/scenes/*',
@@ -59,7 +60,6 @@ setup(
         'quadrupedal': ['scipy>=0.12.0', 'pybullet>=3.0.7', 'attrs>=20.3.0'],
         'quadrotor': ['scipy>=0.12.0', 'networkx>=2.2', 'trimesh>=3.2.39', 'networkx>=2.2', 'colour>=0.1.5'],
         'liftsim': ['configparser>=3.7.4', 'pyglet==1.5.0; python_version>="3"', 'pyglet==1.4.0; python_version<"3"'],
-        'navigator2d': ['pygame>=2.0.2dev2']
     },
     zip_safe=False,
 )
