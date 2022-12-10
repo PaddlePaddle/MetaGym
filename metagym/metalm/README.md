@@ -53,3 +53,14 @@ batch_obs, batch_label = env.batch_generator(batch_size) # generate observations
 ```bash
 python -m metagym.metalm.data_generator --vocab_size 64 --elements_length 64 --elements_number 10 --error_rate 0.10 --sequence_length 4096 --samples 2 --output file
 ```
+
+# Demonstration
+
+We run 6-Layer, $d_{model}=512$, $n_{head}=16$, Segment Length = 128 Transformer-XL and 4-Layer, $d_{model}=512$ LSTM on the following meta-lm dataset:
+
+- MetaLM(V=64, n=5, l=32, e=0.10, L=4096) <br>
+- MetaLM(V=64, n=10, l=32, e=0.10, L=4096) <br>
+- MetaLM(V=64, n=10, l=64, e=0.10, L=4096) <br>
+
+We evaluate the perplexity per step $t$ within $t\in[1, 4096]$, the results are shown below:
+<img src="./Perplexity-MetaLM.png" alt="Perplexity against t" title="Perplexity of MetaLM">
