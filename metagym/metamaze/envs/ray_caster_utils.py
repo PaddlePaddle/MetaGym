@@ -22,11 +22,11 @@ def DDA_2D(pos, i, j, cell_number, cell_size, cos_ori, sin_ori, cell_walls, cell
     hit_dist = 0.0
     hit_side = 0
     hit_transparent_list = []
-    if(cell_transparent[hit_i, hit_j] > 0):
+    if(cell_transparent[hit_i, hit_j] > 0.01):
         if(side_dist_x < side_dist_y):
-            hit_transparent_list.append((side_dist_x, hit_i, hit_j, 0))
+            hit_transparent_list.append((side_dist_x, hit_i, hit_j, 0, cell_transparent[hit_i, hit_j]))
         else:
-            hit_transparent_list.append((side_dist_y, hit_i, hit_j, 1))
+            hit_transparent_list.append((side_dist_y, hit_i, hit_j, 1, cell_transparent[hit_i, hit_j]))
 
     while hit_dist < max_vision:
         if(side_dist_x < side_dist_y):
@@ -38,8 +38,8 @@ def DDA_2D(pos, i, j, cell_number, cell_size, cos_ori, sin_ori, cell_walls, cell
                     hit_dist = 1.0e+6
                     break
             else:
-                if(cell_transparent[hit_i, hit_j] > 0):
-                    hit_transparent_list.append((hit_dist, hit_i, hit_j, 0))
+                if(cell_transparent[hit_i, hit_j] > 0.01):
+                    hit_transparent_list.append((hit_dist, hit_i, hit_j, 0, cell_transparent[hit_i, hit_j]))
                 if(cell_walls[hit_i, hit_j] > 0):
                     hit_side = 0
                     break
@@ -53,8 +53,8 @@ def DDA_2D(pos, i, j, cell_number, cell_size, cos_ori, sin_ori, cell_walls, cell
                     hit_dist = 1.0e+6
                     break
             else:
-                if(cell_transparent[hit_i, hit_j] > 0):
-                    hit_transparent_list.append((hit_dist, hit_i, hit_j, 1))
+                if(cell_transparent[hit_i, hit_j] > 0.01):
+                    hit_transparent_list.append((hit_dist, hit_i, hit_j, 1, cell_transparent[hit_i, hit_j]))
                 if(cell_walls[hit_i, hit_j] > 0):
                     hit_side = 1
                     break
@@ -74,7 +74,6 @@ def maze_view(pos, ori, vision_height, cell_walls, cell_transparent, cell_texts,
     max_cell_i = cell_walls.shape[0]
     max_cell_j = cell_walls.shape[1]
     pixel_factor = pixel_size / l_focal
-    transparent_factor = 0.30
 
     # prepare some maths
     rgb_array = numpy.zeros(shape=(resolution_h, resolution_v, 3), dtype="int32")
@@ -121,7 +120,8 @@ def maze_view(pos, ori, vision_height, cell_walls, cell_transparent, cell_texts,
                 d_i *= texture_array[text_id].shape[0]
                 d_j *= texture_array[text_id].shape[1]
                 rgb_array[d_h, d_v, :] = light_incident * (alpha * FAR_RGB + (1.0 - alpha) * texture_array[text_id][int(d_i), int(d_j)])
-                if(cell_transparent[i, j] > 0):
+                if(cell_transparent[i, j] > 0.01):
+                    transparent_factor = cell_transparent[i, j] * 0.50 + 0.10
                     rgb_array[d_h, d_v] = (1.0 - transparent_factor) * rgb_array[d_h, d_v] + transparent_factor * TRANSPARENT_RGB
                     transparent_array[d_h, d_v] = 1.0
 
@@ -148,6 +148,7 @@ def maze_view(pos, ori, vision_height, cell_walls, cell_transparent, cell_texts,
             d_j *= ceil_text.shape[1]
             rgb_array[d_h, d_v, :] = light_incident * (alpha * FAR_RGB + (1.0 - alpha) * ceil_text[int(d_i), int(d_j)])
             if(t_i >= 0 and t_i < max_cell_i and t_j >= 0 and t_j < max_cell_j and cell_transparent[t_i, t_j] > 0):
+                transparent_factor = cell_transparent[t_i, t_j] * 0.50 + 0.10
                 rgb_array[d_h, d_v] = (1.0 - transparent_factor) * rgb_array[d_h, d_v] + transparent_factor * TRANSPARENT_RGB
                 transparent_array[d_h, d_v] = 1.0
     
@@ -191,8 +192,9 @@ def maze_view(pos, ori, vision_height, cell_walls, cell_transparent, cell_texts,
             rgb_array[d_h, d_v, :] = light_incident * (alpha * FAR_RGB + (1.0 - alpha) * texture_array[text_id][int(d_i), int(d_j)])
 
         # Add those transparent
-        for hit_dist, hit_i, hit_j, hit_side in hit_transparent:
+        for hit_dist, hit_i, hit_j, hit_side, strength in hit_transparent:
             ratio = hit_dist * cos_hp_array[d_h] / l_focal
+            transparent_factor = strength * 0.50 + 0.10
             top_v = (ceil_height - vision_height) / ratio
             bot_v = vision_height / ratio
 

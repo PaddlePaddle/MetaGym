@@ -13,18 +13,32 @@
 # limitations under the License.
 
 from gym.envs.registration import register
-from metagym.metamaze.envs import MetaMaze3D
+from metagym.metamaze.envs import MetaMazeContinuous3D
+from metagym.metamaze.envs import MetaMazeDiscrete3D
 from metagym.metamaze.envs import MetaMaze2D
+from metagym.metamaze.envs import MazeTaskSampler
 
 register(
-    id='meta-maze-3D-v0',
-    entry_point='metagym.metamaze:MetaMaze3D',
-    kwargs={"with_guidepost": False,
+    id='meta-maze-continuous-3D-v0',
+    entry_point='metagym.metamaze:MetaMazeContinuous3D',
+    kwargs={
         "enable_render": True,
         "render_scale": 480,
-        "render_godview": True,
         "resolution": (256, 256),
-        "max_steps": 1000,
+        "max_steps": 5000,
+        "task_type": "SURVIVAL"
+    }
+)
+
+register(
+    id='meta-maze-discrete-3D-v0',
+    entry_point='metagym.metamaze:MetaMazeDiscrete3D',
+    kwargs={
+        "enable_render": True,
+        "render_scale": 480,
+        "resolution": (256, 256),
+        "max_steps": 200,
+        "task_type": "SURVIVAL"
     }
 )
 
@@ -33,8 +47,8 @@ register(
     entry_point='metagym.metamaze:MetaMaze2D',
     kwargs={
         "enable_render": True,
-        "render_godview": True,
         "max_steps": 200,
-        "view_grid": 1
+        "view_grid": 1,
+        "task_type": "SURVIVAL"
     }
 )

@@ -72,7 +72,7 @@ def vector_move_with_collision(ori, pos, turn_rate, walk_speed, deta_t, cell_wal
     slide_factor = 0.20
     if(walk_speed < 0):
         walk_speed *= 0.50
-    tmp_pos = numpy.copy(pos)
+    tmp_pos = numpy.copy(numpy.array(pos, dtype="float32"))
     for _ in range(int(100 * deta_t)):
         ori, offset = vector_move(ori, turn_rate, walk_speed, 0.01)
         exp_pos = tmp_pos + offset

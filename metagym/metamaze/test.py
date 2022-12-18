@@ -1,12 +1,16 @@
+#!/usr/bin/env python
+# coding=utf8
+# File: test.py
 import gym
 import sys
 import metagym.metamaze
+from metagym.metamaze import MazeTaskSampler
 
-def test_2d_maze(max_iteration):
-    print("Testing 2D Maze...")
-    maze_env = gym.make("meta-maze-2D-v0", enable_render=False, view_grid=1)
-    cell_scale = 9
-    task = maze_env.sample_task(cell_scale=cell_scale)
+def test_2d_maze(max_iteration, task_type):
+    print("Testing 2D Maze with task type: ", task_type)
+    maze_env = gym.make("meta-maze-2D-v0", max_steps=200, enable_render=False, view_grid=1, task_type=task_type)
+    n = 9
+    task = MazeTaskSampler(n=n, step_reward=-0.01, goal_reward=1.0)
     maze_env.set_task(task)
     iteration = 0
     while iteration < max_iteration:
@@ -17,18 +21,16 @@ def test_2d_maze(max_iteration):
         while not done:
             state, reward, done, _ = maze_env.step(maze_env.action_space.sample())
             sum_reward += reward
-        print("Episode is over! You got %.1f score."%sum_reward)
-        if(sum_reward > 0.0):
-            cell_scale += 2 # gradually increase the difficulty
-            print("Increase the difficulty, cell_scale = %d"%cell_scale)
-        task = maze_env.sample_task(cell_scale=cell_scale)
+        n += 2 # gradually increase the difficulty
+        print("Get score %f, Increase the difficulty, n = %d"%(sum_reward, n))
+        task = MazeTaskSampler(n=n, step_reward=-0.01, goal_reward=1.0)
         maze_env.set_task(task)
 
-def test_3d_maze(max_iteration):
-    print("Testing 3D Maze...")
-    maze_env = gym.make("meta-maze-3D-v0", enable_render=False)
-    cell_scale = 9
-    task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2)
+def test_3d_discrete_maze(max_iteration, task_type):
+    print("Testing Discrete 3D Maze with task type: ", task_type)
+    maze_env = gym.make("meta-maze-discrete-3D-v0", max_steps=200, enable_render=False, task_type=task_type)
+    n = 9
+    task = MazeTaskSampler(n=n, step_reward=-0.01, goal_reward=1.0)
     maze_env.set_task(task)
     iteration = 0
     while iteration < max_iteration:
@@ -39,13 +41,35 @@ def test_3d_maze(max_iteration):
         while not done:
             state, reward, done, _ = maze_env.step(maze_env.action_space.sample())
             sum_reward += reward
-        print("Episode is over! You got %.1f score."%sum_reward)
-        if(sum_reward > 0.0):
-            cell_scale += 2 # gradually increase the difficulty
-            print("Increase the difficulty, cell_scale = %d"%cell_scale)
-        task = maze_env.sample_task(cell_scale=cell_scale, cell_size=2.0, wall_height=3.2)
+        n += 2 # gradually increase the difficulty
+        print("Get score %f, Increase the difficulty, n = %d"%(sum_reward, n))
+        task = MazeTaskSampler(n=n, step_reward=-0.01, goal_reward=1.0)
+        maze_env.set_task(task)
+
+def test_3d_continuous_maze(max_iteration, task_type):
+    print("Testing Continuous 3D Maze with task type: ", task_type)
+    maze_env = gym.make("meta-maze-continuous-3D-v0", max_steps=1000, enable_render=False, task_type=task_type)
+    n = 9
+    task = MazeTaskSampler(n=n, step_reward=-0.001, goal_reward=1.0)
+    maze_env.set_task(task)
+    iteration = 0
+    while iteration < max_iteration:
+        iteration += 1
+        maze_env.reset()
+        done=False
+        sum_reward = 0
+        while not done:
+            state, reward, done, _ = maze_env.step(maze_env.action_space.sample())
+            sum_reward += reward
+        n += 2 # gradually increase the difficulty
+        print("Get score %f, Increase the difficulty, n = %d"%(sum_reward, n))
+        task = MazeTaskSampler(n=n, step_reward=-0.001, goal_reward=1.0)
         maze_env.set_task(task)
 
 if __name__=="__main__":
-    test_2d_maze(100)
-    test_3d_maze(100)
+    test_2d_maze(10, "ESCAPE")
+    test_2d_maze(10, "SURVIVAL")
+    test_3d_discrete_maze(10, "ESCAPE")
+    test_3d_discrete_maze(10, "SURVIVAL")
+    test_3d_continuous_maze(10, "ESCAPE")
+    test_3d_continuous_maze(10, "SURVIVAL")

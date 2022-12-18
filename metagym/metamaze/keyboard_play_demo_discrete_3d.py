@@ -1,12 +1,11 @@
 import gym
-import sys
 import metagym.metamaze
 from metagym.metamaze import MazeTaskSampler
 
 if __name__=='__main__':
-    maze_env = gym.make("meta-maze-2D-v0", max_steps=1000, view_grid=1, task_type="ESCAPE")
+    maze_env = gym.make("meta-maze-discrete-3D-v0", task_type="ESCAPE", max_steps=5000)
     n = 15
-    task = MazeTaskSampler(n=n, allow_loops=True, crowd_ratio=0.35)
+    task = MazeTaskSampler(n=n, cell_size=2.0, wall_height=3.2, allow_loops=True, crowd_ratio=0.35)
     maze_env.set_task(task)
     while True:
         maze_env.reset()
@@ -22,7 +21,7 @@ if __name__=='__main__':
             if(sum_reward > 0.0):
                 n += 2 # gradually increase the difficulty
                 print("Increase the difficulty, n = %d"%n)
-            task = MazeTaskSampler(n=n, allow_loops=True, crowd_ratio=0.35)
+            task = MazeTaskSampler(n=n, cell_size=2.0, wall_height=3.2, allow_loops=True, crowd_ratio=0.35)
             maze_env.set_task(task)
         else:
             break

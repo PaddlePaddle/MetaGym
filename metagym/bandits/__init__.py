@@ -13,16 +13,12 @@
 # limitations under the License.
 
 from gym.envs.registration import register
-from metagym.navigator2d.navigator import Navigator2D
-from metagym.navigator2d.wheeled_robot import WheeledRobot
+from metagym.bandits.bandits_env import Bandits
 
 register(
-    id='navigator-wr-2D-v0',
-    entry_point='metagym.navigator2d.navigator:Navigator2D',
-    kwargs={
-        "max_steps": 100,
-        "robot_class": WheeledRobot,
-        "signal_noise": 0.20,
-        "enable_render": True
+    id='bandits-v0',
+    entry_point='metagym.bandits:Bandits',
+    kwargs={"arms": 50,
+        "max_steps": 1000,
     }
 )
